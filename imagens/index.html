@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galeria & Identidade Visual | AURA MOCOCA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #08090c;
+      --bg-card: #11141d;
+      --bg-card-hover: #161b27;
+      --neon-cyan: #00f0ff;
+      --neon-blue: #0084ff;
+      --sunset-orange: #ea560d;
+      --text-white: #ffffff;
+      --text-muted: #94a3b8;
+      --border-color: rgba(0, 240, 255, 0.15);
+      --border-glow: 0 0 20px rgba(0, 240, 255, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header & Hero */
+    header {
+      background: radial-gradient(circle at 50% 0%, rgba(0, 210, 255, 0.15) 0%, transparent 70%), var(--bg-dark);
+      padding: 50px 20px 30px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .brand-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: 12px;
+      color: var(--text-white);
+      text-shadow: 0 0 25px rgba(0, 240, 255, 0.8), 0 0 50px rgba(0, 132, 255, 0.4);
+      margin-bottom: 8px;
+    }
+
+    .brand-subtitle {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 6px;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .brand-meta {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .pill:hover {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--neon-cyan);
+      color: var(--text-white);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Filter Buttons */
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 35px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #11141d;
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 22px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(0, 132, 255, 0.2) 100%);
+      border-color: var(--neon-cyan);
+      color: var(--text-white);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+
+    /* Grid Layout */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: var(--neon-cyan);
+      box-shadow: var(--border-glow);
+      background: var(--bg-card-hover);
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #040507;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-img {
+      transform: scale(1.05);
+    }
+
+    .badge-source {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(8, 9, 12, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: var(--neon-cyan);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-category {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--neon-blue);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 18px;
+      flex-grow: 1;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-action {
+      flex: 1;
+      text-align: center;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00D2FF 0%, #0084FF 100%);
+      color: #08090C;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+      filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-white);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Lightbox Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+      border: 1px solid var(--neon-cyan);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 25px;
+      right: 35px;
+      color: white;
+      font-size: 36px;
+      font-weight: 300;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--neon-cyan);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #11141d;
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+      z-index: 10000;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">AURA</div>
+    <div class="brand-subtitle">MOCOCA • SP</div>
+    <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto 16px;">
+      Acervo multimídia e diretrizes oficiais da casa noturna mais sofisticada de Mococa e região.
+    </p>
+    <div class="brand-meta">
+      <a href="https://www.google.com/maps/place/AURA+MOCOCA/@-21.4696108,-47.0105247,15z/data=!3m1!4b1!4m6!3m5!1s0x94b7b9dbd4b2535d:0x2452803cc0ed262c!8m2!3d-21.4696311!4d-47.000225!16s%2Fg%2F11zh2cw7wt" target="_blank" class="pill">
+        📍 Av. João Batista Lima Figueiredo, 2707
+      </a>
+      <a href="https://www.instagram.com/aura_mococa/" target="_blank" class="pill">
+        📱 @aura_mococa
+      </a>
+      <a href="https://byma.com.br/event/6a7dd1a59188fb00040a6bb8" target="_blank" class="pill" style="border-color: rgba(234, 86, 13, 0.5); color: #ff9d66;">
+        🎟️ Ingressos Byma
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Filtros -->
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterGallery('all', this)">Todas as Mídias</button>
+      <button class="filter-btn" onclick="filterGallery('fachada', this)">Fachada &amp; Estrutura</button>
+      <button class="filter-btn" onclick="filterGallery('eventos', this)">Eventos &amp; Flyers</button>
+      <button class="filter-btn" onclick="filterGallery('identidade', this)">Identidade &amp; Logos</button>
+    </div>
+
+    <!-- Galeria -->
+    <div class="gallery-grid" id="galleryGrid">
+      
+      <!-- Card 1 -->
+      <div class="card" data-category="fachada">
+        <div class="card-img-wrapper" onclick="openModal('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWneT5jHSUAEXkvoT7NdITSZWPAS7TLJ976722F9hAI0_1TMaGHTKZF4WJWAcDjC893N2fU9C6lLwxxNkZD-hFkrU1N-vMN_CU1xJN9WqiS-34TK8yJdOAKDCY4oLjol0GKmDgNIaR0IP8Ql')">
+          <span class="badge-source">Google Maps</span>
+          <img src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWneT5jHSUAEXkvoT7NdITSZWPAS7TLJ976722F9hAI0_1TMaGHTKZF4WJWAcDjC893N2fU9C6lLwxxNkZD-hFkrU1N-vMN_CU1xJN9WqiS-34TK8yJdOAKDCY4oLjol0GKmDgNIaR0IP8Ql" alt="Fachada Noturna AURA" class="card-img" />
+        </div>
+        <div class="card-body">
+          <div class="card-category">Estrutura Física</div>
+          <div class="card-title">Fachada Noturna com Neon Azul</div>
+          <div class="card-desc">Visão noturna frontal destacando o letreiro luminoso da AURA e a iluminação em LED azul cobalto.</div>
+          <div class="card-actions">
+            <button class="btn-action btn-primary" onclick="openModal('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWneT5jHSUAEXkvoT7NdITSZWPAS7TLJ976722F9hAI0_1TMaGHTKZF4WJWAcDjC893N2fU9C6lLwxxNkZD-hFkrU1N-vMN_CU1xJN9WqiS-34TK8yJdOAKDCY4oLjol0GKmDgNIaR0IP8Ql')">🔍 Visualizar</button>
+            <button class="btn-action btn-secondary" onclick="copyLink('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWneT5jHSUAEXkvoT7NdITSZWPAS7TLJ976722F9hAI0_1TMaGHTKZF4WJWAcDjC893N2fU9C6lLwxxNkZD-hFkrU1N-vMN_CU1xJN9WqiS-34TK8yJdOAKDCY4oLjol0GKmDgNIaR0IP8Ql')">📋 Copiar Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card" data-category="eventos">
+        <div class="card-img-wrapper" onclick="openModal('https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg')">
+          <span class="badge-source">Byma / Cloudinary</span>
+          <img src="https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg" alt="Flyer Lorenah in Aura" class="card-img" />
+        </div>
+        <div class="card-body">
+          <div class="card-category">Flyer de Evento</div>
+          <div class="card-title">Lorenah in Aura (22/08)</div>
+          <div class="card-desc">Arte promocional em altíssima resolução (2048x2048) do evento com sertanejo ao vivo e funk premium.</div>
+          <div class="card-actions">
+            <button class="btn-action btn-primary" onclick="openModal('https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg')">🔍 Visualizar</button>
+            <button class="btn-action btn-secondary" onclick="copyLink('https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg')">📋 Copiar Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card" data-category="fachada">
+        <div class="card-img-wrapper" onclick="openModal('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrPdwQfmOHDaduLQQXqO3-x88rm0hjPJw5J-LAolBHC2q6ysakiw41vCavM3PlTgsl-CJOWWWhmTDP-FoDiKBg0pxJPgk1-M-5J-eCjLnqvNsOh45iLQjskHuMuT7sfStsydBEWYqbXsYJ')">
+          <span class="badge-source">Google Maps</span>
+          <img src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrPdwQfmOHDaduLQQXqO3-x88rm0hjPJw5J-LAolBHC2q6ysakiw41vCavM3PlTgsl-CJOWWWhmTDP-FoDiKBg0pxJPgk1-M-5J-eCjLnqvNsOh45iLQjskHuMuT7sfStsydBEWYqbXsYJ" alt="Fachada Diurna" class="card-img" />
+        </div>
+        <div class="card-body">
+          <div class="card-category">Estrutura Física</div>
+          <div class="card-title">Fachada Diurna &amp; Imóvel</div>
+          <div class="card-desc">Visão panorâmica em luz natural da localização da AURA na avenida principal de Mococa.</div>
+          <div class="card-actions">
+            <button class="btn-action btn-primary" onclick="openModal('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrPdwQfmOHDaduLQQXqO3-x88rm0hjPJw5J-LAolBHC2q6ysakiw41vCavM3PlTgsl-CJOWWWhmTDP-FoDiKBg0pxJPgk1-M-5J-eCjLnqvNsOh45iLQjskHuMuT7sfStsydBEWYqbXsYJ')">🔍 Visualizar</button>
+            <button class="btn-action btn-secondary" onclick="copyLink('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrPdwQfmOHDaduLQQXqO3-x88rm0hjPJw5J-LAolBHC2q6ysakiw41vCavM3PlTgsl-CJOWWWhmTDP-FoDiKBg0pxJPgk1-M-5J-eCjLnqvNsOh45iLQjskHuMuT7sfStsydBEWYqbXsYJ')">📋 Copiar Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card" data-category="identidade">
+        <div class="card-img-wrapper" onclick="openModal('logo_vetorial.svg')">
+          <span class="badge-source">SVG Vetorial</span>
+          <img src="logo_vetorial.svg" alt="Logotipo Vetorial AURA" class="card-img" />
+        </div>
+        <div class="card-body">
+          <div class="card-category">Identidade Visual</div>
+          <div class="card-title">Logotipo Oficial Vetorial (SVG)</div>
+          <div class="card-desc">Arquivo vetorial escalável com gradientes neon cyan, efeitos de glow e tipografia oficial.</div>
+          <div class="card-actions">
+            <a href="logo_vetorial.svg" target="_blank" class="btn-action btn-primary">🔍 Visualizar</a>
+            <a href="logo_vetorial.svg" download="aura_mococa_logo.svg" class="btn-action btn-secondary">💾 Baixar SVG</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="card" data-category="fachada">
+        <div class="card-img-wrapper" onclick="openModal('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkT00d7rpWkTxrFCWeITp6TWgLL9PEPXC4Ubi4xGY64AG67-wIqVbzXPLMmSaxXEtyuCtbemXa3wFGMrpIiwYr-f6V8H5ooyYjzxsvH8QdpQ2imm8dgGpeKEnsIKYFmEBaubZWlMSu6HDc')">
+          <span class="badge-source">Google Maps</span>
+          <img src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkT00d7rpWkTxrFCWeITp6TWgLL9PEPXC4Ubi4xGY64AG67-wIqVbzXPLMmSaxXEtyuCtbemXa3wFGMrpIiwYr-f6V8H5ooyYjzxsvH8QdpQ2imm8dgGpeKEnsIKYFmEBaubZWlMSu6HDc" alt="Montagem da Fachada" class="card-img" />
+        </div>
+        <div class="card-body">
+          <div class="card-category">Estrutura Física</div>
+          <div class="card-title">Instalação &amp; Arquitetura</div>
+          <div class="card-desc">Registro do processo de montagem e acabamento arquitetônico da entrada principal.</div>
+          <div class="card-actions">
+            <button class="btn-action btn-primary" onclick="openModal('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkT00d7rpWkTxrFCWeITp6TWgLL9PEPXC4Ubi4xGY64AG67-wIqVbzXPLMmSaxXEtyuCtbemXa3wFGMrpIiwYr-f6V8H5ooyYjzxsvH8QdpQ2imm8dgGpeKEnsIKYFmEBaubZWlMSu6HDc')">🔍 Visualizar</button>
+            <button class="btn-action btn-secondary" onclick="copyLink('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkT00d7rpWkTxrFCWeITp6TWgLL9PEPXC4Ubi4xGY64AG67-wIqVbzXPLMmSaxXEtyuCtbemXa3wFGMrpIiwYr-f6V8H5ooyYjzxsvH8QdpQ2imm8dgGpeKEnsIKYFmEBaubZWlMSu6HDc')">📋 Copiar Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="card" data-category="fachada">
+        <div class="card-img-wrapper" onclick="openModal('https://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&w=900&h=600&pitch=0&panoid=Zun4pKSZnE6AQtyuD88WcA&yaw=106.9793')">
+          <span class="badge-source">Street View</span>
+          <img src="https://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&w=900&h=600&pitch=0&panoid=Zun4pKSZnE6AQtyuD88WcA&yaw=106.9793" alt="Street View" class="card-img" />
+        </div>
+        <div class="card-body">
+          <div class="card-category">Geolocalização</div>
+          <div class="card-title">Google Street View Panorâmico</div>
+          <div class="card-desc">Perspectiva urbana da Av. João Batista Lima Figueiredo e acessos viários do entorno.</div>
+          <div class="card-actions">
+            <button class="btn-action btn-primary" onclick="openModal('https://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&w=900&h=600&pitch=0&panoid=Zun4pKSZnE6AQtyuD88WcA&yaw=106.9793')">🔍 Visualizar</button>
+            <button class="btn-action btn-secondary" onclick="copyLink('https://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&w=900&h=600&pitch=0&panoid=Zun4pKSZnE6AQtyuD88WcA&yaw=106.9793')">📋 Copiar Link</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="modal" id="imageModal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img src="" alt="Imagem Ampliada" class="modal-content" id="modalImg" onclick="event.stopPropagation()" />
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastMsg">Link copiado para a área de transferência!</div>
+
+  <footer>
+    <p>AURA MOCOCA © 2026 • Todos os direitos reservados • Desenvolvido para Gestão de Marca e Entretenimento</p>
+  </footer>
+
+  <script>
+    function filterGallery(category, btn) {
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function openModal(imgSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImg');
+      modalImg.src = imgSrc;
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.remove('active');
+    }
+
+    function copyLink(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Link copiado para a área de transferência! ⚡');
+      }).catch(() => {
+        showToast('Erro ao copiar link.');
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastMsg');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

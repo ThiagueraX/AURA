@@ -1,0 +1,2844 @@
+/* ==========================================================================
+   AURA MOCOCA • PRODUX DESIGN SYSTEM & SCROLL MORPHING PUZZLE
+   AURA Gigante no Topo -> Pedaços Desfocados Espalhados -> Foco & Montagem -> Vídeo Automático
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS & VARIÁVEIS GLOBAIS
+   -------------------------------------------------------------------------- */
+:root {
+  /* Cores de Fundo */
+  --bg-abyssal: #08090C;
+  --bg-surface: #11141D;
+  --bg-surface-elevated: #161A26;
+  --bg-card: rgba(17, 20, 29, 0.85);
+  --bg-glass: rgba(8, 9, 12, 0.8);
+
+  /* Tipografia & Contraste */
+  --text-white: #F2F2F2;
+  --text-pure: #FFFFFF;
+  --text-slate: #8A9099;
+  --text-muted: #64748B;
+  --text-dark: #08090C;
+
+  /* Acentos de Luz & Neon */
+  --neon-cyan: #00F0FF;
+  --neon-cyan-glow: rgba(0, 240, 255, 0.45);
+  --neon-blue: #0084FF;
+  --neon-purple: #7000FF;
+  --accent-gold: #FFB800;
+  --accent-gold-glow: rgba(255, 184, 0, 0.55);
+  --sunset-orange: #EA560D;
+  --sunset-orange-glow: rgba(234, 86, 13, 0.45);
+  --accent-green: #10B981;
+
+  /* --- NEON OFICIAL DA FACHADA (amostrado da foto real do letreiro) ---
+     A logo física é um tubo de neon: núcleo branco-quente, corpo dourado
+     e difusão âmbar. Estes três tons reproduzem o letreiro da entrada. */
+  --neon-core: #FFF4D6;   /* núcleo incandescente do tubo */
+  --neon-ouro: #FFC24A;   /* corpo dourado do tubo */
+  --neon-brasa: #FF8A0F;  /* difusão âmbar externa */
+  --cobalto: #1E4DFF;     /* barras de LED azul da fachada */
+
+  /* Bordas & Efeitos de Vidro */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-cyan: rgba(0, 240, 255, 0.25);
+  --border-cyan-active: rgba(0, 240, 255, 0.8);
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+  --shadow-neon: 0 0 30px rgba(0, 240, 255, 0.35);
+
+  /* Tipografia */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-display: 'Montserrat', sans-serif;
+
+  /* Tipografia da marca: a MESMA do letreiro da entrada.
+     Italiana reproduz a modulação do logotipo oficial — diagonal esquerda
+     do "A" em fio de cabelo e direita cheia, haste esquerda do "U" cheia e
+     direita fina. Só existe no peso 400: nunca pedir 200/300/bold.
+     Tenor Sans é a irmã robusta, para tamanhos onde o fio da Italiana some. */
+  --font-logo: 'Italiana', 'Tenor Sans', Georgia, serif;
+  --font-display-alt: 'Tenor Sans', 'Italiana', Georgia, serif;
+
+  /* Curva cinematográfica usada na abertura da moldura do hero */
+  --ease-cine: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Espaçamento & Transições */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. RESET & BASE
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  background-color: var(--bg-abyssal);
+  color: var(--text-white);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-abyssal);
+  color: var(--text-white);
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Entrelinha compacta dos títulos (o `leading-[1.1]` do PRODUX).
+   Sem isto todos herdam o `line-height: 1.6` do corpo, feito para parágrafo,
+   e abrem um vão enorme assim que quebram em duas linhas — o que acontece
+   sempre no celular ("Próximas / Atrações" saía com um buraco no meio). */
+.section-title,
+.show-artist-title,
+.cta-title,
+.sector-name,
+.location-title,
+.drawer-title,
+.success-title,
+.admin-title,
+.summary-event-name,
+.ticket-event-name {
+  line-height: 1.12;
+}
+
+.highlight-cyan {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+}
+
+.highlight-gold {
+  color: var(--accent-gold);
+  text-shadow: 0 0 15px rgba(255, 184, 0, 0.5);
+}
+
+.highlight-green {
+  color: var(--accent-green);
+}
+
+.text-muted {
+  color: var(--text-slate);
+}
+
+.container {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.mb-40 {
+  margin-bottom: 40px;
+}
+
+/* --------------------------------------------------------------------------
+   2b. LOGOTIPO OFICIAL AURA (reprodução vetorial do letreiro da entrada)
+   --------------------------------------------------------------------------
+   Construção conferida contra duas fontes: a foto 4K da fachada noturna e a
+   arte vetorial oficial impressa no flyer. O emblema são três anéis finos com
+   um "A" de duas lâminas — pernas retas saindo do ápice, travessão em arco
+   que desce junto às pernas e termina em ponta, mais o ponto central.
+   Todo o desenho herda `currentColor`, então basta trocar a cor do container.
+   -------------------------------------------------------------------------- */
+.aura-emblem {
+  display: block;
+  color: var(--neon-core);
+  overflow: visible;
+}
+
+/* A espessura do tubo é definida por contexto: no header o logo tem 34px e
+   precisa de traço proporcionalmente mais grosso para não sumir. */
+.aura-emblem .emb-tubo {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--emb-traco, 1.9);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.aura-emblem .emb-ponto {
+  fill: currentColor;
+  stroke: none;
+  /* `r` como propriedade CSS (SVG2) permite engrossar o ponto no header sem
+     duplicar markup. O atributo r="2" no HTML cobre engines antigas. */
+  r: var(--emb-ponto-r, 2);
+}
+
+/* --------------------------------------------------------------------------
+   LOCKUP COMPLETO — CALIBRADO SOBRE A FOTO DA FACHADA
+   --------------------------------------------------------------------------
+   As três peças são posicionadas em porcentagem da própria caixa, e essas
+   porcentagens vêm das coordenadas do letreiro real na foto 4K (2340×4160),
+   obtidas por varredura de pixel (limiar de dourado) e não a olho:
+     emblema  x 990..1313   y 1231..1543
+     nome     x 639..1626   y 1570..1766
+     filete   x 799..1475   y 1792..1829
+   A caixa de referência vai da esquerda do primeiro "A" à direita do último
+   (987 px) e do topo do emblema à base do filete (598 px) — proporção 1.65.
+   Por isso o lockup pousa em cima do letreiro da foto quando o quebra-cabeça
+   termina de montar.
+
+   Métricas da Italiana usadas nas contas (medidas no navegador, por 1em):
+     altura de caixa alta 0.7031 · ascendente 0.928 · descendente 0.250
+     largura de "AURA" sem tracking 2.464
+   -------------------------------------------------------------------------- */
+.aura-lockup {
+  position: absolute;
+  inset: 0;
+  color: var(--neon-core);
+  user-select: none;
+}
+
+/* Emblema: o anel mede 318 px na foto (32.2% da caixa). Como o anel externo
+   ocupa 92.9 de 100 do viewBox, a caixa do SVG fica maior — 34.7% — e sobe
+   2% para o anel cair na marca. O emblema fica centralizado: na foto ele está
+   19 px à direita do eixo do nome, desvio que salvaria 3 px no encaixe mas
+   apareceria como erro grosseiro no tamanho do hero. */
+.aura-lockup .lockup-emblem {
+  position: absolute;
+  left: 50%;
+  top: -2%;
+  width: 34.7%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+}
+
+/* Nome: caixa alta de 196 px = 19.86% da largura da caixa.
+   font-size = 0.1986 ÷ 0.7031 = 0.2824 → 28.24cqw.
+   O espaçamento entre letras é `gap` de flex, não `letter-spacing`: as três
+   folgas precisam completar a largura → (1 − 0.6959) ÷ 3 = 10.14cqw.
+   Com line-height 1 o topo da maiúscula cai 0.1359em abaixo do topo da caixa
+   ((1 − 0.928 − 0.250) ÷ 2 + 0.928 − 0.7031), e o `top` já desconta isso. */
+.aura-lockup .lockup-word {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50.36%;
+  display: flex;
+  justify-content: center;
+  gap: 10.14cqw;
+  font-family: var(--font-logo);
+  font-weight: 400;
+  font-size: 28.24cqw;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Filete com o ponto ao centro: 676 px na foto = 68.5% da largura do nome. */
+.aura-lockup .lockup-rule {
+  position: absolute;
+  left: 50%;
+  top: 96.9%;
+  width: 68.5%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 2.4%;
+}
+
+.aura-lockup .lockup-rule i {
+  flex: 1;
+  height: 0.87cqw;
+  min-height: 1px;
+  background: currentColor;
+}
+
+.aura-lockup .lockup-rule span {
+  flex: 0 0 auto;
+  width: 2.6cqw;
+  height: 2.6cqw;
+  min-width: 2px;
+  min-height: 2px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+/* Acendimento do neon: um halo em camadas, medido em `em` para acompanhar
+   qualquer tamanho do lockup. */
+.aura-neon {
+  color: var(--neon-core);
+  text-shadow:
+    0 0 0.05em var(--neon-ouro),
+    0 0 0.14em rgba(255, 194, 74, 0.9),
+    0 0 0.34em rgba(255, 138, 15, 0.6),
+    0 0 0.8em rgba(255, 138, 15, 0.35);
+}
+
+.aura-neon .lockup-emblem,
+.aura-emblem.aura-neon {
+  filter:
+    drop-shadow(0 0 0.03em var(--neon-ouro))
+    drop-shadow(0 0 0.1em rgba(255, 194, 74, 0.85))
+    drop-shadow(0 0 0.26em rgba(255, 138, 15, 0.55));
+}
+
+.aura-neon .lockup-rule i,
+.aura-neon .lockup-rule span {
+  box-shadow: 0 0 0.1em var(--neon-ouro), 0 0 0.26em rgba(255, 138, 15, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   3. CURSOR MAGNÉTICO PRODUX
+   -------------------------------------------------------------------------- */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none !important;
+  z-index: 999999;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+@media (pointer: fine) {
+  .custom-cursor {
+    display: block;
+  }
+}
+
+.cursor-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--neon-cyan);
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  pointer-events: none !important;
+}
+
+.cursor-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(8, 9, 12, 0.9);
+  border: 1px solid var(--neon-cyan);
+  color: var(--text-pure);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
+  pointer-events: none !important;
+}
+
+.custom-cursor.is-hovering .cursor-dot {
+  transform: scale(2.2);
+  background: var(--text-pure);
+}
+
+.custom-cursor.is-hovering .cursor-badge {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* --------------------------------------------------------------------------
+   4. NAVBAR FIXA PRODUX (SURGE SUAVE NO SCROLL)
+   -------------------------------------------------------------------------- */
+.navbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10000;
+  padding: 14px 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  background: rgba(8, 9, 12, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.navbar-fixed.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.navbar-brand {
+  text-decoration: none;
+}
+
+.brand-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* No header o lockup é horizontal: emblema à esquerda do nome. Em 34px o
+   tubo precisa de traço mais grosso, senão o desenho some. */
+.brand-emblem-svg {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  --emb-traco: 3.4;
+  --emb-ponto-r: 3.6;
+  color: var(--neon-core);
+  filter:
+    drop-shadow(0 0 3px var(--neon-ouro))
+    drop-shadow(0 0 9px rgba(255, 138, 15, 0.6));
+}
+
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  gap: 4px;
+}
+
+.brand-text {
+  font-family: var(--font-logo);
+  font-size: 1.45rem;
+  font-weight: 400;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  line-height: 1;
+  color: var(--neon-core);
+  text-shadow:
+    0 0 6px var(--neon-ouro),
+    0 0 16px rgba(255, 138, 15, 0.55);
+}
+
+/* Como no letreiro, o filete é mais curto que o nome (≈65%). O text-indent do
+   nome empurra o bloco 0.4em para a direita, então o filete acompanha. */
+.brand-underline-decor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 65%;
+  margin-left: 0.4em;
+}
+
+.decor-line {
+  height: 1px;
+  flex-grow: 1;
+  background: var(--neon-ouro);
+  box-shadow: 0 0 5px rgba(255, 138, 15, 0.7);
+}
+
+.decor-dot {
+  width: 3px;
+  height: 3px;
+  background: var(--neon-core);
+  border-radius: 50%;
+  box-shadow: 0 0 5px var(--neon-ouro), 0 0 10px rgba(255, 138, 15, 0.6);
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-item {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-slate);
+  text-decoration: none;
+  padding: 6px 9px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap; /* os colchetes nunca quebram para a linha de baixo */
+  transition: all var(--transition-fast);
+}
+
+.nav-item:hover {
+  color: var(--text-pure);
+  background: rgba(255, 255, 255, 0.05);
+  transform: rotate(-2deg);
+}
+
+.nav-item--highlight {
+  color: var(--neon-cyan);
+  border: 1px solid var(--border-cyan);
+  background: rgba(0, 240, 255, 0.05);
+}
+
+.nav-item--highlight:hover {
+  background: rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 15px var(--neon-cyan-glow);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-quick-ticket {
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  color: var(--text-dark);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.btn-quick-ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--neon-cyan-glow);
+}
+
+.btn-admin-gear {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-slate);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-admin-gear:hover {
+  color: var(--text-pure);
+  border-color: var(--neon-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   5. PRODUX HERO 3D SCROLL & QUEBRA-CABEÇA DINÂMICO
+   -------------------------------------------------------------------------- */
+.produx-hero-scroll-stage {
+  position: relative;
+  height: 320vh;
+  background: var(--bg-abyssal);
+}
+
+.produx-sticky-viewport {
+  position: sticky;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+/* CABEÇALHO HERO INICIAL COM AURA GIGANTE (PRODUX IDENTIDADE) */
+.produx-hero-initial-header {
+  position: absolute;
+  inset: 0;
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  /* O letreiro saiu daqui para dentro da moldura, então o texto de apoio
+     ancora sozinho no rodapé da tela. */
+  justify-content: flex-end;
+  z-index: 6;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: opacity 0.2s linear;
+}
+
+/* --------------------------------------------------------------------------
+   O LETREIRO QUE SE ENCAIXA
+   --------------------------------------------------------------------------
+   Este bloco fica DENTRO da moldura da fachada, ancorado exatamente sobre as
+   coordenadas do letreiro real na foto 4K (medidas na imagem de 2340×4160):
+   emblema começa em 28,9% da altura, o nome vai de 26,8% a 71,5% da largura.
+   No topo da página o JS o amplia e centraliza na tela; conforme a fachada se
+   monta, ele encolhe até pousar em cima do letreiro de verdade.
+   -------------------------------------------------------------------------- */
+.hero-sign-anchor {
+  position: absolute;
+  left: 27.31%;
+  top: 29.59%;
+  width: 42.18%;
+  height: 14.38%;
+  container-type: inline-size;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* Respiro sutil enquanto o letreiro ainda está solto na tela. O JS remove
+   esta classe assim que o encaixe começa, para o pouso ficar preciso. */
+.hero-sign-anchor.is-flutuando {
+  animation: letreiroFlutua 5s ease-in-out infinite;
+}
+
+@keyframes letreiroFlutua {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -0.7%; }
+}
+
+.produx-hero-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 40px;
+  align-items: flex-end;
+  width: 100%;
+  /* espaço para a pílula de status, que fica centralizada no rodapé da tela */
+  padding-bottom: 56px;
+}
+
+.hero-punchline-text {
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 3.8vw, 3.6rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+}
+
+.side-desc-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #8A9099;
+  margin-bottom: 16px;
+}
+
+.hero-scroll-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--neon-cyan);
+}
+
+.indicator-arrow {
+  animation: bounceDown 2s infinite ease-in-out;
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* PALCO DO QUEBRA-CABEÇA 3D: PEDAÇOS DESFOCADOS FLUTUANTES SEM BORDAS */
+.puzzle-canvas-scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   A MOLDURA QUE ABRE
+   --------------------------------------------------------------------------
+   Três mídias passam por aqui e cada uma tem um formato diferente:
+     fachada 2340×4160 (9:16) → fotos da casa 2:3 → vídeo 1920×1080 (16:9)
+   Uma moldura fixa obrigaria a esticar ou cortar pelo menos duas delas. Então
+   a moldura muda de formato junto com o conteúdo: começa estreita como a porta
+   da casa e vai abrindo até a tela cheia do vídeo. Cada mídia aparece no
+   formato real, sem distorção e sem corte.
+
+   As larguras saem de `78vh × proporção` e as alturas de `92vw ÷ proporção`,
+   com `min()` escolhendo qual dos dois limites aperta primeiro. Isso mantém a
+   proporção exata em qualquer tela, do desktop ao celular.
+   -------------------------------------------------------------------------- */
+.assembled-master-canvas {
+  position: relative;
+  /* estado 1 — retrato 9:16, o formato real da foto da fachada */
+  width: min(92vw, 43.9vh);
+  height: min(163.5vw, 78vh);
+  background: transparent;
+  transform-style: preserve-3d;
+  transition: width 1s var(--ease-cine), height 1s var(--ease-cine);
+}
+
+/* estado 2 — 2:3, o formato das fotos da casa */
+.palco-fotos .assembled-master-canvas {
+  width: min(92vw, 52vh);
+  height: min(138vw, 78vh);
+}
+
+/* estado 3 — 16:9, o formato do vídeo */
+.palco-video .assembled-master-canvas {
+  width: min(92vw, 138.7vh);
+  height: min(51.75vw, 78vh);
+}
+
+/* Pedaços Orgânicos do Quebra-Cabeça da Fachada */
+.puzzle-shard {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkZXZqrc0T8ZFoYeSekOSNtFShWifl80QMZGs9dNgdcvbxF_pRSiF8lkLHud2gzpC8YEO_f-kTqAHIyeWPar6njVh0Nzv5w2AOVsXwsCdW63bDB-znWMW04p5n1yxvI7-ZAC_4o-Funhn4=s0');
+  background-repeat: no-repeat;
+  /* `cover` no lugar de `100% 100%`: a moldura já está em 9:16 igual à foto,
+     então isto preenche sem esticar nem cortar nada. */
+  background-size: cover;
+  background-position: center;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+  pointer-events: none;
+  opacity: 0; /* Começa 100% invisível no scroll 0 para manter o fundo preto puro */
+}
+
+/* --------------------------------------------------------------------------
+   RECORTE DOS FRAGMENTOS — LADRILHO SEM SOBREPOSIÇÃO
+   --------------------------------------------------------------------------
+   Regra que não pode ser quebrada: **os recortes não podem se sobrepor**.
+   Todos os fragmentos carregam a MESMA foto e, durante a montagem, cada um
+   está numa posição diferente. Onde dois recortes cobrem o mesmo pedaço da
+   imagem, esse pedaço é desenhado duas vezes em lugares diferentes — foi
+   assim que o letreiro aparecia como "AAURRAA". No repouso o defeito some
+   (todos coincidem), o que faz o problema passar despercebido.
+
+   As oito peças ladrilham a moldura em faixas, e a faixa do letreiro
+   (28%–46%, onde ficam emblema, nome e filete) é **uma peça inteira e de
+   largura total**: o letreiro chega sempre em um pedaço só, nunca partido.
+   -------------------------------------------------------------------------- */
+.shard-topo-esq   { clip-path: polygon(0    0,   50%  0,   50%  28%, 0    28%); }
+.shard-topo-dir   { clip-path: polygon(50%  0,   100% 0,   100% 28%, 50%  28%); }
+
+/* a faixa do letreiro — inteira, sem emenda */
+.shard-letreiro   { clip-path: polygon(0    28%, 100% 28%, 100% 46%, 0    46%); }
+
+.shard-meio-esq   { clip-path: polygon(0    46%, 50%  46%, 50%  64%, 0    64%); }
+.shard-meio-dir   { clip-path: polygon(50%  46%, 100% 46%, 100% 64%, 50%  64%); }
+.shard-baixo-esq  { clip-path: polygon(0    64%, 50%  64%, 50%  82%, 0    82%); }
+.shard-baixo-dir  { clip-path: polygon(50%  64%, 100% 64%, 100% 82%, 50%  82%); }
+.shard-chao       { clip-path: polygon(0    82%, 100% 82%, 100% 100%, 0   100%); }
+
+/* CAMADA DE SEQUÊNCIA DE FOTOS REAIS DO INSTAGRAM (AUTOMÁTICA APÓS O ENCAIXE) */
+.auto-party-photos-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 10;
+}
+
+/* As fotos são 2:3 e a moldura entra em 2:3 junto com elas — `cover` aqui
+   preenche exatamente, sem cortar cabeça nem pé de ninguém. */
+.party-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  /* corte curto: com 620ms por foto, um crossfade longo deixaria duas imagens
+     sobrepostas quase o tempo todo */
+  transition: opacity 0.22s ease;
+}
+
+.party-slide.active {
+  opacity: 1;
+}
+
+/* CAMADA DE VÍDEO DO SHOWREEL E DA FESTA (SEM LEGENDAS / FULL RES) */
+.auto-party-video-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: auto;
+  transition: opacity 0.5s ease;
+  z-index: 12;
+}
+
+.party-video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.party-video-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 9, 12, 0.05) 0%, rgba(8, 9, 12, 0.7) 100%);
+  pointer-events: none;
+}
+
+.party-video-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 14;
+}
+
+.live-status-badge {
+  background: rgba(8, 9, 12, 0.85);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-pure);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(12px);
+}
+
+.live-dot-pulse {
+  width: 8px;
+  height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #EF4444;
+  animation: blinkDot 1s infinite;
+}
+
+.btn-party-audio {
+  background: rgba(8, 9, 12, 0.85);
+  border: 1px solid var(--neon-cyan);
+  color: var(--text-pure);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(12px);
+  transition: all var(--transition-fast);
+}
+
+.btn-party-audio:hover {
+  background: var(--neon-cyan);
+  color: var(--text-dark);
+  box-shadow: 0 0 20px var(--neon-cyan-glow);
+}
+
+.morph-status-pill {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  font-size: 0.8rem;
+  color: var(--neon-cyan);
+  background: rgba(8, 9, 12, 0.9);
+  border: 1px solid var(--border-cyan);
+  padding: 6px 18px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-cyan);
+  animation: blinkDot 1.5s infinite;
+}
+
+@keyframes blinkDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* --------------------------------------------------------------------------
+   6. SEÇÃO 2: AGENDA OFICIAL & LINEUP
+   -------------------------------------------------------------------------- */
+.shows-section {
+  padding: 90px 0 60px;
+  background: var(--bg-abyssal);
+}
+
+.section-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 50px;
+}
+
+.section-header-flex {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.section-tag {
+  font-size: 0.82rem;
+  color: var(--neon-cyan);
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  letter-spacing: -0.01em;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: var(--text-slate);
+  margin-top: 8px;
+}
+
+.tag-status-live {
+  color: var(--accent-green);
+  font-size: 0.85rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+}
+
+.shows-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 32px;
+}
+
+.show-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-smooth);
+}
+
+.show-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--shadow-neon);
+}
+
+.show-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #040507;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.show-flyer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.show-card:hover .show-flyer-img {
+  transform: scale(1.05);
+}
+
+.show-badge-batch {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(8, 9, 12, 0.85);
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+}
+
+.show-media-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.show-card-media:hover .show-media-hover-overlay {
+  opacity: 1;
+}
+
+.hover-view-btn {
+  background: var(--neon-cyan);
+  color: var(--text-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+}
+
+.show-card-body {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.show-date-tag {
+  font-size: 0.8rem;
+  color: var(--sunset-orange);
+  margin-bottom: 8px;
+}
+
+.show-artist-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  margin-bottom: 12px;
+}
+
+.show-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.genre-tag {
+  font-size: 0.72rem;
+  color: var(--text-slate);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.show-description {
+  font-size: 0.92rem;
+  color: var(--text-slate);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+.show-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* O preço nunca encolhe: espremido entre o rótulo e o botão, ele quebrava
+   entre o "R$" e o valor ("R$" numa linha, "35,00" na de baixo). */
+.price-box {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+
+.price-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.price-val {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  white-space: nowrap;
+}
+
+.btn-show-buy {
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  color: var(--text-dark);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-show-buy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--neon-cyan-glow);
+}
+
+.btn-show-buy--secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-pure);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-show-buy--secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--text-pure);
+}
+
+.upcoming-flyer-placeholder {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #1c2333 0%, #0c0f17 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  gap: 12px;
+}
+
+.upcoming-emblem {
+  font-size: 3rem;
+}
+
+.upcoming-artist-name {
+  font-size: 1.1rem;
+  color: var(--text-pure);
+  max-width: 280px;
+}
+
+/* --------------------------------------------------------------------------
+   7. SEÇÃO 3: COMPRA DE INGRESSOS & SETORES VIP
+   -------------------------------------------------------------------------- */
+.sectors-section {
+  padding: 60px 0 90px;
+  background: var(--bg-abyssal);
+}
+
+.cta-banner-card {
+  background: linear-gradient(135deg, rgba(17, 20, 29, 0.95) 0%, rgba(26, 32, 48, 0.95) 100%);
+  border: 1px solid var(--border-cyan);
+  box-shadow: 0 10px 40px -10px rgba(0, 240, 255, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.cta-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--sunset-orange);
+  margin-bottom: 8px;
+  /* mantém os colchetes junto do texto: quebrando, o "]" ficava órfão numa
+     linha só para ele */
+  white-space: nowrap;
+}
+
+.cta-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  margin-bottom: 8px;
+}
+
+.cta-desc {
+  font-size: 0.95rem;
+  color: var(--text-slate);
+  max-width: 580px;
+}
+
+.cta-banner-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.btn-action-primary {
+  background: linear-gradient(135deg, var(--sunset-orange) 0%, #FF7B00 100%);
+  color: var(--text-pure);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 16px 32px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  box-shadow: 0 0 20px var(--sunset-orange-glow);
+}
+
+.btn-action-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 35px rgba(234, 86, 13, 0.7);
+  filter: brightness(1.1);
+}
+
+.cta-subtext {
+  font-size: 0.75rem;
+  color: var(--text-slate);
+}
+
+.sectors-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+}
+
+.sector-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sector-card--vip {
+  border-color: rgba(255, 184, 0, 0.4);
+  background: linear-gradient(135deg, rgba(17, 20, 29, 0.95) 0%, rgba(32, 28, 16, 0.95) 100%);
+  box-shadow: 0 10px 40px -10px rgba(255, 184, 0, 0.2);
+}
+
+.sector-badge {
+  font-size: 0.8rem;
+  color: var(--neon-cyan);
+  margin-bottom: 12px;
+}
+
+.sector-name {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  margin-bottom: 12px;
+}
+
+.sector-desc {
+  font-size: 0.95rem;
+  color: var(--text-slate);
+  margin-bottom: 24px;
+}
+
+.sector-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--text-white);
+  margin-bottom: 32px;
+  flex-grow: 1;
+}
+
+.sector-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-sector {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-pure);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.btn-sector:hover {
+  background: var(--neon-cyan);
+  color: var(--text-dark);
+  border-color: var(--neon-cyan);
+}
+
+.btn-sector--vip {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #FFA000 100%);
+  color: var(--text-dark);
+  font-weight: 700;
+  border: none;
+}
+
+.btn-sector--vip:hover {
+  box-shadow: 0 0 25px rgba(255, 184, 0, 0.6);
+  filter: brightness(1.1);
+}
+
+.sector-vip-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-whatsapp-reserve {
+  font-size: 0.8rem;
+  color: var(--text-slate);
+  text-align: center;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+
+.btn-whatsapp-reserve:hover {
+  color: #25D366;
+}
+
+/* --------------------------------------------------------------------------
+   8. SEÇÃO 4: CARROSSEL DE BEBIDAS & MARCAS PREMIUM (TICKER)
+   -------------------------------------------------------------------------- */
+.brands-section {
+  padding: 40px 0;
+  background: #040507;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.brands-title-tag {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  letter-spacing: 0.15em;
+}
+
+.brands-marquee-wrapper {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.brands-track {
+  display: flex;
+  gap: 60px;
+  white-space: nowrap;
+  animation: marqueeTrack 35s linear infinite;
+}
+
+@keyframes marqueeTrack {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.brand-item {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-slate);
+  letter-spacing: 0.08em;
+  transition: color var(--transition-fast);
+}
+
+.brand-item:hover {
+  color: var(--neon-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   8b. POR DENTRO DA AURA — GALERIA EM RETRATO
+   --------------------------------------------------------------------------
+   As fotos da casa são verticais porque são registros de celular e de
+   Instagram: esse é o formato nativo do acervo. Em vez de forçá-las num card
+   deitado (que cortava mais da metade da imagem), a galeria assume o retrato
+   2:3 e corre na horizontal. Cada foto aparece inteira.
+   -------------------------------------------------------------------------- */
+/* Sem `overflow` aqui: qualquer overflow num ancestral quebra o
+   `position: sticky` da faixa interna. O recorte fica no trilho. */
+.galeria-section {
+  padding: 80px 0 90px;
+  background: var(--bg-abyssal);
+}
+
+.galeria-trilho {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* O encaixe precisa saber do recuo da esteira. Sem isto ele rola o
+     contêiner até grudar a primeira foto na borda, anulando o alinhamento
+     com o título. Tem de repetir o mesmo valor do `padding-left` da esteira. */
+  scroll-padding-left: max(24px, calc(50vw - 656px));
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 194, 74, 0.5) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* O recuo da esquerda acompanha a borda interna do `.container` (máx. 1360px
+   centralizado + 24px), para a primeira foto alinhar com o título. À direita
+   fica só o recuo mínimo, de propósito: a foto seguinte sangra na borda e
+   sinaliza que a fila continua. */
+.galeria-esteira {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  padding-top: 6px;
+  padding-right: 24px;
+  padding-bottom: 22px;
+  /* longhand de propósito: `max()` dentro do atalho `padding` não é aplicado */
+  padding-left: max(24px, calc(50vw - 656px));
+}
+
+/* --------------------------------------------------------------------------
+   MODO FIXO — a rolagem da página comanda o deslocamento lateral
+   --------------------------------------------------------------------------
+   A classe é aplicada pelo JS só quando faz sentido: tela larga e sem
+   preferência por movimento reduzido. Fora disso vale o arraste nativo acima.
+   A altura do palco é calculada em JS a partir do quanto a esteira excede a
+   tela, de modo que 1px de rolagem vertical = 1px de deslocamento lateral.
+   -------------------------------------------------------------------------- */
+.modo-fixo .galeria-fixa {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 26px;
+}
+
+.modo-fixo .galeria-trilho {
+  overflow: hidden;
+  scroll-snap-type: none;
+}
+
+.modo-fixo .galeria-esteira {
+  will-change: transform;
+}
+
+/* Barra de percurso: só existe no modo fixo, onde há um trajeto a percorrer. */
+.galeria-progresso {
+  display: none;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.modo-fixo .galeria-progresso {
+  display: block;
+}
+
+.galeria-progresso span {
+  display: block;
+  height: 100%;
+  background: var(--neon-ouro);
+  box-shadow: 0 0 8px rgba(255, 138, 15, 0.7);
+  transform-origin: left center;
+  transform: scaleX(0.06);
+}
+
+.galeria-rodape {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* A dica muda conforme o modo: rolar (desktop) ou arrastar (toque). */
+.dica-rolar { display: none; }
+.modo-fixo .dica-rolar { display: inline; }
+.modo-fixo .dica-arrastar { display: none; }
+
+.galeria-trilho::-webkit-scrollbar {
+  height: 5px;
+}
+
+.galeria-trilho::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 99px;
+}
+
+.galeria-trilho::-webkit-scrollbar-thumb {
+  background: rgba(255, 194, 74, 0.55);
+  border-radius: 99px;
+}
+
+.galeria-item {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(210px, 22vw, 290px);
+  aspect-ratio: 2 / 3;      /* o formato real dos arquivos: nada é cortado */
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  scroll-snap-align: start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  transition: transform var(--transition-smooth), border-color var(--transition-fast);
+}
+
+.galeria-item:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 194, 74, 0.45);
+}
+
+.galeria-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-smooth);
+}
+
+.galeria-item:hover img {
+  transform: scale(1.04);
+}
+
+.galeria-legenda {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 26px 14px 12px;
+  font-size: 0.72rem;
+  color: var(--text-white);
+  background: linear-gradient(180deg, transparent, rgba(6, 7, 10, 0.92));
+  letter-spacing: 0.04em;
+}
+
+.galeria-dica {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 0.76rem;
+  color: var(--text-slate);
+}
+
+/* --------------------------------------------------------------------------
+   9. SEÇÃO 5: AVALIAÇÕES GOOGLE (5.0 ★)
+   -------------------------------------------------------------------------- */
+.reviews-section {
+  padding: 90px 0;
+  background: var(--bg-abyssal);
+}
+
+.google-badge-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  text-align: right;
+}
+
+.google-rating-stars {
+  color: var(--accent-gold);
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+
+.google-score {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-pure);
+}
+
+.google-verified-text {
+  font-size: 0.7rem;
+  color: var(--accent-green);
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.review-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-fast);
+}
+
+.review-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-cyan);
+  background: var(--bg-surface-elevated);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.review-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0084FF 0%, #00F0FF 100%);
+  color: var(--text-dark);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.avatar--cyan {
+  background: linear-gradient(135deg, #00F0FF 0%, #10B981 100%);
+}
+
+.avatar--purple {
+  background: linear-gradient(135deg, #7000FF 0%, #FF007A 100%);
+  color: var(--text-pure);
+}
+
+.review-author {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-pure);
+}
+
+.review-tag {
+  font-size: 0.72rem;
+  color: var(--neon-cyan);
+}
+
+.review-stars {
+  color: var(--accent-gold);
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.review-quote {
+  font-size: 0.9rem;
+  color: var(--text-slate);
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   10. SEÇÃO 6: FAQ RÁPIDO & REGRAS DA CASA
+   -------------------------------------------------------------------------- */
+.faq-section {
+  padding: 90px 0;
+  background: var(--bg-abyssal);
+}
+
+.faq-container {
+  max-width: 900px;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.accordion-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.accordion-item.is-open {
+  border-color: var(--border-cyan);
+}
+
+.accordion-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  color: var(--text-pure);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.acc-title {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.acc-icon {
+  color: var(--neon-cyan);
+  font-size: 0.9rem;
+  transition: transform var(--transition-fast);
+}
+
+.accordion-item.is-open .acc-icon {
+  transform: rotate(45deg);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  padding: 0 28px;
+  color: var(--text-slate);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.accordion-item.is-open .accordion-content {
+  padding-bottom: 24px;
+  max-height: 300px;
+}
+
+/* --------------------------------------------------------------------------
+   11. SEÇÃO 7: LOCALIZAÇÃO, MAPA & RODAPÉ
+   -------------------------------------------------------------------------- */
+.location-section {
+  padding: 60px 0 90px;
+}
+
+.location-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+}
+
+.location-info {
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.location-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  margin-bottom: 16px;
+}
+
+.location-address {
+  font-size: 1rem;
+  color: var(--text-slate);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.location-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-maps-link, .btn-insta-link {
+  font-size: 0.85rem;
+  color: var(--text-pure);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.btn-maps-link:hover {
+  background: var(--neon-cyan);
+  color: var(--text-dark);
+  border-color: var(--neon-cyan);
+}
+
+.btn-insta-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.location-map-wrapper {
+  min-height: 360px;
+  width: 100%;
+}
+
+.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 60px 0 40px;
+  background: #040507;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 30px;
+}
+
+.footer-logo {
+  font-family: var(--font-logo);
+  font-size: 2.1rem;
+  font-weight: 400;
+  color: var(--neon-core);
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  line-height: 1;
+  /* o halo do neon transborda a caixa da letra; sem esta folga ele encosta
+     na frase logo abaixo */
+  margin-bottom: 14px;
+  text-shadow:
+    0 0 8px var(--neon-ouro),
+    0 0 22px rgba(255, 138, 15, 0.5);
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.footer-nav a {
+  color: var(--text-slate);
+  text-decoration: none;
+  font-size: 0.85rem;
+  /* sem isto, o flex aperta cada link em tela estreita e o próprio item quebra
+     no meio — os colchetes ficavam em linhas separadas do texto */
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.footer-nav a:hover {
+  color: var(--neon-cyan);
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   12. MODAL / DRAWER DE CHECKOUT DIRETO NO SITE
+   -------------------------------------------------------------------------- */
+.checkout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  justify-content: flex-end;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-smooth);
+}
+
+.checkout-modal-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.checkout-drawer {
+  width: 100%;
+  max-width: 520px;
+  height: 100%;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-cyan);
+  box-shadow: -10px 0 50px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--transition-smooth);
+}
+
+.checkout-modal-overlay.is-open .checkout-drawer {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  padding: 28px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-tag {
+  font-size: 0.75rem;
+  color: var(--neon-cyan);
+}
+
+.drawer-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-pure);
+}
+
+.btn-drawer-close {
+  background: none;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-slate);
+  font-size: 1.2rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-drawer-close:hover {
+  color: var(--text-pure);
+  border-color: var(--neon-cyan);
+}
+
+.drawer-body {
+  padding: 28px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.checkout-event-summary {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+}
+
+.summary-badge {
+  font-size: 0.75rem;
+  color: var(--sunset-orange);
+}
+
+.summary-event-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-pure);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-slate);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  background: rgba(8, 9, 12, 0.7);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-pure);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.form-input:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 12px var(--neon-cyan-glow);
+}
+
+.sector-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.sector-radio-card {
+  border: 1px solid var(--border-subtle);
+  background: rgba(8, 9, 12, 0.6);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-fast);
+}
+
+.sector-radio-card input {
+  display: none;
+}
+
+.sector-radio-card.is-selected {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.radio-card-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-pure);
+}
+
+.radio-card-price {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--neon-cyan);
+  margin: 4px 0;
+}
+
+.radio-card-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.quantity-counter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-qty {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-pure);
+  font-size: 1.2rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-qty:hover {
+  background: var(--neon-cyan);
+  color: var(--text-dark);
+}
+
+.qty-number {
+  font-size: 1.4rem;
+  font-weight: 700;
+  width: 30px;
+  text-align: center;
+}
+
+.qty-max-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.order-subtotal-card {
+  background: rgba(8, 9, 12, 0.8);
+  border: 1px solid var(--border-subtle);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  margin: 24px 0;
+}
+
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-slate);
+  margin-bottom: 8px;
+}
+
+.subtotal-total {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-pure);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.total-price {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--neon-cyan);
+}
+
+.btn-checkout-next {
+  width: 100%;
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  color: var(--text-dark);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-checkout-next:hover {
+  box-shadow: 0 0 25px var(--neon-cyan-glow);
+  filter: brightness(1.1);
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.btn-step-back {
+  background: none;
+  border: none;
+  color: var(--neon-cyan);
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+
+.payment-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.payment-tab-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-slate);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.payment-tab-btn.is-active {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--neon-cyan);
+  color: var(--text-pure);
+}
+
+.pix-qrcode-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  background: #fff;
+  border-radius: var(--radius-md);
+  margin: 16px 0;
+}
+
+.pix-qr-render {
+  width: 180px;
+  height: 180px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pix-instructions {
+  font-size: 0.85rem;
+  color: var(--text-slate);
+  text-align: center;
+}
+
+.pix-copy-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pix-input-code {
+  flex: 1;
+  background: rgba(8, 9, 12, 0.8);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-slate);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-copy-pix {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-pure);
+  font-size: 0.8rem;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-copy-pix:hover {
+  background: var(--neon-cyan);
+  color: var(--text-dark);
+}
+
+.pix-timer-alert {
+  font-size: 0.75rem;
+  color: var(--sunset-orange);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.btn-simulate-pix-success {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-simulate-pix-success:hover {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+}
+
+.ticket-success-box {
+  text-align: center;
+}
+
+.success-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--accent-green);
+  color: #fff;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.success-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  margin-bottom: 6px;
+}
+
+.success-desc {
+  font-size: 0.85rem;
+  color: var(--text-slate);
+  margin-bottom: 24px;
+}
+
+.digital-ticket-card {
+  background: #08090C;
+  border: 1px dashed var(--neon-cyan);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: left;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+  margin-bottom: 24px;
+}
+
+.ticket-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.ticket-brand {
+  font-weight: 700;
+  color: #FFB800;
+  font-size: 0.9rem;
+}
+
+.ticket-status-badge {
+  font-size: 0.7rem;
+  color: var(--accent-green);
+}
+
+.ticket-event-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--text-pure);
+  margin-bottom: 4px;
+}
+
+.ticket-date-time {
+  font-size: 0.8rem;
+  color: var(--sunset-orange);
+  margin-bottom: 16px;
+}
+
+.ticket-user-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+}
+
+.t-info-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.t-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.t-val {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-pure);
+}
+
+.ticket-qrcode-wrapper {
+  text-align: center;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+#ticket-qrcode-display {
+  display: inline-block;
+  padding: 10px;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.ticket-auth-code {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  letter-spacing: 0.1em;
+}
+
+.ticket-hint {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.ticket-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-ticket-action {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-pure);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-print-ticket {
+  background: var(--neon-cyan);
+  color: var(--text-dark);
+  font-weight: 700;
+  border: none;
+}
+
+/* --------------------------------------------------------------------------
+   13. MODAL ADMINISTRATIVO (/admin)
+   -------------------------------------------------------------------------- */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+}
+
+.admin-modal-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.admin-card {
+  width: 100%;
+  max-width: 600px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-cyan);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+  padding: 32px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 16px;
+}
+
+.admin-tag {
+  font-size: 0.75rem;
+  color: var(--sunset-orange);
+}
+
+.admin-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text-pure);
+}
+
+.btn-admin-close {
+  background: none;
+  border: none;
+  color: var(--text-slate);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.admin-login-desc {
+  font-size: 0.9rem;
+  color: var(--text-slate);
+  margin-bottom: 16px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+}
+
+.admin-tab-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-slate);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.admin-tab-btn.is-active {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--neon-cyan);
+  color: var(--text-pure);
+}
+
+.admin-tab-pane {
+  display: none;
+}
+
+.admin-tab-pane.is-active {
+  display: block;
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.admin-help-text {
+  font-size: 0.8rem;
+  color: var(--text-slate);
+  margin-bottom: 16px;
+}
+
+.lote-status-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.btn-toggle-soldout {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   14. BOTÃO FLUTUANTE DE SUPORTE WHATSAPP VIP
+   -------------------------------------------------------------------------- */
+.whatsapp-float-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  background: #25D366;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.whatsapp-float-btn:hover {
+  transform: scale(1.1) translateY(-3px);
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.6);
+}
+
+.whatsapp-float-tooltip {
+  position: absolute;
+  right: 68px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-cyan);
+  color: var(--text-pure);
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(10px);
+  transition: all var(--transition-fast);
+}
+
+.whatsapp-float-btn:hover .whatsapp-float-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* --------------------------------------------------------------------------
+   15. RESPONSIVIDADE & MEDIA QUERIES
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .produx-hero-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .shows-grid, .sectors-grid, .location-card {
+    grid-template-columns: 1fr;
+  }
+
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-banner-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cta-banner-action {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .btn-action-primary {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-nav {
+    display: none;
+  }
+
+  .produx-hero-initial-header {
+    padding: 30px 20px;
+  }
+
+  .hero-punchline-text {
+    font-size: 1.8rem;
+  }
+
+  /* 2.5rem em Montserrat Black é largo demais para 360px: "Informações"
+     sozinha já estourava a caixa. */
+  .section-title {
+    font-size: 1.9rem;
+  }
+
+  /* rede de segurança para qualquer palavra longa que apareça depois */
+  .section-title,
+  .show-artist-title,
+  .cta-title,
+  .sector-name,
+  .location-title {
+    overflow-wrap: break-word;
+  }
+
+  /* Em tela estreita o rótulo não cabe numa linha. Com `nowrap` ele
+     transbordava o fundo laranja e a palavra "AGORA" ficava fora do botão;
+     aqui ele quebra e fica centralizado dentro do próprio botão. */
+  .btn-action-primary {
+    white-space: normal;
+    font-size: 0.9rem;
+    padding: 15px 20px;
+    line-height: 1.35;
+  }
+
+  .cta-badge {
+    font-size: 0.7rem;
+  }
+
+  .cta-title {
+    font-size: 1.6rem;
+  }
+
+  /* A pílula de status cabe numa linha só e encosta à esquerda: centralizada,
+     ela passava por baixo do botão do WhatsApp, que tem prioridade. */
+  .morph-status-pill {
+    font-size: 0.58rem;
+    padding: 5px 12px;
+    white-space: nowrap;
+    bottom: 14px;
+    left: 14px;
+    transform: none;
+    max-width: calc(100vw - 100px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .produx-hero-bottom-grid {
+    padding-bottom: 44px;
+  }
+
+  /* No celular a moldura já está limitada por 92vw nos três estados, então
+     não há override de largura aqui: quebraria a proporção exata. */
+
+  /* Fotos um pouco mais estreitas: encurta o trajeto lateral e deixa mais de
+     uma foto visível por vez. */
+  .galeria-item {
+    width: 56vw;
+  }
+
+  .galeria-section {
+    padding: 56px 0 64px;
+  }
+
+  /* O botão flutuante do WhatsApp fica no canto inferior direito e cobria o
+     fim da dica. Ele é conversão: quem cede espaço é o texto. */
+  .galeria-rodape {
+    padding-right: 76px;
+  }
+
+  .section-header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .google-badge-box {
+    text-align: left;
+  }
+
+  .footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 10px;
+    /* o botão flutuante do WhatsApp fica fixo neste canto e engolia o fim da
+       linha de crédito (o "NSG" sumia atrás dele) */
+    padding-right: 72px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. MOVIMENTO REDUZIDO
+   --------------------------------------------------------------------------
+   Quem pediu menos animação no sistema recebe a página inteira, só que parada:
+   a moldura assume direto o formato final e nada pulsa, gira ou flutua.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .assembled-master-canvas {
+    transition: none;
+  }
+
+  .hero-sign-anchor.is-flutuando {
+    animation: none;
+  }
+
+  .brands-track {
+    animation: none;
+  }
+}
+
+/* Foco visível e consistente para navegação por teclado. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.galeria-item:focus-visible {
+  outline: 2px solid var(--neon-ouro);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   17. TELAS MUITO ESTREITAS (≤ 380px)
+   --------------------------------------------------------------------------
+   Nesta faixa a barra do topo não cabe: logotipo + botão de compra + engrenagem
+   estouravam a largura em 17px. Tudo encolhe junto, em vez de esconder o nome
+   da marca — o letreiro é o que identifica a casa.
+   -------------------------------------------------------------------------- */
+@media (max-width: 380px) {
+  .navbar-container {
+    padding: 0 14px;
+  }
+
+  .brand-logo-wrapper {
+    gap: 8px;
+  }
+
+  .brand-emblem-svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand-text {
+    font-size: 1.05rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+  }
+
+  .navbar-actions {
+    gap: 6px;
+  }
+
+  .btn-quick-ticket {
+    font-size: 0.72rem;
+    padding: 8px 11px;
+  }
+
+  /* o ingresso já está dito na palavra; o emoji é o que sobra primeiro */
+  .btn-quick-ticket .btn-icon {
+    display: none;
+  }
+}

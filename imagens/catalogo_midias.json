@@ -1,0 +1,57 @@
+{
+  "nome_estabelecimento": "AURA MOCOCA",
+  "categoria": "Casa Noturna / Casa de Shows",
+  "endereco": "Av. João Batista Lima Figueiredo, 2707 - Jardim Santa Cecília, Mococa - SP, 13730-005",
+  "coordenadas": {
+    "latitude": -21.4696311,
+    "longitude": -47.000225,
+    "plus_code": "GXJX+4W Jardim Santa Cecilia, Mococa - SP"
+  },
+  "canais_digitais": {
+    "instagram": "https://www.instagram.com/aura_mococa/",
+    "google_maps": "https://www.google.com/maps/place/AURA+MOCOCA/@-21.4696108,-47.0105247,15z/data=!3m1!4b1!4m6!3m5!1s0x94b7b9dbd4b2535d:0x2452803cc0ed262c!8m2!3d-21.4696311!4d-47.000225!16s%2Fg%2F11zh2cw7wt",
+    "byma_ingressos": "https://byma.com.br/event/6a7dd1a59188fb00040a6bb8"
+  },
+  "midias": [
+    {
+      "id": "fachada_noturna",
+      "titulo": "Fachada Noturna com Neon Azul",
+      "categoria": "Estrutura & Fachada",
+      "origem": "Google Maps",
+      "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWneT5jHSUAEXkvoT7NdITSZWPAS7TLJ976722F9hAI0_1TMaGHTKZF4WJWAcDjC893N2fU9C6lLwxxNkZD-hFkrU1N-vMN_CU1xJN9WqiS-34TK8yJdOAKDCY4oLjol0GKmDgNIaR0IP8Ql",
+      "descricao": "Fachada moderna com iluminação em LED neon azul e letreiro luminoso AURA."
+    },
+    {
+      "id": "fachada_diurna",
+      "titulo": "Fachada Diurna do Estabelecimento",
+      "categoria": "Estrutura & Fachada",
+      "origem": "Google Maps",
+      "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrPdwQfmOHDaduLQQXqO3-x88rm0hjPJw5J-LAolBHC2q6ysakiw41vCavM3PlTgsl-CJOWWWhmTDP-FoDiKBg0pxJPgk1-M-5J-eCjLnqvNsOh45iLQjskHuMuT7sfStsydBEWYqbXsYJ",
+      "descricao": "Vista frontal diurna do imóvel e via de acesso na avenida principal."
+    },
+    {
+      "id": "estrutura_instalacao",
+      "titulo": "Instalação Estrutural da Fachada",
+      "categoria": "Estrutura & Fachada",
+      "origem": "Google Maps",
+      "url": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkT00d7rpWkTxrFCWeITp6TWgLL9PEPXC4Ubi4xGY64AG67-wIqVbzXPLMmSaxXEtyuCtbemXa3wFGMrpIiwYr-f6V8H5ooyYjzxsvH8QdpQ2imm8dgGpeKEnsIKYFmEBaubZWlMSu6HDc",
+      "descricao": "Registro de montagem e acabamento arquitetônico da fachada."
+    },
+    {
+      "id": "flyer_lorenah",
+      "titulo": "Flyer Oficial - Lorenah in Aura",
+      "categoria": "Eventos",
+      "origem": "Byma / Cloudinary",
+      "url": "https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg",
+      "descricao": "Arte de divulgação do evento de 22/08 com cantora Lorenah (Sertanejo) e Funk Premium."
+    },
+    {
+      "id": "banner_byma",
+      "titulo": "Banner Web Responsivo Byma",
+      "categoria": "Eventos",
+      "origem": "Byma CDN",
+      "url": "https://byma.com.br/api/img/htkavmx5a/image/upload/f_auto,q_auto,c_limit,h_2048,w_2048/hq6bthf6gky5eyqeqp44.jpg",
+      "descricao": "Banner de alta fidelidade para ingressos e divulgação no Byma."
+    }
+  ]
+}
