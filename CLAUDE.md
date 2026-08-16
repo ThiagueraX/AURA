@@ -147,13 +147,14 @@ mesmo letreiro nunca aparecem juntos.
 
 Tem dois modos, escolhidos pelo JS em `initGaleriaHorizontal()`:
 
-- **Desktop (> 768px, sem movimento reduzido):** a seção ganha a classe
+- **Qualquer largura, sem movimento reduzido:** a seção ganha a classe
   `modo-fixo`, gruda na tela via `position: sticky` e as fotos correm na
-  horizontal conforme a página desce. A altura do palco é calculada para que
-  1px de rolagem vertical = 1px de deslocamento lateral. Não há sequestro de
-  rolagem — parar de rolar sai da seção normalmente.
-- **Celular e movimento reduzido:** arraste lateral nativo. Prender a rolagem
-  vertical no toque custaria mais de duas telas e meia só de fotos.
+  horizontal conforme a página desce. Não há sequestro de rolagem — parar de
+  rolar sai da seção normalmente. No celular o percurso é comprimido
+  (`Math.max(teto, percurso * 0.55)`, fotos em 56vw) para que a seção prenda
+  a rolagem por pouco mais de uma tela, e não pelas duas e meia que o
+  percurso cheio custaria.
+- **Movimento reduzido:** arraste lateral nativo, sem `modo-fixo`.
 
 Dois detalhes que já quebraram e não são óbvios:
 
@@ -164,6 +165,103 @@ Dois detalhes que já quebraram e não são óbvios:
    `scroll-snap-type: x mandatory`, o encaixe rola o contêiner até grudar a
    primeira foto na borda e anula o recuo, desalinhando a foto do título.
    Também: `max()` dentro do atalho `padding` não é aplicado — usar longhand.
+
+---
+
+---
+
+## 🔐 Arquitetura de dados & permissões (Supabase)
+
+Projeto `sgfyxmajpdgynsicmzdb`. **O navegador não escreve mais direto nas
+tabelas.** Tudo que envolve dinheiro, dado de cliente ou validação de entrada
+passa por função no banco (`SECURITY DEFINER`), que confere permissão no
+servidor.
+
+### Papéis
+`aura_equipe` liga `auth.users` a um papel: `dono` ou `portaria`.
+`aura_papel()` devolve o papel do usuário logado. Não existe mais senha
+escrita no JS — quem confere é o Supabase Auth.
+
+### Funções expostas
+
+| Função | Quem chama | Faz |
+|---|---|---|
+| `aura_criar_pedido` | qualquer visitante | Cria pedido + ingressos numa transação. **Preço vem de `aura_lotes`**, não do navegador. Nasce `PENDENTE`. |
+| `aura_buscar_voucher` | qualquer visitante | Devolve **um** ingresso pelo código, sem CPF. |
+| `aura_validar_ingresso` | `dono`/`portaria` | UPDATE condicional (`and status = 'DISPONIVEL'`): o banco arbitra a corrida. Recusa se o pedido não estiver `APROVADO`. |
+| `aura_confirmar_pagamento` | `dono` | Único caminho que torna um ingresso válido. |
+| `aura_cancelar_pedido` | `dono` | Cancela e devolve as vagas ao lote. |
+| `aura_pedidos_pendentes`, `aura_metricas`, `aura_resumo_portaria` | `dono` (as duas primeiras) / equipe | Sempre filtradas por show. |
+
+### Três armadilhas que já morderam aqui
+
+1. **`coalesce` na guarda de permissão.** `aura_papel() <> 'dono'` é **NULL**
+   para visitante anônimo, e `if NULL` não dispara — a guarda passava batido.
+   Sempre `coalesce(aura_papel(), '') <> 'dono'`.
+
+2. **`revoke from public` ≠ `revoke from anon`.** O Supabase concede EXECUTE a
+   `anon` automaticamente em toda função nova (default privileges). Revogar de
+   `PUBLIC` não desfaz uma concessão explícita ao papel `anon`. Toda função de
+   equipe precisa de `revoke all on function ... from anon`.
+
+3. **Política RLS que filtra por `coluna IS NOT NULL`** numa coluna
+   obrigatória é `USING (true)` disfarçado. Era assim que as políticas
+   chamadas "Blindagem" liberavam a tabela inteira.
+
+E uma consequência prática: **RLS não dá erro quando bloqueia um UPDATE — ela
+devolve zero linhas com HTTP 200.** Todo `PATCH` precisa conferir se o array
+retornado tem tamanho > 0, senão o painel exibe "salvo com sucesso" sem ter
+salvado nada (foi o que aconteceu com preços durante semanas).
+
+### O que ainda depende do dono, não do sistema
+
+O pagamento não tem gateway: o PIX cai direto na conta da casa. Por isso o
+pedido nasce `PENDENTE` e o QR **não abre a portaria** até o dono conferir o
+valor no app do banco e clicar em "Recebi o PIX" na aba Pagamentos. É esse
+clique — e não o checkout — que emite entrada válida.
+
+---
+
+## 🎟️ Regras do checkout que não podem regredir
+
+Estas quatro invariantes vieram de defeitos reais que chegaram a estar no ar.
+Cada uma tem teste em `teste_checkout.mjs` (Chrome headless com o `AuraDB`
+simulado).
+
+0. **Um scanner só.** A portaria vive em `portaria.html`. Existiu uma cópia
+   embutida no `index.html` que divergiu da original; ela foi removida junto
+   com a biblioteca de leitura de QR (100KB+) da página pública. Não
+   reintroduzir.
+
+1. **Um botão, um handler.** Nenhum botão do checkout pode ter `onclick` no
+   HTML *e* `addEventListener` no JS ao mesmo tempo — o `onclick` roda primeiro,
+   não passa pelas travas, e o clique vira duas compras. Todos os botões com
+   listener em `initCheckoutEvents()` tiveram o `onclick` removido. A trava de
+   verdade mora dentro de `emitDigitalTicket()` (`checkoutState.emitindo`), não
+   no botão, para valer também em toque duplo e chamada solta.
+
+2. **Emissão falha fechada.** Se `savePedido` ou `saveIngressos` não concluir,
+   o cliente **não** vê a tela de sucesso — fica no pagamento com o motivo em
+   `#checkout-erro`. Não existe mais código de ingresso gerado localmente: um
+   QR que não está no banco só é descoberto na portaria, com o cliente na fila.
+   Quando o pedido grava mas os ingressos não, a mensagem entrega o
+   `codigo_pedido` para emissão manual.
+
+3. **Um QR por ingresso.** `checkoutState.codigosValidadores` é uma lista.
+   A tela e o WhatsApp renderizam todos. Mostrar só o primeiro fazia o segundo
+   a entrar ser barrado como "já utilizado" enquanto o ingresso dele estava
+   intacto no banco.
+
+4. **Compra nova começa zerada.** `openCheckout()` chama
+   `limparEmissaoAnterior()` e `limparDadosDoCliente()`. Sem isso, num caixa
+   compartilhado, o código do comprador anterior sobrevive em memória e é
+   entregue ao próximo cliente se a gravação dele falhar.
+
+**Portaria:** o card de resultado é mostrado/escondido pela classe
+`status-*`, nunca por `style.display` inline — estilo inline vence a folha e
+travava o card invisível da segunda leitura em diante. E todo `AudioContext`
+precisa de `resume()` antes do bipe: no celular ele nasce suspenso e a leitura
+do QR não conta como gesto do usuário.
 
 ---
 

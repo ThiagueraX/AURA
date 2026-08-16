@@ -1,0 +1,24 @@
+{
+  "name": "AURA MOCOCA • Validador de Portaria",
+  "short_name": "AURA Portaria",
+  "description": "Sistema oficial de validação e leitura de ingressos QR Code da AURA MOCOCA.",
+  "start_url": "portaria.html",
+  "display": "standalone",
+  "background_color": "#060709",
+  "theme_color": "#060709",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "imagens/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

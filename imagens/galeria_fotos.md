@@ -41,4 +41,4 @@ Acervo completo de fotografias, peças publicitárias, registros de localizaçã
 ## 💎 3. Conceito Visual & Identidade em Alta Resolução
 
 - **Logotipo Vetorial SVG:** [logo_vetorial.svg](file:///c:/Users/thiga/Desktop/Projetos%20Thiago/Aura/imagens/logo_vetorial.svg)
-- **Visualizador Web Interativo:** [index.html](file:///c:/Users/thiga/Desktop/Projetos%20Thiago/Aura/imagens/index.html)
+- **Website Oficial:** [index.html](file:///c:/Users/thiga/Desktop/Projetos%20Thiago/Aura/index.html)

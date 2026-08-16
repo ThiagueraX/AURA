@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Meu Ingresso • AURA MOCOCA</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Favicon Oficial -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <meta name="theme-color" content="#060709" />
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #060709;
+      color: #F2F2F2;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .font-mono { font-family: 'DM Mono', monospace; }
+
+    /* Estado de Carregamento */
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(0, 240, 255, 0.2);
+      border-top-color: #00F0FF;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Estado de Erro */
+    .error-state {
+      text-align: center;
+      padding: 60px 20px;
+      display: none;
+    }
+
+    .error-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    /* Voucher do Ingresso */
+    .voucher-wrapper {
+      width: 100%;
+      max-width: 420px;
+      display: none;
+    }
+
+    .voucher-card {
+      background: linear-gradient(170deg, #0D1117 0%, #121826 40%, #0A0F18 100%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 8px 50px rgba(0, 240, 255, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .voucher-header {
+      background: rgba(0, 240, 255, 0.06);
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .voucher-brand {
+      font-family: 'Italiana', serif;
+      font-size: 1.5rem;
+      color: #FFF4D6;
+      letter-spacing: 0.2em;
+    }
+
+    .voucher-badge {
+      font-size: 0.68rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .badge-valido {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10B981;
+      color: #10B981;
+    }
+
+    .badge-utilizado {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #EF4444;
+      color: #EF4444;
+    }
+
+    .voucher-body {
+      padding: 20px;
+    }
+
+    .voucher-event-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      color: #FFFFFF;
+    }
+
+    .voucher-event-date {
+      font-size: 0.8rem;
+      color: #8A9099;
+      margin-bottom: 18px;
+    }
+
+    .voucher-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .voucher-info-item {
+      background: rgba(8, 9, 12, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .voucher-info-label {
+      font-size: 0.65rem;
+      color: #6B7280;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .voucher-info-value {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #F2F2F2;
+    }
+
+    .voucher-info-value.cyan { color: #00F0FF; }
+
+    /* QR Code Central */
+    .voucher-qr-section {
+      background: #FFFFFF;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .voucher-qr-section img {
+      width: 220px;
+      height: 220px;
+      image-rendering: pixelated;
+    }
+
+    .voucher-qr-hint {
+      font-size: 0.72rem;
+      color: #6B7280;
+      margin-top: 10px;
+    }
+
+    .voucher-code-display {
+      text-align: center;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px dashed rgba(0, 240, 255, 0.4);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #00F0FF;
+      letter-spacing: 0.15em;
+      word-break: break-all;
+    }
+
+    .voucher-footer {
+      background: rgba(8, 9, 12, 0.6);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 14px 20px;
+      text-align: center;
+    }
+
+    .voucher-footer-text {
+      font-size: 0.7rem;
+      color: #6B7280;
+      line-height: 1.5;
+    }
+
+    .voucher-footer-text strong {
+      color: #94A3B8;
+    }
+
+    /* Botão Salvar */
+    .voucher-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-voucher-action {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      color: #F2F2F2;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ESTADO: CARREGANDO -->
+  <div class="loading-state" id="state-loading">
+    <div class="loading-spinner"></div>
+    <p class="font-mono" style="color: #8A9099; font-size: 0.85rem;">Buscando seu ingresso...</p>
+  </div>
+
+  <!-- ESTADO: ERRO / NÃO ENCONTRADO -->
+  <div class="error-state" id="state-error">
+    <div class="error-icon">&#10060;</div>
+    <h2 style="font-size: 1.2rem; margin-bottom: 8px;">Ingresso Nao Encontrado</h2>
+    <p class="font-mono" style="color: #8A9099; font-size: 0.82rem;" id="error-msg">
+      Verifique se o link esta correto ou entre em contato com a AURA.
+    </p>
+  </div>
+
+  <!-- ESTADO: VOUCHER DO INGRESSO -->
+  <div class="voucher-wrapper" id="state-voucher">
+    <div class="voucher-card">
+
+      <div class="voucher-header">
+        <span class="voucher-brand">AURA</span>
+        <span class="voucher-badge badge-valido font-mono" id="voucher-status-badge">ENTRADA VALIDA</span>
+      </div>
+
+      <div class="voucher-body">
+        <div class="voucher-event-name" id="voucher-evento">LORENAH IN AURA</div>
+        <div class="voucher-event-date font-mono" id="voucher-data">SABADO, 22 DE AGOSTO - 21:00</div>
+
+        <div class="voucher-info-grid font-mono">
+          <div class="voucher-info-item">
+            <div class="voucher-info-label">TITULAR</div>
+            <div class="voucher-info-value" id="voucher-nome">-</div>
+          </div>
+          <div class="voucher-info-item">
+            <div class="voucher-info-label">SETOR</div>
+            <div class="voucher-info-value cyan" id="voucher-setor">-</div>
+          </div>
+        </div>
+
+        <!-- QR CODE REAL ESCANEAVEL -->
+        <div class="voucher-qr-section">
+          <img id="voucher-qr-img" src="" alt="QR Code do Ingresso" />
+          <div class="voucher-qr-hint font-mono">Apresente este QR Code na portaria oficial</div>
+        </div>
+
+        <div class="voucher-code-display font-mono" id="voucher-codigo">-</div>
+      </div>
+
+      <div class="voucher-footer">
+        <p class="voucher-footer-text font-mono">
+          <strong>AURA MOCOCA</strong> - Ingresso digital oficial e intransferivel.<br />
+          Entrada somente com documento original (RG ou CNH).<br />
+          Av. Joao Batista Lima Figueiredo, 2707 - Mococa/SP
+        </p>
+      </div>
+    </div>
+
+    <div class="voucher-actions">
+      <button type="button" class="btn-voucher-action" onclick="window.print()">
+        Salvar / PDF
+      </button>
+      <a href="/" class="btn-voucher-action">
+        Voltar ao Site
+      </a>
+    </div>
+  </div>
+
+  <!-- SUPABASE CLIENT -->
+  <script src="js/supabase-client.js?v=20260814_21"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const codigoValidador = params.get('v');
+
+      if (!codigoValidador) {
+        showError('Nenhum codigo de ingresso informado na URL.');
+        return;
+      }
+
+      // A tabela de ingressos nao e mais legivel pelo navegador. Esta funcao
+      // do banco devolve so o ingresso deste codigo, e sem o CPF do titular.
+      const r = await window.AuraDB.buscarVoucher(codigoValidador);
+
+      if (!r || !r.ok) {
+        if (r && r.motivo === 'NAO_ENCONTRADO') {
+          showError('Ingresso nao encontrado no sistema. Verifique o link.');
+        } else {
+          showError((r && r.mensagem) || 'Falha de conexao. Tente novamente.');
+        }
+        return;
+      }
+
+      renderVoucher(r.ingresso);
+    });
+
+    /** Monta a linha de data a partir do que a funcao do banco devolveu. */
+    function montarDataDoShow(ingresso) {
+      if (!ingresso || !ingresso.show_data) return null;
+
+      const d = new Date(ingresso.show_data);
+      if (isNaN(d.getTime())) return null;
+
+      const base = d.toLocaleDateString('pt-BR', {
+        weekday: 'long', day: '2-digit', month: 'long'
+      });
+      const abertura = ingresso.show_abertura ? ` - ${ingresso.show_abertura}` : '';
+      return (base + abertura).toUpperCase();
+    }
+
+    function renderVoucher(ingresso) {
+      document.getElementById('state-loading').style.display = 'none';
+      document.getElementById('state-voucher').style.display = 'block';
+
+      const elNome = document.getElementById('voucher-nome');
+      const elSetor = document.getElementById('voucher-setor');
+      const elCodigo = document.getElementById('voucher-codigo');
+      const elQrImg = document.getElementById('voucher-qr-img');
+      const elBadge = document.getElementById('voucher-status-badge');
+      const elEvento = document.getElementById('voucher-evento');
+      const elData = document.getElementById('voucher-data');
+      const elDica = document.querySelector('.voucher-qr-hint');
+
+      if (elNome) elNome.textContent = ingresso.titular_nome || '-';
+      if (elSetor) elSetor.textContent = (ingresso.setor || '-').toUpperCase();
+      if (elCodigo) elCodigo.textContent = ingresso.codigo_validador || '-';
+
+      // Evento e data vem do show do ingresso, nao do texto fixo do HTML
+      if (elEvento && ingresso.show_titulo) {
+        elEvento.textContent = ingresso.show_titulo.toUpperCase();
+      }
+      const dataShow = montarDataDoShow(ingresso);
+      if (elData && dataShow) elData.textContent = dataShow;
+
+      const cancelado = ingresso.status === 'CANCELADO'
+                     || ingresso.status_pagamento === 'CANCELADO';
+
+      if (cancelado) {
+        if (elBadge) {
+          elBadge.textContent = 'INGRESSO CANCELADO';
+          elBadge.className = 'voucher-badge badge-utilizado font-mono';
+        }
+        const secaoQr = document.querySelector('.voucher-qr-section');
+        if (secaoQr) {
+          secaoQr.textContent = '';
+          const aviso = document.createElement('div');
+          aviso.className = 'voucher-qr-hint font-mono';
+          aviso.textContent = 'Este ingresso foi cancelado ou estornado e nao permite entrada. Fale com a AURA pelo WhatsApp.';
+          secaoQr.appendChild(aviso);
+        }
+        return;
+      }
+
+      // Pagamento ainda em conferencia: o QR existe mas a portaria recusa.
+      // Esta pagina e o lugar onde o cliente acompanha a liberacao em tempo real.
+      if (!ingresso.pago) {
+        if (elBadge) {
+          elBadge.textContent = 'AGUARDANDO CONFIRMAÇÃO';
+          elBadge.className = 'voucher-badge badge-utilizado font-mono';
+        }
+        if (elDica) {
+          elDica.textContent = '⏱️ Pagamento em conferência. Assim que a AURA confirmar seu PIX, esta tela atualizará automaticamente para Entrada Válida.';
+        }
+        iniciarMonitoramentoVoucher(ingresso.codigo_validador);
+      } else if (ingresso.status === 'UTILIZADO') {
+        if (elBadge) {
+          elBadge.textContent = 'JÁ UTILIZADO';
+          elBadge.className = 'voucher-badge badge-utilizado font-mono';
+        }
+      } else {
+        if (elBadge) {
+          elBadge.textContent = 'ENTRADA VÁLIDA';
+          elBadge.className = 'voucher-badge badge-valido font-mono';
+        }
+      }
+
+      // QR Code real gerado via API publica
+      if (elQrImg) {
+        const qrData = encodeURIComponent(ingresso.codigo_validador);
+        elQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrData}&format=png&margin=8`;
+      }
+    }
+
+    let pollingVoucherInterval = null;
+
+    function iniciarMonitoramentoVoucher(codigoValidador) {
+      if (pollingVoucherInterval) clearInterval(pollingVoucherInterval);
+      if (!codigoValidador || !window.AuraDB) return;
+
+      pollingVoucherInterval = setInterval(async () => {
+        try {
+          const r = await window.AuraDB.buscarVoucher(codigoValidador);
+          if (r && r.ok && r.ingresso && r.ingresso.pago) {
+            clearInterval(pollingVoucherInterval);
+            pollingVoucherInterval = null;
+
+            const elBadge = document.getElementById('voucher-status-badge');
+            const elDica = document.querySelector('.voucher-qr-hint');
+
+            if (elBadge) {
+              elBadge.textContent = 'ENTRADA VÁLIDA';
+              elBadge.className = 'voucher-badge badge-valido font-mono';
+              elBadge.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
+            }
+            if (elDica) {
+              elDica.textContent = '✓ Pagamento confirmado! Apresente este QR Code na portaria da AURA.';
+              elDica.style.color = '#10B981';
+            }
+
+            if (navigator.vibrate) {
+              try { navigator.vibrate([100, 50, 150]); } catch (e) {}
+            }
+          }
+        } catch (e) {
+          console.warn('[Voucher Realtime] Polling:', e);
+        }
+      }, 3000);
+    }
+
+    function showError(msg) {
+      document.getElementById('state-loading').style.display = 'none';
+      const errorEl = document.getElementById('state-error');
+      errorEl.style.display = 'block';
+      const msgEl = document.getElementById('error-msg');
+      if (msgEl) msgEl.textContent = msg;
+    }
+  </script>
+</body>
+</html>

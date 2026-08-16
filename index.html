@@ -19,10 +19,15 @@
        DM Mono / Inter / Montserrat = sistema técnico e de corpo já existente. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Italiana&family=Montserrat:wght@700;800;900&family=Tenor+Sans&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Italiana&family=Merriweather+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&family=Tenor+Sans&display=swap" rel="stylesheet" />
+
+  <!-- Favicon Oficial & Identidade -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <meta name="theme-color" content="#08090C" />
 
   <!-- Folha de Estilos Principal -->
-  <link rel="stylesheet" href="css/style.css?v=20260814_13" />
+  <link rel="stylesheet" href="css/style.css?v=20260815_47" />
 </head>
 <body>
 
@@ -81,10 +86,10 @@
 
       <!-- Ações Rápidas: Checkout e Admin -->
       <div class="navbar-actions">
-        <button type="button" class="btn-quick-ticket" id="btn-header-buy" onclick="openCheckout()" data-cursor="CHECKOUT">
+        <button type="button" class="btn-quick-ticket" id="btn-header-buy" data-cursor="CHECKOUT">
           <span class="btn-icon">🎟️</span> COMPRAR
         </button>
-        <button type="button" class="btn-admin-gear" id="btn-open-admin" onclick="openAdminModal()" title="Painel do Proprietário" aria-label="Painel Administrativo">
+        <button type="button" class="btn-admin-gear" id="btn-open-admin" title="Painel do Proprietário" aria-label="Painel Administrativo">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -107,23 +112,15 @@
              moldura da fachada, mais abaixo, para poder se encaixar sobre o
              letreiro real da foto. -->
         <div class="produx-hero-initial-header" id="hero-initial-header">
-          <!-- PUNCHLINE & TEXTO LATERAL PRODUX STYLE -->
+          <!-- Assinatura sob o letreiro: mesma letra (Italiana) e mesmo neon
+               da AURA, numa linha só, centralizada. Abaixo dela, a chamada de
+               rolagem no mesmo tom. Nada mais compete com o letreiro. -->
           <div class="produx-hero-bottom-grid" id="hero-bottom-grid">
-            <div class="hero-punchline-box">
-              <h1 class="hero-punchline-text">
-                Você sente a energia<br />
-                antes do primeiro drop.®
-              </h1>
-            </div>
+            <h1 class="hero-punchline-text aura-neon">Você sente a energia antes do primeiro drop.®</h1>
 
-            <div class="hero-side-desc-box font-mono">
-              <p class="side-desc-text">
-                A AURA redefine a experiência noturna no interior paulista com som de alta pressão, iluminação cênica de lasers e os maiores shows ao vivo do Brasil.
-              </p>
-              <div class="hero-scroll-indicator">
-                <span class="indicator-arrow">↓</span>
-                <span class="indicator-text">[ ROLAR PARA REUNIR A EXPERIÊNCIA ]</span>
-              </div>
+            <div class="hero-scroll-indicator font-mono">
+              <span class="indicator-arrow">↓</span>
+              <span class="indicator-text">[ ROLAR PARA REUNIR A EXPERIÊNCIA ]</span>
             </div>
           </div>
         </div>
@@ -221,26 +218,14 @@
 
               <!-- Controles Flutuantes da Experiência -->
               <div class="party-video-controls font-mono">
-                <div class="live-status-badge">
-                  <span class="live-dot-pulse"></span>
-                  <span>AURA MOCOCA • AMBIENTE AO VIVO</span>
-                </div>
-
-                <button type="button" class="btn-party-audio" id="btn-toggle-video" data-cursor="SOM">
+                <button type="button" class="btn-party-audio" id="btn-toggle-video" data-cursor="SOM" title="Ativar / Desativar som da festa" aria-label="Ativar ou desativar áudio">
                   <span id="sound-icon">🔊</span>
-                  <span id="sound-text">[ ATIVAR SOM DA FESTA ]</span>
                 </button>
               </div>
             </div>
 
           </div>
 
-        </div>
-
-        <!-- Indicador de Status Monospaçado do Scroll Morph -->
-        <div class="morph-status-pill font-mono" id="morph-status">
-          <span class="status-dot"></span>
-          <span id="status-text">[ EXPERIÊNCIA AURA • FOCANDO FRAGMENTOS 0% ]</span>
         </div>
 
       </div>
@@ -370,7 +355,7 @@
             </p>
           </div>
           <div class="cta-banner-action">
-            <button type="button" class="btn-action-primary" id="btn-open-checkout-main" onclick="openCheckout()" data-cursor="COMPRAR">
+            <button type="button" class="btn-action-primary" id="btn-open-checkout-main" data-cursor="COMPRAR">
               🎟️ COMPRAR INGRESSO AGORA →
             </button>
             <span class="cta-subtext font-mono">Validação Segura na Portaria • 100% Garantido</span>
@@ -386,7 +371,7 @@
             <h3 class="sector-name">Pista Geral • Main Floor</h3>
             <p class="sector-desc">O coração da AURA. Sinta a pressão sonora e a energia das pessoas bem de frente para o palco principal.</p>
             
-            <ul class="sector-features font-mono">
+            <ul class="sector-features font-merriweather">
               <li>✓ Acesso ao salão principal e pista de dança</li>
               <li>✓ Visão frontal do palco e dos DJs</li>
               <li>✓ Bares laterais de atendimento ágil</li>
@@ -400,11 +385,11 @@
 
           <!-- CAMAROTE VIP & BISTRÔS -->
           <div class="sector-card sector-card--vip">
-            <div class="sector-badge font-mono highlight-gold">[ EXPERIÊNCIA VIP EXCLUSIVA ]</div>
+            <div class="sector-badge font-mono highlight-blood">[ EXPERIÊNCIA VIP EXCLUSIVA ]</div>
             <h3 class="sector-name">Camarotes Privativos &amp; Mesas Bistrô</h3>
             <p class="sector-desc">Conforto superior com vista panorâmica da casa, atendimento exclusivo de garçom e combos de bebidas personalizadas.</p>
             
-            <ul class="sector-features font-mono">
+            <ul class="sector-features font-merriweather">
               <li>★ Vista elevada e privilegiada de todo o clube</li>
               <li>★ Pulseira de identificação VIP exclusiva</li>
               <li>★ Atendimento dedicado por equipe de garçons</li>
@@ -413,12 +398,12 @@
             </ul>
 
             <div class="sector-vip-actions">
-              <button type="button" class="btn-sector btn-sector--vip" onclick="openCheckoutWithSector('Camarote')">
-                Garantir Camarote Individual (R$ 80,00) →
-              </button>
               <a href="https://wa.me/5519992971614?text=Ol%C3%A1!%20Gostaria%20de%20reservar%20um%20Camarote%20Fechado%20ou%20Mesa%20Bistr%C3%B4%20na%20AURA%20Mococa." target="_blank" rel="noopener" class="btn-whatsapp-reserve font-mono">
                 💬 Reservar Camarote Fechado no WhatsApp
               </a>
+              <button type="button" class="btn-sector btn-sector--vip" onclick="openCheckoutWithSector('Camarote')">
+                Garantir Camarote Individual (R$ 80,00) →
+              </button>
             </div>
           </div>
 
@@ -432,28 +417,63 @@
     <!-- ======================================================== -->
     <section class="brands-section" aria-label="Marcas Parceiras Servidas na Casa">
       <div class="brands-container">
-        <div class="brands-title-tag font-mono">[ BEBIDAS &amp; COMBOS ORIGINAIS CERTIFICADOS ]</div>
+        <div class="brands-header text-center">
+          <div class="brands-title-tag font-mono">[ CARDÁPIO EXCLUSIVO DE MARCAS ]</div>
+          <h2 class="brands-main-title font-display">BEBIDAS &amp; COMBOS ORIGINAIS</h2>
+          <p class="brands-subtitle">Trabalhamos exclusivamente com marcas premium e rótulos 100% certificados.</p>
+        </div>
         
         <div class="brands-marquee-wrapper">
           <div class="brands-track">
-            <div class="brand-item font-mono">⚡ RED BULL</div>
-            <div class="brand-item font-mono">🍸 TANQUERAY</div>
-            <div class="brand-item font-mono">🥃 JOHNNIE WALKER BLACK LABEL</div>
-            <div class="brand-item font-mono">🍾 ABSOLUT VODKA</div>
-            <div class="brand-item font-mono">✨ CÎROC SUPER PREMIUM</div>
-            <div class="brand-item font-mono">🍺 HEINEKEN EXTRA COLD</div>
-            <div class="brand-item font-mono">👑 CHANDON BRUT</div>
-            <div class="brand-item font-mono">🌴 CORONA EXTRA</div>
-            
-            <!-- Duplicação para loop contínuo -->
-            <div class="brand-item font-mono">⚡ RED BULL</div>
-            <div class="brand-item font-mono">🍸 TANQUERAY</div>
-            <div class="brand-item font-mono">🥃 JOHNNIE WALKER BLACK LABEL</div>
-            <div class="brand-item font-mono">🍾 ABSOLUT VODKA</div>
-            <div class="brand-item font-mono">✨ CÎROC SUPER PREMIUM</div>
-            <div class="brand-item font-mono">🍺 HEINEKEN EXTRA COLD</div>
-            <div class="brand-item font-mono">👑 CHANDON BRUT</div>
-            <div class="brand-item font-mono">🌴 CORONA EXTRA</div>
+            <!-- Grupo 1 -->
+            <div class="brands-track-group">
+              <div class="brand-square-card" title="Red Bull">
+                <img src="imagens/bebidas/red_bul-removebg-preview.png_2K_202608151228.jpeg_2K_202608151259__1_-removebg-preview.png" alt="Red Bull" class="brand-logo-img logo--redbull" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Johnnie Walker">
+                <img src="imagens/bebidas/walker__1_-removebg-preview.png_2K_202608151227.jpeg" alt="Johnnie Walker" class="brand-logo-img logo--walker" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Absolut Vodka">
+                <img src="imagens/bebidas/absolut-removebg-preview.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Absolut Vodka" class="brand-logo-img logo--absolut" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Cîroc">
+                <img src="imagens/bebidas/images.jpg_2K_202608151259__1_-removebg-preview.png" alt="Cîroc" class="brand-logo-img logo--ciroc" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Heineken">
+                <img src="imagens/bebidas/heineken-removebg-preview__1_.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Heineken" class="brand-logo-img logo--heineken" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Chandon">
+                <img src="imagens/bebidas/chandon-removebg-preview.png_2K_202608151227.jpeg" alt="Chandon" class="brand-logo-img logo--chandon" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Corona Extra">
+                <img src="imagens/bebidas/corona-removebg-preview.png" alt="Corona Extra" class="brand-logo-img logo--corona" loading="lazy" />
+              </div>
+            </div>
+
+            <!-- Grupo 2 (Looping Infinito Perfeito & Contínuo) -->
+            <div class="brands-track-group" aria-hidden="true">
+              <div class="brand-square-card" title="Red Bull">
+                <img src="imagens/bebidas/red_bul-removebg-preview.png_2K_202608151228.jpeg_2K_202608151259__1_-removebg-preview.png" alt="Red Bull" class="brand-logo-img logo--redbull" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Johnnie Walker">
+                <img src="imagens/bebidas/walker__1_-removebg-preview.png_2K_202608151227.jpeg" alt="Johnnie Walker" class="brand-logo-img logo--walker" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Absolut Vodka">
+                <img src="imagens/bebidas/absolut-removebg-preview.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Absolut Vodka" class="brand-logo-img logo--absolut" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Cîroc">
+                <img src="imagens/bebidas/images.jpg_2K_202608151259__1_-removebg-preview.png" alt="Cîroc" class="brand-logo-img logo--ciroc" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Heineken">
+                <img src="imagens/bebidas/heineken-removebg-preview__1_.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Heineken" class="brand-logo-img logo--heineken" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Chandon">
+                <img src="imagens/bebidas/chandon-removebg-preview.png_2K_202608151227.jpeg" alt="Chandon" class="brand-logo-img logo--chandon" loading="lazy" />
+              </div>
+              <div class="brand-square-card" title="Corona Extra">
+                <img src="imagens/bebidas/corona-removebg-preview.png" alt="Corona Extra" class="brand-logo-img logo--corona" loading="lazy" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -537,67 +557,123 @@
     <!-- SEÇÃO 6: SATISFAÇÃO DOS CLIENTES (PRODUX GOOGLE REVIEWS)  -->
     <!-- ======================================================== -->
     <section class="reviews-section" id="reviews">
-      <div class="container">
+      <div class="reviews-palco" id="reviews-palco">
+        <div class="reviews-fixa">
 
-        <div class="section-header-flex">
-          <div>
-            <div class="section-tag font-mono">[ 05 // PROVA SOCIAL &amp; REVIEWS ]</div>
-            <h2 class="section-title">O que a Galera Diz Sobre a AURA</h2>
+          <div class="container">
+            <div class="section-header-flex">
+              <div>
+                <div class="section-tag font-mono">[ 05 // PROVA SOCIAL &amp; REVIEWS ]</div>
+                <h2 class="section-title">O que a Galera Diz Sobre a AURA</h2>
+              </div>
+              
+              <div class="google-badge-box font-mono">
+                <div class="google-rating-stars">★★★★★</div>
+                <div class="google-score">5.0 • GOOGLE MAPS</div>
+                <span class="google-verified-text">[ 100% REVIEWS POSITIVAS ]</span>
+              </div>
+            </div>
           </div>
-          
-          <div class="google-badge-box font-mono">
-            <div class="google-rating-stars">★★★★★</div>
-            <div class="google-score">5.0 • GOOGLE MAPS</div>
-            <span class="google-verified-text">[ 100% REVIEWS POSITIVAS ]</span>
+
+          <div class="reviews-trilho" id="reviews-trilho" tabindex="0" role="region" aria-label="Avaliações dos Clientes da AURA">
+            <div class="reviews-esteira" id="reviews-esteira">
+              
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-avatar">GS</div>
+                  <div>
+                    <h4 class="review-author">Gabriel Silveira</h4>
+                    <span class="review-tag font-mono">[ CLIENTE VERIFICADO • PISTA ]</span>
+                  </div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-quote">
+                  "A iluminação e a acústica dessa casa são de outro planeta! Fui no show e a organização da entrada com QR Code foi super rápida. O interior de São Paulo precisava de uma balada desse nível."
+                </p>
+              </div>
+
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-avatar avatar--cyan">LM</div>
+                  <div>
+                    <h4 class="review-author">Larissa Martins</h4>
+                    <span class="review-tag font-mono">[ CLIENTE VERIFICADO • CAMAROTE ]</span>
+                  </div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-quote">
+                  "Fechamos camarote em grupo para comemorar aniversário e o atendimento dos garçons foi impecável. Bebidas 100% originais e os drinks são maravilhosos. Com certeza voltaremos!"
+                </p>
+              </div>
+
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-avatar avatar--purple">RA</div>
+                  <div>
+                    <h4 class="review-author">Rodrigo Almeida</h4>
+                    <span class="review-tag font-mono">[ CLIENTE VERIFICADO • GOOGLE ]</span>
+                  </div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-quote">
+                  "Ambiente extremamente seguro, estacionamento fácil na avenida e a fachada com neon ouro à noite impressiona demais. A melhor vibe de Mococa e região."
+                </p>
+              </div>
+
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-avatar">BM</div>
+                  <div>
+                    <h4 class="review-author">Beatriz Mendes</h4>
+                    <span class="review-tag font-mono">[ CLIENTE VERIFICADO • PISTA ]</span>
+                  </div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-quote">
+                  "Comprei o ingresso pelo site em 2 minutos e entrei sem fila nenhuma! O som é muito pesado e o ambiente super limpo. Melhor experiência da região."
+                </p>
+              </div>
+
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-avatar avatar--cyan">TR</div>
+                  <div>
+                    <h4 class="review-author">Thiago Rezende</h4>
+                    <span class="review-tag font-mono">[ CLIENTE VERIFICADO • CAMAROTE ]</span>
+                  </div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-quote">
+                  "Camarote VIP vale cada centavo. Vista privileged do palco, atendimento exclusivo e carta de drinks com bebidas de altíssima qualidade."
+                </p>
+              </div>
+
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-avatar avatar--purple">CO</div>
+                  <div>
+                    <h4 class="review-author">Camila Oliveira</h4>
+                    <span class="review-tag font-mono">[ CLIENTE VERIFICADO • GOOGLE ]</span>
+                  </div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-quote">
+                  "Energia surreal! A recepção e a segurança são super atenciosas e a festa foi inesquecível. Mococa ganhou uma casa noturna de alto nível."
+                </p>
+              </div>
+
+            </div>
           </div>
+
+          <div class="container reviews-rodape">
+            <div class="reviews-progresso" aria-hidden="true"><span id="reviews-barra"></span></div>
+            <p class="reviews-dica font-mono">
+              <span class="dica-rolar">Continue rolando para percorrer as avaliações ↓</span>
+              <span class="dica-arrastar">Arraste para o lado para ver mais avaliações →</span>
+            </p>
+          </div>
+
         </div>
-
-        <div class="reviews-grid">
-          
-          <div class="review-card">
-            <div class="review-header">
-              <div class="review-avatar">GS</div>
-              <div>
-                <h4 class="review-author">Gabriel Silveira</h4>
-                <span class="review-tag font-mono">[ CLIENTE VERIFICADO • PISTA ]</span>
-              </div>
-            </div>
-            <div class="review-stars">★★★★★</div>
-            <p class="review-quote">
-              "A iluminação e a acústica dessa casa são de outro planeta! Fui no show e a organização da entrada com QR Code foi super rápida. O interior de São Paulo precisava de uma balada desse nível."
-            </p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div class="review-avatar avatar--cyan">LM</div>
-              <div>
-                <h4 class="review-author">Larissa Martins</h4>
-                <span class="review-tag font-mono">[ CLIENTE VERIFICADO • CAMAROTE ]</span>
-              </div>
-            </div>
-            <div class="review-stars">★★★★★</div>
-            <p class="review-quote">
-              "Fechamos camarote em grupo para comemorar aniversário e o atendimento dos garçons foi impecável. Bebidas 100% originais e os drinks são maravilhosos. Com certeza voltaremos!"
-            </p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div class="review-avatar avatar--purple">RA</div>
-              <div>
-                <h4 class="review-author">Rodrigo Almeida</h4>
-                <span class="review-tag font-mono">[ CLIENTE VERIFICADO • GOOGLE ]</span>
-              </div>
-            </div>
-            <div class="review-stars">★★★★★</div>
-            <p class="review-quote">
-              "Ambiente extremamente seguro, estacionamento fácil na avenida e a fachada com neon azul à noite impressiona demais. A melhor vibe de Mococa e região."
-            </p>
-          </div>
-
-        </div>
-
       </div>
     </section>
 
@@ -750,7 +826,7 @@
           <div class="drawer-tag font-mono">[ INGRESSOS OFICIAIS AURA ]</div>
           <h3 class="drawer-title" id="checkout-modal-title">Finalizar Compra</h3>
         </div>
-        <button type="button" class="btn-drawer-close" id="btn-close-checkout" onclick="closeCheckout()" aria-label="Fechar checkout">✕</button>
+        <button type="button" class="btn-drawer-close" id="btn-close-checkout" aria-label="Fechar checkout">✕</button>
       </div>
 
       <div class="drawer-body">
@@ -812,7 +888,7 @@
             </div>
           </div>
 
-          <button type="button" class="btn-checkout-next" id="btn-goto-identification" onclick="goToStep('step-identification')">
+          <button type="button" class="btn-checkout-next" id="btn-goto-identification">
             Continuar para Identificação →
           </button>
         </div>
@@ -820,7 +896,7 @@
         <!-- ETAPA 2: IDENTIFICAÇÃO DO COMPRADOR -->
         <div class="checkout-step" id="step-identification" style="display: none;">
           <div class="form-header font-mono">
-            <button type="button" class="btn-step-back" id="btn-back-to-step1" onclick="goToStep('step-selection')">← Voltar</button>
+            <button type="button" class="btn-step-back" id="btn-back-to-step1">← Voltar</button>
             <span>DADOS DO TITULAR</span>
           </div>
 
@@ -854,9 +930,14 @@
         <!-- ETAPA 3: PAGAMENTO (PIX & CARTÃO) -->
         <div class="checkout-step" id="step-payment" style="display: none;">
           <div class="form-header font-mono">
-            <button type="button" class="btn-step-back" id="btn-back-to-step2" onclick="goToStep('step-identification')">← Voltar</button>
+            <button type="button" class="btn-step-back" id="btn-back-to-step2">← Voltar</button>
             <span>FORMA DE PAGAMENTO</span>
           </div>
+
+          <!-- Aviso de falha na emissão. Só aparece quando a gravação do
+               pedido no banco não conclui — nesse caso o cliente NÃO avança
+               para a tela de ingresso. -->
+          <div class="checkout-erro-box font-mono" id="checkout-erro" role="alert" style="display: none;"></div>
 
           <div class="payment-tabs">
             <button type="button" class="payment-tab-btn is-active" id="tab-btn-pix" data-pay="pix">
@@ -886,7 +967,7 @@
                 ⏱️ QR Code válido por <span id="pix-countdown">15:00</span> minutos
               </div>
 
-              <button type="button" class="btn-simulate-pix-success" id="btn-confirm-payment" onclick="emitDigitalTicket()">
+              <button type="button" class="btn-simulate-pix-success" id="btn-confirm-payment">
                 ✓ Confirmar Pagamento &amp; Gerar Ingresso
               </button>
             </div>
@@ -929,14 +1010,14 @@
         <!-- ETAPA 4: INGRESSO EMITIDO COM QR CODE DE ENTRADA -->
         <div class="checkout-step" id="step-success" style="display: none;">
           <div class="ticket-success-box">
-            <div class="success-icon">✓</div>
-            <h3 class="success-title">Ingresso Confirmado!</h3>
-            <p class="success-desc">Seu ingresso oficial da <strong>AURA MOCOCA</strong> foi gerado e enviado para seu e-mail e WhatsApp.</p>
+            <div class="success-icon" id="success-icon">✓</div>
+            <h3 class="success-title" id="success-title">Pedido Registrado!</h3>
+            <p class="success-desc" id="success-desc">Seu ingresso oficial da <strong>AURA MOCOCA</strong> foi gerado.</p>
 
             <div class="digital-ticket-card" id="printable-ticket">
               <div class="ticket-top">
                 <span class="ticket-brand font-mono">AURA MOCOCA</span>
-                <span class="ticket-status-badge font-mono">[ ENTRADA VÁLIDA ]</span>
+                <span class="ticket-status-badge font-mono" id="ticket-status-badge">[ ENTRADA VÁLIDA ]</span>
               </div>
 
               <div class="ticket-event-name" id="ticket-out-event">LORENAH IN AURA</div>
@@ -953,20 +1034,26 @@
                 </div>
               </div>
 
+              <!-- Um QR Code por ingresso comprado. Cada um tem código próprio
+                   no banco: o QR do ingresso 1 não libera a entrada do 2. -->
               <div class="ticket-qrcode-wrapper">
-                <div id="ticket-qrcode-display"></div>
-                <span class="ticket-auth-code font-mono" id="ticket-out-code">AUR-2026-8942-VIP</span>
+                <div id="ticket-qr-lista"></div>
                 <span class="ticket-hint font-mono">[ Apresente na portaria junto com documento original ]</span>
               </div>
             </div>
 
-            <div class="ticket-actions font-mono">
-              <button type="button" class="btn-ticket-action btn-print-ticket" onclick="window.print()">
-                🖨️ Imprimir Ingresso / PDF
+            <div class="ticket-actions font-mono" style="display: flex; flex-direction: column; gap: 8px;">
+              <button type="button" class="btn-ticket-action btn-whatsapp-ticket" id="btn-whatsapp-ticket" onclick="sendTicketToWhatsApp()" style="background: #25D366; color: #FFF; font-weight: bold; border: none;">
+                📲 Salvar / Enviar no Meu WhatsApp
               </button>
-              <button type="button" class="btn-ticket-action" id="btn-finish-checkout" onclick="closeCheckout()">
-                ✕ Concluir
-              </button>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-ticket-action btn-print-ticket" onclick="window.print()" style="flex: 1;">
+                  📥 Baixar / Salvar PDF
+                </button>
+                <button type="button" class="btn-ticket-action" id="btn-finish-checkout" style="flex: 1;">
+                  ✕ Concluir
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -987,17 +1074,24 @@
           <div class="admin-tag font-mono">[ PAINEL ADMINISTRATIVO AURA ]</div>
           <h3 class="admin-title" id="admin-title">Gerenciar Shows &amp; Ingressos</h3>
         </div>
-        <button type="button" class="btn-admin-close" id="btn-close-admin" onclick="closeAdminModal()" aria-label="Fechar painel">✕</button>
+        <button type="button" class="btn-admin-close" id="btn-close-admin" aria-label="Fechar painel">✕</button>
       </div>
 
+      <!-- Login de verdade, contra o Supabase Auth. A senha nunca fica no
+           código do site: quem confere é o servidor. -->
       <div id="admin-auth-view" class="admin-auth-view">
         <form id="form-admin-login">
-          <p class="admin-login-desc">Digite a senha de administrador da AURA para alterar preços, atrações e lotes:</p>
+          <p class="admin-login-desc">Entre com a conta de proprietário da AURA para alterar preços, atrações e confirmar pagamentos:</p>
           <div class="form-group">
-            <label for="admin-pin" class="form-label font-mono">SENHA DO PROPRIETÁRIO:</label>
-            <input type="password" id="admin-pin" class="form-input font-mono" placeholder="Digite a senha..." required />
+            <label for="admin-email" class="form-label font-mono">E-MAIL:</label>
+            <input type="email" id="admin-email" class="form-input font-mono" placeholder="dono@auramococa.com.br" autocomplete="username" required />
           </div>
-          <button type="submit" class="btn-action-primary w-100">
+          <div class="form-group">
+            <label for="admin-senha" class="form-label font-mono">SENHA:</label>
+            <input type="password" id="admin-senha" class="form-input font-mono" placeholder="Sua senha" autocomplete="current-password" required />
+          </div>
+          <div class="checkout-erro-box font-mono" id="admin-erro" role="alert" style="display: none;"></div>
+          <button type="submit" class="btn-action-primary w-100" id="btn-admin-entrar">
             Acessar Painel →
           </button>
         </form>
@@ -1005,13 +1099,54 @@
 
       <div id="admin-dashboard-view" class="admin-dashboard-view" style="display: none;">
         
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); padding: 10px 14px; border-radius: 6px;">
+          <span class="font-mono" style="font-size: 0.78rem; color: #00F0FF;">⚡ MÓDULO DE PORTARIA AO VIVO</span>
+          <a href="portaria.html" target="_blank" class="font-mono" style="background: #00F0FF; color: #08090C; font-size: 0.75rem; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-decoration: none;">
+            Abrir Scanner Portaria 📱
+          </a>
+        </div>
+
+        <div class="admin-sessao-barra font-mono">
+          <span id="adm-sessao-email">—</span>
+          <button type="button" class="btn-sair-sessao" id="btn-admin-sair">Sair</button>
+        </div>
+
         <div class="admin-tabs">
-          <button type="button" class="admin-tab-btn is-active" data-admintab="tab-edit-show">🎤 Show Ativo</button>
+          <button type="button" class="admin-tab-btn is-active" data-admintab="tab-pagamentos">💵 Pagamentos <span class="admin-badge-contador" id="adm-contador-pendentes">0</span></button>
+          <button type="button" class="admin-tab-btn" data-admintab="tab-edit-show">🎤 Show Ativo</button>
           <button type="button" class="admin-tab-btn" data-admintab="tab-queue-show">📋 Próximo Show</button>
           <button type="button" class="admin-tab-btn" data-admintab="tab-lotes">💰 Lotes &amp; Preços</button>
         </div>
 
-        <div class="admin-tab-pane is-active" id="tab-edit-show">
+        <!-- Conferência do PIX: é aqui que um pedido vira ingresso válido.
+             O dono vê o valor cair no app do banco dele e confirma. -->
+        <div class="admin-tab-pane is-active" id="tab-pagamentos">
+          <div class="admin-metricas font-mono" id="adm-metricas">
+            <div class="metrica-box">
+              <span class="metrica-rotulo">CONFIRMADO</span>
+              <span class="metrica-valor" id="adm-met-faturamento">R$ 0,00</span>
+              <span class="metrica-sub" id="adm-met-ingressos">0 ingressos</span>
+            </div>
+            <div class="metrica-box metrica-aguardando">
+              <span class="metrica-rotulo">AGUARDANDO</span>
+              <span class="metrica-valor" id="adm-met-aguardando">R$ 0,00</span>
+              <span class="metrica-sub" id="adm-met-aguardando-qtd">0 ingressos</span>
+            </div>
+          </div>
+
+          <p class="admin-help-text font-mono">
+            Confira o PIX na conta da casa e confirme aqui. O QR Code do cliente
+            só abre a portaria depois da confirmação.
+          </p>
+
+          <div id="adm-lista-pendentes" class="admin-lista-pendentes"></div>
+
+          <button type="button" class="btn-action-primary w-100" id="btn-recarregar-pendentes">
+            ↻ Atualizar lista
+          </button>
+        </div>
+
+        <div class="admin-tab-pane" id="tab-edit-show">
           <form id="form-edit-active-show">
             <div class="form-group">
               <label for="adm-show-title" class="form-label font-mono">NOME DO EVENTO / ARTISTA *</label>
@@ -1121,9 +1256,32 @@
     <span class="whatsapp-float-tooltip font-mono">Atendimento VIP WhatsApp 💬</span>
   </a>
 
-  <!-- SCRIPTS DA APLICAÇÃO -->
-  <script src="js/main.js?v=20260814_13"></script>
-  <script src="js/checkout.js?v=20260814_13"></script>
-  <script src="js/admin.js?v=20260814_13"></script>
+  <!-- BOTÃO FLUTUANTE DE CADEADO • PORTARIA (INFERIOR ESQUERDO)
+       Leva para portaria.html. O scanner existia duplicado (aqui e lá) e as
+       duas cópias já tinham divergido; agora existe só uma. Isso também tira
+       a biblioteca de leitura de QR (100KB+) da página pública. -->
+  <a
+    href="portaria.html"
+    class="portaria-float-btn"
+    id="btn-portaria-float"
+    title="Acesso Portaria / Segurança"
+    aria-label="Abrir Validador da Portaria"
+  >
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+      <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+    </svg>
+  </a>
+
+
+  <!-- SUPABASE JS SDK & CLIENT -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js?v=20260815_46"></script>
+
+  <!-- SCRIPTS DA APLICAÇÃO & BLINDAGEM DE CÓDIGO -->
+  <script src="js/security.js?v=20260815_46"></script>
+  <script src="js/main.js?v=20260815_46"></script>
+  <script src="js/checkout.js?v=20260815_46"></script>
+  <script src="js/admin.js?v=20260815_46"></script>
+
 </body>
 </html>

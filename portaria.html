@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark-theme">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AURA MOCOCA • Validador Oficial de Portaria</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Tipografia Oficial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Inter:wght@400;600;700;800;900&family=Italiana&display=swap" rel="stylesheet" />
+
+  <!-- Favicon Oficial & App Manifest PWA -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#060709" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AURA Portaria" />
+
+  <!-- Estilos da Portaria -->
+  <link rel="stylesheet" href="css/style.css?v=20260814_21" />
+  <style>
+    /* Estilos Específicos do Validador de Portaria */
+    body.portaria-body {
+      background-color: #060709;
+      color: #F2F2F2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    .portaria-header {
+      background: rgba(12, 16, 26, 0.95);
+      border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .portaria-title-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .portaria-badge-live {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid #10B981;
+      color: #10B981;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .portaria-pulse {
+      width: 7px;
+      height: 7px;
+      background: #10B981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10B981;
+      animation: blinkDot 1.2s infinite;
+    }
+
+    .portaria-container {
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Placar de Entradas */
+    .portaria-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    /* Tela de login da equipe */
+    .portaria-login-tela {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px;
+    }
+    .portaria-login-card {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(18, 22, 34, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 26px 22px;
+    }
+    .portaria-login-titulo {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      line-height: 1.12;
+      margin-bottom: 6px;
+    }
+    .portaria-login-desc {
+      font-size: 0.78rem;
+      color: #8A9099;
+      margin-bottom: 20px;
+    }
+    .portaria-erro {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid #EF4444;
+      border-radius: 6px;
+      color: #FCA5A5;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      padding: 11px 13px;
+      margin-bottom: 14px;
+    }
+    .btn-portaria-entrar {
+      width: 100%;
+      background: #00F0FF;
+      color: #08090C;
+      border: none;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-portaria-entrar:disabled { opacity: 0.6; cursor: wait; }
+
+    .portaria-sessao {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.7rem;
+      color: #6B7280;
+      margin-bottom: 12px;
+    }
+    .portaria-sessao span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btn-portaria-sair {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #8A9099;
+      border-radius: 5px;
+      padding: 5px 11px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .stat-card {
+      background: rgba(18, 22, 34, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      color: #8A9099;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .stat-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .stat-val.val-green { color: #10B981; }
+    .stat-val.val-cyan { color: #00F0FF; }
+    .stat-val.val-amber { color: #F59E0B; }
+
+    /* Scanner da Câmera */
+    .scanner-box {
+      position: relative;
+      background: #000;
+      border: 2px solid rgba(0, 240, 255, 0.35);
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+    }
+
+    #reader {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    #reader video {
+      object-fit: cover !important;
+      border-radius: 14px;
+    }
+
+    .scanner-mira {
+      position: absolute;
+      inset: 20px;
+      border: 2px dashed rgba(0, 240, 255, 0.5);
+      border-radius: 12px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: miraPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes miraPulse {
+      0%, 100% { border-color: rgba(0, 240, 255, 0.4); }
+      50% { border-color: rgba(0, 240, 255, 0.9); }
+    }
+
+    .scanner-laser-line {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      height: 2px;
+      background: #00F0FF;
+      box-shadow: 0 0 12px #00F0FF, 0 0 20px #00F0FF;
+      top: 20%;
+      animation: scanLaser 2.2s infinite alternate ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes scanLaser {
+      0% { top: 15%; }
+      100% { top: 85%; }
+    }
+
+    /* Controles do Scanner */
+    .scanner-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-scanner-ctrl {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #F2F2F2;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-scanner-ctrl:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: #00F0FF;
+      color: #00F0FF;
+    }
+
+    /* Card de Resultado da Validação */
+    .result-card {
+      background: rgba(18, 22, 34, 0.96);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      display: none;
+      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .result-card.status-success {
+      display: block;
+      border: 2px solid #10B981;
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+    }
+
+    .result-card.status-error {
+      display: block;
+      border: 2px solid #EF4444;
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.3);
+    }
+
+    .result-card.status-warning {
+      display: block;
+      border: 2px solid #F59E0B;
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+    }
+
+    .result-icon-badge {
+      font-size: 2.4rem;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .status-success .result-title { color: #10B981; }
+    .status-error .result-title { color: #EF4444; }
+    .status-warning .result-title { color: #F59E0B; }
+
+    .result-detail-box {
+      background: rgba(8, 9, 12, 0.7);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 14px 0;
+      text-align: left;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .btn-next-scan {
+      width: 100%;
+      background: #10B981;
+      color: #08090C;
+      font-family: 'DM Mono', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* Entrada Manual de Emergência */
+    .manual-entry-card {
+      background: rgba(18, 22, 34, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .manual-form-flex {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .manual-input {
+      flex: 1;
+      background: rgba(8, 9, 12, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FFF;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.88rem;
+      padding: 10px 14px;
+      border-radius: 6px;
+    }
+
+    .btn-manual-val {
+      background: rgba(0, 240, 255, 0.2);
+      border: 1px solid #00F0FF;
+      color: #00F0FF;
+      font-family: 'DM Mono', monospace;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+
+  <!-- Biblioteca Ultrarrápida de Scanner HTML5 -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body class="portaria-body">
+
+  <!-- CABEÇALHO DA PORTARIA -->
+  <header class="portaria-header">
+    <div class="portaria-title-block">
+      <span style="font-family: 'Italiana', serif; font-size: 1.4rem; color: #FFF4D6; letter-spacing: 0.2em;">AURA</span>
+      <span class="font-mono" style="font-size: 0.75rem; color: #8A9099;">• CHECK-IN PORTARIA</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <a href="admin.html" class="font-mono" style="color: #FFC24A; font-size: 0.75rem; text-decoration: none; border: 1px solid rgba(255, 194, 74, 0.4); background: rgba(255, 194, 74, 0.08); padding: 4px 10px; border-radius: 6px;">
+        👑 Painel Admin
+      </a>
+      <div class="portaria-badge-live font-mono">
+        <span class="portaria-pulse"></span>
+        <span>ONLINE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOGIN DA EQUIPE.
+       Esta pagina nao tinha autenticacao nenhuma: quem tivesse o endereco
+       validava e queimava ingresso. Agora o proprio banco recusa a validacao
+       sem uma conta com papel 'portaria' ou 'dono'. -->
+  <div class="portaria-login-tela" id="portaria-login">
+    <form id="form-portaria-login" class="portaria-login-card">
+      <h2 class="portaria-login-titulo">Acesso da equipe</h2>
+      <p class="portaria-login-desc font-mono">Entre com a conta da portaria para liberar o scanner.</p>
+
+      <div class="form-group">
+        <label for="port-email" class="form-label font-mono">E-MAIL</label>
+        <input type="email" id="port-email" class="form-input font-mono" autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label for="port-senha" class="form-label font-mono">SENHA</label>
+        <input type="password" id="port-senha" class="form-input font-mono" autocomplete="current-password" required />
+      </div>
+
+      <div class="portaria-erro font-mono" id="portaria-erro" role="alert" style="display: none;"></div>
+
+      <button type="submit" class="btn-portaria-entrar font-mono" id="btn-portaria-entrar">
+        Liberar Scanner →
+      </button>
+    </form>
+  </div>
+
+  <main class="portaria-container" id="portaria-scanner" style="display: none;">
+
+    <div class="portaria-sessao font-mono">
+      <span id="port-sessao-email">—</span>
+      <button type="button" class="btn-portaria-sair" id="btn-portaria-sair">Sair</button>
+    </div>
+
+    <!-- PLACAR DE ENTRADAS EM TEMPO REAL -->
+    <div class="portaria-stats-grid font-mono">
+      <div class="stat-card">
+        <div class="stat-label">Emitidos</div>
+        <div class="stat-val val-cyan" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Entraram</div>
+        <div class="stat-val val-green" id="stat-validados">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Faltam</div>
+        <div class="stat-val" id="stat-restantes">0</div>
+      </div>
+      <!-- Comprou mas o PIX ainda nao foi conferido: essa gente aparece na
+           porta e o scanner vai recusar. Ter o numero a vista evita susto. -->
+      <div class="stat-card">
+        <div class="stat-label">A confirmar</div>
+        <div class="stat-val val-amber" id="stat-aguardando">0</div>
+      </div>
+    </div>
+
+    <!-- BOX DO SCANNER DE CÂMERA -->
+    <div class="scanner-box">
+      <div id="reader"></div>
+      <div class="scanner-mira">
+        <div class="scanner-laser-line"></div>
+      </div>
+    </div>
+
+    <!-- CONTROLES DO SCANNER -->
+    <div class="scanner-actions">
+      <button type="button" class="btn-scanner-ctrl" id="btn-toggle-camera">
+        🔄 Alternar Câmera
+      </button>
+      <button type="button" class="btn-scanner-ctrl" id="btn-toggle-flash">
+        🔦 Lanterna / Flash
+      </button>
+    </div>
+
+    <!-- CARD DE RESULTADO DA LEITURA -->
+    <div class="result-card" id="result-card">
+      <div class="result-icon-badge" id="result-icon">✓</div>
+      <h2 class="result-title" id="result-title">ENTRADA LIBERADA</h2>
+      <p class="font-mono" id="result-msg" style="font-size: 0.85rem; color: #CBD5E1;"></p>
+
+      <div class="result-detail-box" id="result-details">
+        <div><strong>TITULAR:</strong> <span id="det-nome">-</span></div>
+        <div><strong>SETOR:</strong> <span id="det-setor" style="color: #00F0FF; font-weight: bold;">-</span></div>
+        <div><strong>CÓDIGO:</strong> <span id="det-codigo">-</span></div>
+      </div>
+
+      <button type="button" class="btn-next-scan" id="btn-next-scan">
+        Próximo Ingresso (Bipar Novamente) →
+      </button>
+    </div>
+
+    <!-- ENTRADA MANUAL DE EMERGÊNCIA (CASO A TELA DO CELULAR ESTEJA QUEBRADA) -->
+    <div class="manual-entry-card font-mono">
+      <label for="manual-code-input" style="font-size: 0.72rem; color: #8A9099;">DIGITAÇÃO MANUAL DE EMERGÊNCIA:</label>
+      <form id="form-manual-val" class="manual-form-flex">
+        <input type="text" id="manual-code-input" class="manual-input" placeholder="Ex: AURA-TKT-98F1-1" required />
+        <button type="submit" class="btn-manual-val">Validar ↵</button>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- SUPABASE CLIENT & SCRIPT DE PORTARIA -->
+  <script src="js/supabase-client.js?v=20260815_40"></script>
+  <script src="js/portaria.js?v=20260815_41"></script>
+</body>
+</html>

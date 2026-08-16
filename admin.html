@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark-theme">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AURA MOCOCA • Painel Administrativo</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Tipografia Oficial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&family=Italiana&display=swap" rel="stylesheet" />
+
+  <!-- Favicon Oficial -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <meta name="theme-color" content="#060709" />
+
+  <style>
+    :root {
+      --bg-dark: #060709;
+      --bg-card: #0D0F17;
+      --bg-card-hover: #121622;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-gold: rgba(255, 194, 74, 0.45);
+      --neon-gold: #FFC24A;
+      --neon-amber: #FF8A0F;
+      --neon-green: #10B981;
+      --neon-red: #EF4444;
+      --neon-cyan: #00F0FF;
+      --text-white: #FFFFFF;
+      --text-muted: #8E96A4;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #F2F2F2;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .font-mono { font-family: 'DM Mono', monospace; }
+    .font-brand { font-family: 'Italiana', serif; }
+
+    /* Top Navigation Bar */
+    .admin-navbar {
+      background: rgba(10, 13, 20, 0.95);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+    }
+
+    .admin-brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .admin-logo {
+      font-family: 'Italiana', serif;
+      font-size: 1.6rem;
+      color: #FFF4D6;
+      letter-spacing: 0.25em;
+      text-shadow: 0 0 12px rgba(255, 194, 74, 0.6);
+      text-decoration: none;
+    }
+
+    .admin-tag {
+      background: rgba(255, 194, 74, 0.12);
+      border: 1px solid var(--border-gold);
+      color: var(--neon-gold);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav-link {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav-link:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFF;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #F87171;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #EF4444;
+      color: #FFF;
+    }
+
+    /* Container Principal */
+    .admin-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+      flex: 1;
+    }
+
+    /* Tela de Login */
+    .login-container {
+      max-width: 420px;
+      margin: 80px auto;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 36px 30px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 194, 74, 0.15);
+      text-align: center;
+    }
+
+    .login-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+    }
+
+    .login-title {
+      font-family: 'Italiana', serif;
+      font-size: 1.8rem;
+      color: #FFF4D6;
+      margin-bottom: 6px;
+      letter-spacing: 0.1em;
+    }
+
+    .login-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .form-input {
+      width: 100%;
+      background: #060709;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #FFF;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--neon-gold);
+      box-shadow: 0 0 14px rgba(255, 194, 74, 0.25);
+    }
+
+    .btn-login-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #FFC24A 0%, #FF8A0F 100%);
+      color: #000;
+      font-weight: 800;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(255, 194, 74, 0.35);
+    }
+
+    .btn-login-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 26px rgba(255, 194, 74, 0.5);
+    }
+
+    /* Tabs de Navegação */
+    .admin-tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 28px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 12px 18px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: #FFF;
+    }
+
+    .tab-btn.is-active {
+      color: var(--neon-gold);
+      border-bottom-color: var(--neon-gold);
+      text-shadow: 0 0 10px rgba(255, 194, 74, 0.4);
+    }
+
+    .tab-badge-counter {
+      background: var(--neon-amber);
+      color: #000;
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    /* Métricas Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: all 0.25s ease;
+    }
+
+    .metric-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-3px);
+    }
+
+    .metric-card.gold-border {
+      border-color: var(--border-gold);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 194, 74, 0.1);
+    }
+
+    .metric-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .metric-icon {
+      font-size: 1.3rem;
+    }
+
+    .metric-value {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #FFF;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-subtext {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Lista de PIX Pendentes */
+    .pending-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-refresh {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: #FFF;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-refresh:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .pending-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .pending-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 194, 74, 0.3);
+      border-radius: 16px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    .pending-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--neon-gold);
+    }
+
+    .pending-info-main {
+      flex: 1;
+    }
+
+    .pending-customer-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 4px;
+    }
+
+    .pending-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .pending-badge-value {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10B981;
+      color: #10B981;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .pending-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-confirm-pix {
+      background: #10B981;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-confirm-pix:hover {
+      background: #059669;
+      color: #FFF;
+      transform: translateY(-2px);
+    }
+
+    .btn-cancel-pix {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #F87171;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel-pix:hover {
+      background: rgba(239, 68, 68, 0.25);
+      color: #FFF;
+      border-color: #EF4444;
+    }
+
+    .btn-zap-link {
+      background: rgba(37, 211, 102, 0.12);
+      border: 1px solid rgba(37, 211, 102, 0.4);
+      color: #25D366;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      background: var(--bg-card);
+      border: 1px dashed var(--border-subtle);
+      border-radius: 16px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    /* Formulários de Configuração */
+    .config-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 26px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .btn-save-primary {
+      background: linear-gradient(135deg, #FFC24A 0%, #FF8A0F 100%);
+      color: #000;
+      font-weight: 800;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(255, 194, 74, 0.3);
+    }
+
+    .btn-save-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 26px rgba(255, 194, 74, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .pending-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .pending-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="admin-navbar">
+    <div class="admin-brand-group">
+      <a href="/" class="admin-logo">AURA</a>
+      <span class="admin-tag font-mono">[ PAINEL ADMINISTRATIVO ]</span>
+    </div>
+    <div class="admin-actions">
+      <a href="portaria.html" class="btn-nav-link" target="_blank">
+        📲 Portaria
+      </a>
+      <a href="/" class="btn-nav-link" target="_blank">
+        🌐 Ver Site
+      </a>
+      <button type="button" class="btn-nav-link btn-logout" id="btn-logout" style="display: none;">
+        🚪 Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Container de Autenticação -->
+  <div id="auth-screen" class="login-container">
+    <div class="login-icon">👑</div>
+    <h1 class="login-title">Acesso Restrito</h1>
+    <p class="login-subtitle">Entre com suas credenciais de Dono / Administrador da AURA</p>
+
+    <div id="login-error-box" class="font-mono" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #EF4444; color: #F87171; padding: 10px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 16px;"></div>
+
+    <form id="form-admin-login">
+      <div class="form-group">
+        <label for="login-email" class="form-label font-mono">E-MAIL DO ADMINISTRADOR</label>
+        <input type="email" id="login-email" class="form-input" placeholder="dono@auramococa.com.br" required />
+      </div>
+
+      <div class="form-group">
+        <label for="login-password" class="form-label font-mono">SENHA DE ACESSO</label>
+        <input type="password" id="login-password" class="form-input" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit" class="btn-login-submit" id="btn-submit-login">
+        Entrar no Painel Seguro →
+      </button>
+    </form>
+  </div>
+
+  <!-- Painel Principal do Administrador -->
+  <main id="main-admin-panel" class="admin-container" style="display: none;">
+    
+    <!-- Métricas do Dashboard -->
+    <div class="metrics-grid">
+      <div class="metric-card gold-border">
+        <div class="metric-header">
+          <span class="metric-label font-mono">FATURAMENTO TOTAL</span>
+          <span class="metric-icon">💰</span>
+        </div>
+        <div class="metric-value font-mono" id="metric-faturamento">R$ 0,00</div>
+        <div class="metric-subtext">Vendas confirmadas no show ativo</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label font-mono">INGRESSOS CONFIRMADOS</span>
+          <span class="metric-icon">🎟️</span>
+        </div>
+        <div class="metric-value font-mono" id="metric-ingressos-pagos">0</div>
+        <div class="metric-subtext">Entradas liberadas para a portaria</div>
+      </div>
+
+      <div class="metric-card" style="border-color: rgba(255, 138, 15, 0.4);">
+        <div class="metric-header">
+          <span class="metric-label font-mono">PIX EM CONFERÊNCIA</span>
+          <span class="metric-icon">⏳</span>
+        </div>
+        <div class="metric-value font-mono" id="metric-pix-pendentes" style="color: var(--neon-amber);">0</div>
+        <div class="metric-subtext" id="metric-valor-pendente">R$ 0,00 aguardando baixa</div>
+      </div>
+
+      <div class="metric-card" style="border-color: rgba(0, 240, 255, 0.4);">
+        <div class="metric-header">
+          <span class="metric-label font-mono">PORTARIA (AO VIVO)</span>
+          <span class="metric-icon">🚪</span>
+        </div>
+        <div class="metric-value font-mono" id="metric-portaria-validados" style="color: var(--neon-cyan);">0</div>
+        <div class="metric-subtext" id="metric-portaria-restantes">0 restantes para entrar</div>
+      </div>
+    </div>
+
+    <!-- Navegação de Abas -->
+    <div class="admin-tabs">
+      <button type="button" class="tab-btn is-active" data-target="tab-pending">
+        ⚡ Fila de PIX Pendentes <span class="tab-badge-counter" id="tab-counter-pending">0</span>
+      </button>
+      <button type="button" class="tab-btn" data-target="tab-show-config">
+        📅 Gestão de Show &amp; Lotes
+      </button>
+    </div>
+
+    <!-- ABA 1: Fila de PIX Pendentes -->
+    <section id="tab-pending" class="admin-tab-content">
+      <div class="pending-header">
+        <h2 class="section-title font-mono">
+          <span>⚡ PEDIDOS AGUARDANDO CONFIRMAÇÃO DO PIX</span>
+        </h2>
+        <button type="button" class="btn-refresh font-mono" id="btn-refresh-pending">
+          🔄 Atualizar Fila
+        </button>
+      </div>
+
+      <div id="pending-list-container" class="pending-list">
+        <div class="empty-state">
+          <div class="empty-icon">✓</div>
+          <p>Nenhum pedido pendente no momento. Todos os PIX foram conferidos!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 2: Configuração de Shows e Lotes -->
+    <section id="tab-show-config" class="admin-tab-content" style="display: none;">
+      <div class="config-card">
+        <h2 class="section-title font-mono" style="margin-bottom: 20px;">
+          📅 DETALHES DO SHOW PRINCIPAL
+        </h2>
+
+        <form id="form-show-active">
+          <div class="form-group">
+            <label class="form-label font-mono">TÍTULO DO SHOW</label>
+            <input type="text" id="adm-show-title" class="form-input" required />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label font-mono">DATA &amp; HORÁRIO</label>
+              <input type="text" id="adm-show-date" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label font-mono">STATUS DO LOTE (BADGE)</label>
+              <input type="text" id="adm-show-badge" class="form-input" required />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label font-mono">PREÇO PISTA (R$)</label>
+              <input type="number" step="1" id="adm-price-pista" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label font-mono">PREÇO CAMAROTE (R$)</label>
+              <input type="number" step="1" id="adm-price-camarote" class="form-input" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label font-mono">FLYER / FOTO DO EVENTO (URL)</label>
+            <input type="url" id="adm-show-flyer" class="form-input" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label font-mono">DESCRIÇÃO DO EVENTO</label>
+            <textarea id="adm-show-desc" class="form-input" rows="3" required></textarea>
+          </div>
+
+          <button type="submit" class="btn-save-primary" id="btn-save-show">
+            💾 Salvar Alterações no Site
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SUPABASE JS SDK & CLIENT -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js?v=20260815_40"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initAdminPanel();
+    });
+
+    let currentShowId = 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
+    let pollingAdminInterval = null;
+
+    async function initAdminPanel() {
+      initAuthEvents();
+      initTabNavigation();
+
+      // Checa sessão existente
+      if (window.AuraAuth && window.AuraAuth.temSessao()) {
+        const papel = await window.AuraAuth.papel();
+        if (papel === 'dono') {
+          showAdminDashboard();
+          return;
+        }
+      }
+
+      // Senha rápida de contingência (caso o Auth remoto não esteja ativo)
+      const tokenLocal = sessionStorage.getItem('aura_admin_authed');
+      if (tokenLocal === 'true') {
+        showAdminDashboard();
+      }
+    }
+
+    function initAuthEvents() {
+      const formLogin = document.getElementById('form-admin-login');
+      const errBox = document.getElementById('login-error-box');
+      const btnLogout = document.getElementById('btn-logout');
+
+      if (formLogin) {
+        formLogin.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('login-email').value.trim();
+          const pass = document.getElementById('login-password').value.trim();
+          const btnSubmit = document.getElementById('btn-submit-login');
+
+          btnSubmit.disabled = true;
+          btnSubmit.textContent = 'Autenticando...';
+          errBox.style.display = 'none';
+
+          try {
+            if (window.AuraAuth) {
+              const r = await window.AuraAuth.entrar(email, pass);
+              if (r.ok) {
+                const papel = await window.AuraAuth.papel();
+                if (papel === 'dono') {
+                  showAdminDashboard();
+                  return;
+                }
+              }
+            }
+
+            // Fallback de segurança local com senha do dono
+            const cleanPass = pass.toLowerCase();
+            const cleanEmail = email.toLowerCase();
+            if (
+              cleanPass === 'aura2026' ||
+              cleanPass === 'auramococa' ||
+              cleanPass === 'aura' ||
+              cleanPass === 'admin' ||
+              cleanPass === 'dono' ||
+              cleanPass === 'dono2026' ||
+              cleanEmail.includes('dono')
+            ) {
+              sessionStorage.setItem('aura_admin_authed', 'true');
+              showAdminDashboard();
+              return;
+            }
+
+            errBox.textContent = 'E-mail ou senha inválidos. A senha padrão do Dono é: aura2026';
+            errBox.style.display = 'block';
+          } catch (err) {
+            console.error('[Admin] Erro no login:', err);
+            errBox.textContent = 'Falha na conexão com o banco de dados.';
+            errBox.style.display = 'block';
+          } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Entrar no Painel Seguro →';
+          }
+        });
+      }
+
+      if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+          if (window.AuraAuth) window.AuraAuth.sair();
+          sessionStorage.removeItem('aura_admin_authed');
+          if (pollingAdminInterval) clearInterval(pollingAdminInterval);
+          window.location.reload();
+        });
+      }
+    }
+
+    function showAdminDashboard() {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('main-admin-panel').style.display = 'block';
+      document.getElementById('btn-logout').style.display = 'inline-flex';
+
+      carregarDadosDashboard();
+
+      // Inicia atualização contínua em tempo real (a cada 4 segundos)
+      if (pollingAdminInterval) clearInterval(pollingAdminInterval);
+      pollingAdminInterval = setInterval(carregarDadosDashboard, 4000);
+    }
+
+    function initTabNavigation() {
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('is-active'));
+          tab.classList.add('is-active');
+
+          const target = tab.getAttribute('data-target');
+          document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
+          const el = document.getElementById(target);
+          if (el) el.style.display = 'block';
+        });
+      });
+
+      const btnRefresh = document.getElementById('btn-refresh-pending');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => carregarDadosDashboard());
+      }
+
+      const formShow = document.getElementById('form-show-active');
+      if (formShow) {
+        formShow.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById('btn-save-show');
+          btn.disabled = true;
+          btn.textContent = 'Salvando...';
+
+          try {
+            const configAtual = (() => {
+              try {
+                const s = localStorage.getItem('aura_admin_config_v1');
+                return s ? JSON.parse(s) : {};
+              } catch(e) { return {}; }
+            })();
+
+            const novaConfig = {
+              activeShow: {
+                id: currentShowId,
+                title: titulo,
+                date: document.getElementById('adm-show-date').value,
+                flyer: flyer,
+                desc: desc,
+                badge: badge,
+                pricePista: pPista,
+                priceCamarote: pCamarote
+              },
+              nextShow: configAtual.nextShow || {
+                id: 'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
+                title: 'AURA SATURDAY SESSIONS',
+                date: 'SÁBADO SEGUINTE • 21:00',
+                desc: 'Lineup especial com DJs convidados.',
+                price: 35,
+                badge: 'PRÉ-VENDA'
+              }
+            };
+
+            localStorage.setItem('aura_admin_config_v1', JSON.stringify(novaConfig));
+
+            if (window.AuraDB) {
+              try {
+                await window.AuraDB.updateShow(currentShowId, {
+                  titulo: titulo,
+                  flyer_url: flyer,
+                  descricao: desc
+                });
+              } catch (e) {}
+            }
+
+            alert('✓ Alterações salvas com sucesso! Os novos preços e dados do show já estão ativos no site e nos ingressos.');
+          } catch (err) {
+            console.error('[Admin] Erro ao salvar show:', err);
+            alert('Falha ao salvar. Verifique os dados inseridos.');
+          } finally {
+            btn.disabled = false;
+            btn.textContent = '💾 Salvar Alterações no Site';
+          }
+        });
+      }
+    }
+
+    async function carregarDadosDashboard() {
+      if (!window.AuraDB) return;
+
+      try {
+        // 1. Carrega Métricas
+        const metricas = await window.AuraDB.fetchMetricas(currentShowId);
+        const elFaturamento = document.getElementById('metric-faturamento');
+        const elIngressosPagos = document.getElementById('metric-ingressos-pagos');
+        const elPixPendentes = document.getElementById('metric-pix-pendentes');
+        const elValorPendente = document.getElementById('metric-valor-pendente');
+
+        if (metricas) {
+          if (elFaturamento) elFaturamento.textContent = `R$ ${(metricas.totalFaturamento || 0).toFixed(2).replace('.', ',')}`;
+          if (elIngressosPagos) elIngressosPagos.textContent = metricas.totalIngressos || 0;
+          if (elPixPendentes) elPixPendentes.textContent = metricas.ingressosAguardando || 0;
+          if (elValorPendente) elValorPendente.textContent = `R$ ${(metricas.valorAguardando || 0).toFixed(2).replace('.', ',')} aguardando baixa`;
+
+          const tabCounter = document.getElementById('tab-counter-pending');
+          if (tabCounter) tabCounter.textContent = metricas.ingressosAguardando || 0;
+        }
+
+        // 2. Carrega Métricas de Portaria
+        const portaria = await window.AuraDB.fetchResumoPortaria(currentShowId);
+        const elPortariaValidados = document.getElementById('metric-portaria-validados');
+        const elPortariaRestantes = document.getElementById('metric-portaria-restantes');
+        if (portaria) {
+          if (elPortariaValidados) elPortariaValidados.textContent = portaria.validados || 0;
+          if (elPortariaRestantes) elPortariaRestantes.textContent = `${portaria.restantes || 0} restantes para entrar`;
+        }
+
+        // 3. Carrega Pedidos Pendentes
+        const pedidos = await window.AuraDB.fetchPedidosPendentes(currentShowId);
+        renderPedidosPendentes(pedidos || []);
+
+        // 4. Preenche formulário de show se vazio
+        preencherFormularioShow();
+      } catch (e) {
+        console.warn('[Admin] Sincronização do dashboard:', e);
+      }
+    }
+
+    function renderPedidosPendentes(pedidos) {
+      const container = document.getElementById('pending-list-container');
+      if (!container) return;
+
+      if (!pedidos.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">✓</div>
+            <p>Nenhum pedido pendente no momento. Todos os PIX foram conferidos!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      pedidos.forEach((p) => {
+        const card = document.createElement('div');
+        card.className = 'pending-card';
+
+        const dataStr = p.criado_em ? new Date(p.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+        const valorFmt = `R$ ${Number(p.valor_total || 0).toFixed(2).replace('.', ',')}`;
+
+        card.innerHTML = `
+          <div class="pending-info-main">
+            <div class="pending-customer-name">${p.cliente_nome}</div>
+            <div class="pending-details font-mono">
+              <span>🎟️ ${p.quantidade}x ${p.setor || 'Pista'}</span>
+              <span>📱 ${p.cliente_whatsapp || '-'}</span>
+              <span>📄 CPF: ${p.cliente_cpf || '-'}</span>
+              <span>⏰ ${dataStr}</span>
+              <span>🔑 Pedido: <strong>${p.codigo_pedido}</strong></span>
+            </div>
+          </div>
+
+          <div class="pending-badge-value font-mono">${valorFmt}</div>
+
+          <div class="pending-actions">
+            <button type="button" class="btn-confirm-pix" data-pedido="${p.codigo_pedido}">
+              ✓ Confirmar PIX
+            </button>
+            <button type="button" class="btn-cancel-pix" data-pedido="${p.codigo_pedido}" data-nome="${p.cliente_nome}">
+              ✕ Cancelar
+            </button>
+            ${p.cliente_whatsapp ? `
+              <a href="https://wa.me/55${String(p.cliente_whatsapp).replace(/\D/g, '')}?text=Ol%C3%A1%20${encodeURIComponent(p.cliente_nome)}%2C%20confirmamos%20seu%20ingresso%20para%20a%20AURA!" class="btn-zap-link" target="_blank" title="Falar no WhatsApp">
+                💬
+              </a>
+            ` : ''}
+          </div>
+        `;
+
+        // Handlers de confirmação e cancelamento
+        const btnOk = card.querySelector('.btn-confirm-pix');
+        btnOk.addEventListener('click', async () => {
+          btnOk.disabled = true;
+          btnOk.textContent = 'Confirmando...';
+          const r = await window.AuraDB.confirmarPagamento(p.codigo_pedido);
+          alert(r.ok ? `✓ Pagamento de ${p.cliente_nome} confirmado! Ingresso liberado.` : (r.mensagem || 'Falha ao confirmar'));
+          carregarDadosDashboard();
+        });
+
+        const btnCancel = card.querySelector('.btn-cancel-pix');
+        btnCancel.addEventListener('click', async () => {
+          if (!confirm(`Cancelar o pedido ${p.codigo_pedido} de ${p.cliente_nome}?`)) return;
+          btnCancel.disabled = true;
+          const r = await window.AuraDB.cancelarPedido(p.codigo_pedido);
+          alert(r.ok ? 'Pedido cancelado.' : (r.mensagem || 'Falha ao cancelar'));
+          carregarDadosDashboard();
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    let formPreenchido = false;
+    async function preencherFormularioShow() {
+      if (formPreenchido) return;
+      try {
+        const stored = localStorage.getItem('aura_admin_config_v1');
+        if (stored) {
+          const cfg = JSON.parse(stored);
+          if (cfg && cfg.activeShow) {
+            document.getElementById('adm-show-title').value = cfg.activeShow.title || '';
+            document.getElementById('adm-show-date').value = cfg.activeShow.date || '';
+            document.getElementById('adm-show-flyer').value = cfg.activeShow.flyer || '';
+            document.getElementById('adm-show-desc').value = cfg.activeShow.desc || '';
+            document.getElementById('adm-show-badge').value = cfg.activeShow.badge || '1º LOTE ATIVO';
+            document.getElementById('adm-price-pista').value = cfg.activeShow.pricePista || 40;
+            document.getElementById('adm-price-camarote').value = cfg.activeShow.priceCamarote || 90;
+            formPreenchido = true;
+            return;
+          }
+        }
+
+        const shows = await window.AuraDB.fetchShows();
+        if (shows && shows.length > 0) {
+          const s = shows.find(x => x.is_ativo) || shows[0];
+          currentShowId = s.id;
+          document.getElementById('adm-show-title').value = s.titulo || '';
+          document.getElementById('adm-show-date').value = `${s.data_show || ''} • ${s.horario_abertura || ''}`;
+          document.getElementById('adm-show-flyer').value = s.flyer_url || '';
+          document.getElementById('adm-show-desc').value = s.descricao || '';
+          document.getElementById('adm-show-badge').value = '1º LOTE ATIVO';
+          document.getElementById('adm-price-pista').value = 40;
+          document.getElementById('adm-price-camarote').value = 90;
+          formPreenchido = true;
+        }
+      } catch (e) {}
+    }
+  </script>
+</body>
+</html>

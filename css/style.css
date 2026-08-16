@@ -32,25 +32,36 @@
   --sunset-orange-glow: rgba(234, 86, 13, 0.45);
   --accent-green: #10B981;
 
+  /* Vermelho Sangue — camarotes VIP */
+  --blood-red: #8B0000;
+  --blood-red-glow: rgba(139, 0, 0, 0.55);
+  --blood-red-light: #C41E3A;
+
   /* --- NEON OFICIAL DA FACHADA (amostrado da foto real do letreiro) ---
      A logo física é um tubo de neon: núcleo branco-quente, corpo dourado
      e difusão âmbar. Estes três tons reproduzem o letreiro da entrada. */
-  --neon-core: #FFF4D6;   /* núcleo incandescente do tubo */
-  --neon-ouro: #FFC24A;   /* corpo dourado do tubo */
-  --neon-brasa: #FF8A0F;  /* difusão âmbar externa */
-  --cobalto: #1E4DFF;     /* barras de LED azul da fachada */
+  --neon-core: #FFF4D6;
+  /* núcleo incandescente do tubo */
+  --neon-ouro: #FFC24A;
+  /* corpo dourado do tubo */
+  --neon-brasa: #FF8A0F;
+  /* difusão âmbar externa */
+  --cobalto: #1E4DFF;
+  /* barras de LED azul da fachada */
 
   /* Bordas & Efeitos de Vidro */
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-cyan: rgba(0, 240, 255, 0.25);
-  --border-cyan-active: rgba(0, 240, 255, 0.8);
+  --border-cyan: rgba(255, 194, 74, 0.25);
+  --border-cyan-active: rgba(255, 194, 74, 0.8);
   --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
-  --shadow-neon: 0 0 30px rgba(0, 240, 255, 0.35);
+  --shadow-neon: 0 0 30px rgba(255, 194, 74, 0.35);
 
   /* Tipografia */
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'DM Mono', monospace;
   --font-display: 'Montserrat', sans-serif;
+  --font-elsie: 'Elsie', Georgia, serif;
+  --font-merriweather-sans: 'Merriweather Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Tipografia da marca: a MESMA do letreiro da entrada.
      Italiana reproduz a modulação do logotipo oficial — diagonal esquerda
@@ -75,7 +86,9 @@
 /* --------------------------------------------------------------------------
    2. RESET & BASE
    -------------------------------------------------------------------------- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -108,6 +121,15 @@ body {
   font-family: var(--font-display);
 }
 
+.font-elsie {
+  font-family: var(--font-elsie);
+}
+
+.font-merriweather,
+.font-merriweather-sans {
+  font-family: var(--font-merriweather-sans);
+}
+
 /* Entrelinha compacta dos títulos (o `leading-[1.1]` do PRODUX).
    Sem isto todos herdam o `line-height: 1.6` do corpo, feito para parágrafo,
    e abrem um vão enorme assim que quebram em duas linhas — o que acontece
@@ -126,8 +148,8 @@ body {
 }
 
 .highlight-cyan {
-  color: var(--neon-cyan);
-  text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+  color: var(--neon-ouro);
+  text-shadow: 0 0 15px rgba(255, 194, 74, 0.6);
 }
 
 .highlight-gold {
@@ -137,6 +159,11 @@ body {
 
 .highlight-green {
   color: var(--accent-green);
+}
+
+.highlight-blood {
+  color: var(--blood-red-light);
+  text-shadow: 0 0 15px var(--blood-red-glow);
 }
 
 .text-muted {
@@ -277,28 +304,24 @@ body {
   border-radius: 50%;
 }
 
-/* Acendimento do neon: um halo em camadas, medido em `em` para acompanhar
-   qualquer tamanho do lockup. */
+/* Acendimento do neon: um halo nítido, refinado e elegante */
 .aura-neon {
   color: var(--neon-core);
   text-shadow:
-    0 0 0.05em var(--neon-ouro),
-    0 0 0.14em rgba(255, 194, 74, 0.9),
-    0 0 0.34em rgba(255, 138, 15, 0.6),
-    0 0 0.8em rgba(255, 138, 15, 0.35);
+    0 0 0.04em var(--neon-ouro),
+    0 0 0.12em rgba(255, 194, 74, 0.8),
+    0 0 0.28em rgba(255, 138, 15, 0.35);
 }
 
 .aura-neon .lockup-emblem,
 .aura-emblem.aura-neon {
   filter:
-    drop-shadow(0 0 0.03em var(--neon-ouro))
-    drop-shadow(0 0 0.1em rgba(255, 194, 74, 0.85))
-    drop-shadow(0 0 0.26em rgba(255, 138, 15, 0.55));
+    drop-shadow(0 0 0.03em var(--neon-ouro)) drop-shadow(0 0 0.09em rgba(255, 194, 74, 0.8));
 }
 
 .aura-neon .lockup-rule i,
 .aura-neon .lockup-rule span {
-  box-shadow: 0 0 0.1em var(--neon-ouro), 0 0 0.26em rgba(255, 138, 15, 0.6);
+  box-shadow: 0 0 0.08em var(--neon-ouro), 0 0 0.18em rgba(255, 138, 15, 0.4);
 }
 
 /* --------------------------------------------------------------------------
@@ -416,8 +439,7 @@ body {
   --emb-ponto-r: 3.6;
   color: var(--neon-core);
   filter:
-    drop-shadow(0 0 3px var(--neon-ouro))
-    drop-shadow(0 0 9px rgba(255, 138, 15, 0.6));
+    drop-shadow(0 0 3px var(--neon-ouro)) drop-shadow(0 0 9px rgba(255, 138, 15, 0.6));
 }
 
 .brand-text-block {
@@ -480,8 +502,10 @@ body {
   text-decoration: none;
   padding: 6px 9px;
   border-radius: var(--radius-sm);
-  white-space: nowrap; /* os colchetes nunca quebram para a linha de baixo */
+  white-space: nowrap;
+  /* os colchetes nunca quebram para a linha de baixo */
   transition: all var(--transition-fast);
+  position: relative;
 }
 
 .nav-item:hover {
@@ -490,15 +514,46 @@ body {
   transform: rotate(-2deg);
 }
 
+/* Estado ativo: indica a seção visível atual na rolagem */
+.nav-item.is-active {
+  color: var(--neon-core);
+  text-shadow: 0 0 8px rgba(255, 194, 74, 0.6);
+}
+
+.nav-item.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: var(--neon-ouro);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--neon-ouro), 0 0 12px rgba(255, 138, 15, 0.4);
+}
+
 .nav-item--highlight {
-  color: var(--neon-cyan);
-  border: 1px solid var(--border-cyan);
-  background: rgba(0, 240, 255, 0.05);
+  color: var(--neon-ouro);
+  border: 1px solid rgba(255, 194, 74, 0.25);
+  background: rgba(255, 194, 74, 0.05);
+}
+
+.nav-item--highlight.is-active {
+  color: var(--neon-ouro);
+  text-shadow: 0 0 10px rgba(255, 194, 74, 0.6);
+  border-color: rgba(255, 194, 74, 0.8);
+  background: rgba(255, 194, 74, 0.12);
+}
+
+.nav-item--highlight.is-active::after {
+  background: var(--neon-ouro);
+  box-shadow: 0 0 6px var(--neon-ouro), 0 0 12px rgba(255, 138, 15, 0.4);
 }
 
 .nav-item--highlight:hover {
-  background: rgba(0, 240, 255, 0.15);
-  box-shadow: 0 0 15px var(--neon-cyan-glow);
+  background: rgba(255, 194, 74, 0.15);
+  box-shadow: 0 0 15px rgba(255, 194, 74, 0.45);
 }
 
 .navbar-actions {
@@ -508,7 +563,8 @@ body {
 }
 
 .btn-quick-ticket {
-  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  position: relative;
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--neon-brasa) 100%);
   color: var(--text-dark);
   font-family: var(--font-mono);
   font-weight: 700;
@@ -520,12 +576,32 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all var(--transition-fast);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 0 12px rgba(255, 184, 0, 0.3);
+}
+
+/* Camada azul que varre da esquerda para a direita no hover */
+.btn-quick-ticket::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  z-index: -1;
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: inherit;
+}
+
+.btn-quick-ticket:hover::before {
+  transform: translateX(0);
 }
 
 .btn-quick-ticket:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 20px var(--neon-cyan-glow);
+  box-shadow: 0 0 22px var(--neon-cyan-glow);
+  color: var(--text-dark);
 }
 
 .btn-admin-gear {
@@ -543,7 +619,7 @@ body {
 
 .btn-admin-gear:hover {
   color: var(--text-pure);
-  border-color: var(--neon-cyan);
+  border-color: var(--neon-ouro);
 }
 
 /* --------------------------------------------------------------------------
@@ -571,11 +647,9 @@ body {
 .produx-hero-initial-header {
   position: absolute;
   inset: 0;
-  padding: 40px 60px;
+  padding: 32px 24px 20px;
   display: flex;
   flex-direction: column;
-  /* O letreiro saiu daqui para dentro da moldura, então o texto de apoio
-     ancora sozinho no rodapé da tela. */
   justify-content: flex-end;
   z-index: 6;
   pointer-events: none;
@@ -612,42 +686,56 @@ body {
 }
 
 @keyframes letreiroFlutua {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -0.7%; }
+
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -0.7%;
+  }
 }
 
+/* Coluna única centralizada sob o letreiro: frase e chamada de rolagem. */
 .produx-hero-bottom-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 40px;
-  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   width: 100%;
-  /* espaço para a pílula de status, que fica centralizada no rodapé da tela */
-  padding-bottom: 56px;
+  padding-bottom: 54px;
 }
 
+/* A frase usa a letra do letreiro e o mesmo neon — é assinatura da marca, não
+   texto de apoio. Numa linha só: o tamanho vem de `vw` com teto em `rem`, para
+   caber de 320px a ultrawide sem nunca quebrar.
+   O halo é mais curto que o do letreiro (0.34em contra 0.8em): em corpo pequeno
+   o brilho largo do letreiro empasta os contornos e come a legibilidade. */
 .hero-punchline-text {
-  font-family: var(--font-body);
-  font-size: clamp(2rem, 3.8vw, 3.6rem);
-  font-weight: 600;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-  color: #FFFFFF;
-}
-
-.side-desc-text {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #8A9099;
-  margin-bottom: 16px;
+  font-family: var(--font-logo);
+  font-weight: 400;
+  font-size: min(3.05rem, 4vw);
+  line-height: 1.2;
+  letter-spacing: 0.055em;
+  white-space: nowrap;
+  text-align: center;
+  text-shadow:
+    0 0 0.04em var(--neon-ouro),
+    0 0 0.12em rgba(255, 194, 74, 0.85),
+    0 0 0.34em rgba(255, 138, 15, 0.5);
 }
 
 .hero-scroll-indicator {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  font-size: 0.8rem;
-  color: var(--neon-cyan);
+  margin-top: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--neon-ouro);
+  text-shadow: 0 0 14px rgba(255, 138, 15, 0.55);
 }
 
 .indicator-arrow {
@@ -655,8 +743,15 @@ body {
 }
 
 @keyframes bounceDown {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
 }
 
 /* PALCO DO QUEBRA-CABEÇA 3D: PEDAÇOS DESFOCADOS FLUTUANTES SEM BORDAS */
@@ -726,7 +821,8 @@ body {
   transform-style: preserve-3d;
   will-change: transform, opacity, filter;
   pointer-events: none;
-  opacity: 0; /* Começa 100% invisível no scroll 0 para manter o fundo preto puro */
+  opacity: 0;
+  /* Começa 100% invisível no scroll 0 para manter o fundo preto puro */
 }
 
 /* --------------------------------------------------------------------------
@@ -743,17 +839,38 @@ body {
    (28%–46%, onde ficam emblema, nome e filete) é **uma peça inteira e de
    largura total**: o letreiro chega sempre em um pedaço só, nunca partido.
    -------------------------------------------------------------------------- */
-.shard-topo-esq   { clip-path: polygon(0    0,   50%  0,   50%  28%, 0    28%); }
-.shard-topo-dir   { clip-path: polygon(50%  0,   100% 0,   100% 28%, 50%  28%); }
+.shard-topo-esq {
+  clip-path: polygon(0 0, 50% 0, 50% 28%, 0 28%);
+}
+
+.shard-topo-dir {
+  clip-path: polygon(50% 0, 100% 0, 100% 28%, 50% 28%);
+}
 
 /* a faixa do letreiro — inteira, sem emenda */
-.shard-letreiro   { clip-path: polygon(0    28%, 100% 28%, 100% 46%, 0    46%); }
+.shard-letreiro {
+  clip-path: polygon(0 28%, 100% 28%, 100% 46%, 0 46%);
+}
 
-.shard-meio-esq   { clip-path: polygon(0    46%, 50%  46%, 50%  64%, 0    64%); }
-.shard-meio-dir   { clip-path: polygon(50%  46%, 100% 46%, 100% 64%, 50%  64%); }
-.shard-baixo-esq  { clip-path: polygon(0    64%, 50%  64%, 50%  82%, 0    82%); }
-.shard-baixo-dir  { clip-path: polygon(50%  64%, 100% 64%, 100% 82%, 50%  82%); }
-.shard-chao       { clip-path: polygon(0    82%, 100% 82%, 100% 100%, 0   100%); }
+.shard-meio-esq {
+  clip-path: polygon(0 46%, 50% 46%, 50% 64%, 0 64%);
+}
+
+.shard-meio-dir {
+  clip-path: polygon(50% 46%, 100% 46%, 100% 64%, 50% 64%);
+}
+
+.shard-baixo-esq {
+  clip-path: polygon(0 64%, 50% 64%, 50% 82%, 0 82%);
+}
+
+.shard-baixo-dir {
+  clip-path: polygon(50% 64%, 100% 64%, 100% 82%, 50% 82%);
+}
+
+.shard-chao {
+  clip-path: polygon(0 82%, 100% 82%, 100% 100%, 0 100%);
+}
 
 /* CAMADA DE SEQUÊNCIA DE FOTOS REAIS DO INSTAGRAM (AUTOMÁTICA APÓS O ENCAIXE) */
 .auto-party-photos-layer {
@@ -817,89 +934,48 @@ body {
 .party-video-controls {
   position: absolute;
   bottom: 24px;
-  left: 24px;
   right: 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   z-index: 14;
-}
-
-.live-status-badge {
-  background: rgba(8, 9, 12, 0.85);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-pure);
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  backdrop-filter: blur(12px);
-}
-
-.live-dot-pulse {
-  width: 8px;
-  height: 8px;
-  background: #EF4444;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #EF4444;
-  animation: blinkDot 1s infinite;
 }
 
 .btn-party-audio {
   background: rgba(8, 9, 12, 0.85);
-  border: 1px solid var(--neon-cyan);
+  border: 1px solid var(--neon-ouro);
   color: var(--text-pure);
-  padding: 8px 18px;
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   backdrop-filter: blur(12px);
   transition: all var(--transition-fast);
 }
 
 .btn-party-audio:hover {
-  background: var(--neon-cyan);
+  background: var(--neon-ouro);
   color: var(--text-dark);
-  box-shadow: 0 0 20px var(--neon-cyan-glow);
+  box-shadow: 0 0 20px var(--accent-gold-glow);
 }
 
-.morph-status-pill {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  font-size: 0.8rem;
-  color: var(--neon-cyan);
-  background: rgba(8, 9, 12, 0.9);
-  border: 1px solid var(--border-cyan);
-  padding: 6px 18px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  backdrop-filter: blur(12px);
-  pointer-events: none;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--neon-cyan);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--neon-cyan);
-  animation: blinkDot 1.5s infinite;
-}
-
+/* A pílula de status do scroll ("EXPERIÊNCIA AURA • FOCANDO FRAGMENTOS") foi
+   removida do hero — competia com o letreiro. O keyframe abaixo continua,
+   porque o selo ONLINE da portaria usa. */
 @keyframes blinkDot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -925,7 +1001,8 @@ body {
 
 .section-tag {
   font-size: 0.82rem;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
+  text-shadow: 0 0 8px rgba(255, 138, 15, 0.4);
   margin-bottom: 8px;
 }
 
@@ -970,7 +1047,7 @@ body {
 
 .show-card:hover {
   transform: translateY(-6px);
-  border-color: var(--neon-cyan);
+  border-color: var(--neon-ouro);
   box-shadow: var(--shadow-neon);
 }
 
@@ -999,8 +1076,8 @@ body {
   top: 16px;
   left: 16px;
   background: rgba(8, 9, 12, 0.85);
-  border: 1px solid var(--neon-cyan);
-  color: var(--neon-cyan);
+  border: 1px solid var(--neon-ouro);
+  color: var(--neon-ouro);
   padding: 5px 12px;
   border-radius: var(--radius-sm);
   font-size: 0.75rem;
@@ -1024,7 +1101,7 @@ body {
 }
 
 .hover-view-btn {
-  background: var(--neon-cyan);
+  background: var(--neon-ouro);
   color: var(--text-dark);
   font-size: 0.85rem;
   font-weight: 700;
@@ -1110,7 +1187,7 @@ body {
 }
 
 .btn-show-buy {
-  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--neon-brasa) 100%);
   color: var(--text-dark);
   font-family: var(--font-mono);
   font-size: 0.88rem;
@@ -1124,7 +1201,7 @@ body {
 
 .btn-show-buy:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 20px var(--neon-cyan-glow);
+  box-shadow: 0 0 20px var(--accent-gold-glow);
 }
 
 .btn-show-buy--secondary {
@@ -1172,7 +1249,7 @@ body {
 .cta-banner-card {
   background: linear-gradient(135deg, rgba(17, 20, 29, 0.95) 0%, rgba(26, 32, 48, 0.95) 100%);
   border: 1px solid var(--border-cyan);
-  box-shadow: 0 10px 40px -10px rgba(0, 240, 255, 0.25);
+  box-shadow: 0 10px 40px -10px rgba(255, 194, 74, 0.25);
   border-radius: var(--radius-lg);
   padding: 40px 48px;
   display: flex;
@@ -1247,22 +1324,35 @@ body {
 
 .sector-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(255, 194, 74, 0.42);
   border-radius: var(--radius-lg);
   padding: 40px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), 0 0 22px rgba(255, 194, 74, 0.1);
+  transition: all var(--transition-smooth);
+}
+
+.sector-card:hover {
+  border-color: rgba(255, 194, 74, 0.8);
+  box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.9), 0 0 32px rgba(255, 194, 74, 0.22);
 }
 
 .sector-card--vip {
-  border-color: rgba(255, 184, 0, 0.4);
-  background: linear-gradient(135deg, rgba(17, 20, 29, 0.95) 0%, rgba(32, 28, 16, 0.95) 100%);
-  box-shadow: 0 10px 40px -10px rgba(255, 184, 0, 0.2);
+  border-color: rgba(139, 0, 0, 0.6);
+  background: linear-gradient(135deg, rgba(17, 20, 29, 0.95) 0%, rgba(40, 12, 12, 0.95) 100%);
+  box-shadow: 0 10px 40px -10px var(--blood-red-glow);
+}
+
+.sector-card--vip:hover {
+  border-color: rgba(196, 30, 58, 0.85);
+  box-shadow: 0 15px 45px -10px rgba(139, 0, 0, 0.75);
 }
 
 .sector-badge {
   font-size: 0.8rem;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
+  text-shadow: 0 0 8px rgba(255, 138, 15, 0.4);
   margin-bottom: 12px;
 }
 
@@ -1285,7 +1375,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  font-size: 0.88rem;
+  font-family: var(--font-merriweather-sans);
+  font-size: 0.92rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
   color: var(--text-white);
   margin-bottom: 32px;
   flex-grow: 1;
@@ -1294,7 +1388,7 @@ body {
 .sector-features li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .btn-sector {
@@ -1312,21 +1406,21 @@ body {
 }
 
 .btn-sector:hover {
-  background: var(--neon-cyan);
+  background: var(--neon-ouro);
   color: var(--text-dark);
-  border-color: var(--neon-cyan);
+  border-color: var(--neon-ouro);
 }
 
 .btn-sector--vip {
-  background: linear-gradient(135deg, var(--accent-gold) 0%, #FFA000 100%);
-  color: var(--text-dark);
+  background: linear-gradient(135deg, var(--blood-red) 0%, var(--blood-red-light) 100%);
+  color: var(--text-pure);
   font-weight: 700;
   border: none;
 }
 
 .btn-sector--vip:hover {
-  box-shadow: 0 0 25px rgba(255, 184, 0, 0.6);
-  filter: brightness(1.1);
+  box-shadow: 0 0 25px var(--blood-red-glow);
+  filter: brightness(1.15);
 }
 
 .sector-vip-actions {
@@ -1352,52 +1446,156 @@ body {
 /* --------------------------------------------------------------------------
    8. SEÇÃO 4: CARROSSEL DE BEBIDAS & MARCAS PREMIUM (TICKER)
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   8. SEÇÃO 4: CARROSSEL DE BEBIDAS & MARCAS PREMIUM (TICKER)
+   -------------------------------------------------------------------------- */
 .brands-section {
-  padding: 40px 0;
+  position: relative;
+  padding: 70px 0 28px;
   background: #040507;
-  border-top: 1px solid var(--border-subtle);
-  border-bottom: 1px solid var(--border-subtle);
+  border-top: 1px solid rgba(255, 194, 74, 0.3);
+  border-bottom: 1px solid rgba(255, 194, 74, 0.3);
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95);
   overflow: hidden;
+}
+
+.brands-container {
+  position: relative;
+  z-index: 2;
+}
+
+.brands-header {
+  text-align: center;
+  margin-bottom: 36px;
 }
 
 .brands-title-tag {
   text-align: center;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-bottom: 24px;
-  letter-spacing: 0.15em;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--neon-ouro);
+  text-shadow: 0 0 12px rgba(255, 138, 15, 0.6);
+  margin-bottom: 12px;
+  letter-spacing: 0.2em;
+}
+
+.brands-main-title {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 800;
+  color: var(--neon-ouro);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+  text-shadow:
+    0 0 16px rgba(255, 194, 74, 0.85),
+    0 0 35px rgba(255, 138, 15, 0.5);
+}
+
+.brands-subtitle {
+  font-size: 0.98rem;
+  color: var(--text-slate);
+  max-width: 580px;
+  margin: 0 auto;
 }
 
 .brands-marquee-wrapper {
   display: flex;
   width: 100%;
   overflow: hidden;
-  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  padding: 12px 0 14px;
+  user-select: none;
+  pointer-events: auto;
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 
 .brands-track {
   display: flex;
-  gap: 60px;
-  white-space: nowrap;
-  animation: marqueeTrack 35s linear infinite;
+  width: max-content;
+  flex-wrap: nowrap;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  animation: marqueeContinuous 28s linear infinite;
 }
 
-@keyframes marqueeTrack {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* Garante fluxo contínuo ininterrupto mesmo com interação */
+.brands-track:hover,
+.brands-marquee-wrapper:hover .brands-track {
+  animation-play-state: running !important;
 }
 
-.brand-item {
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--text-slate);
-  letter-spacing: 0.08em;
-  transition: color var(--transition-fast);
+.brands-track-group {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding-right: 32px;
+  flex-shrink: 0;
 }
 
-.brand-item:hover {
-  color: var(--neon-cyan);
+@keyframes marqueeContinuous {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Cards no Padrão Oficial PRODUX Design com Borda Dourada Límpida & Glow Dourado Realçado */
+.brand-square-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 230px;
+  height: 260px;
+  padding: 16px 18px;
+  overflow: hidden;
+  background: #000000;
+  border: 2px solid rgba(255, 194, 74, 0.75);
+  border-radius: 24px;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.92),
+    0 0 25px rgba(255, 194, 74, 0.32),
+    inset 0 0 15px rgba(255, 194, 74, 0.12);
+  flex-shrink: 0;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  opacity: 0.98;
+  filter: none;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+/* Calibração Óptica dos Logos no Formato Estendido */
+.logo--walker { max-height: 215px; max-width: 185px; }
+.logo--corona { max-height: 200px; max-width: 195px; filter: brightness(1.25) contrast(1.1); }
+.logo--ciroc { max-height: 205px; max-width: 190px; }
+.logo--redbull { max-height: 180px; max-width: 205px; }
+.logo--heineken { max-height: 170px; max-width: 205px; }
+.logo--absolut { max-height: 140px; max-width: 205px; }
+.logo--chandon { max-height: 140px; max-width: 205px; }
+
+.brand-square-card:hover {
+  background: #0A0D14;
+  border-color: #FFDF80;
+  transform: translateY(-6px);
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.95),
+    0 0 45px rgba(255, 194, 74, 0.6),
+    inset 0 0 22px rgba(255, 194, 74, 0.2);
+}
+
+.brand-square-card:hover .brand-logo-img {
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 /* --------------------------------------------------------------------------
@@ -1498,9 +1696,17 @@ body {
 }
 
 /* A dica muda conforme o modo: rolar (desktop) ou arrastar (toque). */
-.dica-rolar { display: none; }
-.modo-fixo .dica-rolar { display: inline; }
-.modo-fixo .dica-arrastar { display: none; }
+.dica-rolar {
+  display: none;
+}
+
+.modo-fixo .dica-rolar {
+  display: inline;
+}
+
+.modo-fixo .dica-arrastar {
+  display: none;
+}
 
 .galeria-trilho::-webkit-scrollbar {
   height: 5px;
@@ -1520,7 +1726,8 @@ body {
   position: relative;
   flex: 0 0 auto;
   width: clamp(210px, 22vw, 290px);
-  aspect-ratio: 2 / 3;      /* o formato real dos arquivos: nada é cortado */
+  aspect-ratio: 2 / 3;
+  /* o formato real dos arquivos: nada é cortado */
   border-radius: var(--radius-md);
   overflow: hidden;
   scroll-snap-align: start;
@@ -1600,25 +1807,118 @@ body {
   color: var(--accent-green);
 }
 
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+.reviews-trilho {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: max(24px, calc(50vw - 656px));
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 194, 74, 0.5) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.reviews-esteira {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  padding-top: 6px;
+  padding-right: 24px;
+  padding-bottom: 22px;
+  padding-left: max(24px, calc(50vw - 656px));
+}
+
+.modo-fixo-reviews .reviews-fixa {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 26px;
+}
+
+.modo-fixo-reviews .reviews-trilho {
+  overflow: hidden;
+  scroll-snap-type: none;
+}
+
+.modo-fixo-reviews .reviews-esteira {
+  will-change: transform;
+}
+
+.reviews-progresso {
+  display: none;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.modo-fixo-reviews .reviews-progresso {
+  display: block;
+}
+
+.reviews-progresso span {
+  display: block;
+  height: 100%;
+  background: var(--neon-ouro);
+  box-shadow: 0 0 8px rgba(255, 138, 15, 0.7);
+  transform-origin: left center;
+  transform: scaleX(0.06);
+}
+
+.reviews-rodape {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reviews-dica {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 0.76rem;
+  color: var(--text-slate);
+}
+
+.modo-fixo-reviews .dica-rolar {
+  display: inline;
+}
+
+.modo-fixo-reviews .dica-arrastar {
+  display: none;
+}
+
+.reviews-trilho::-webkit-scrollbar {
+  height: 5px;
+}
+
+.reviews-trilho::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 99px;
+}
+
+.reviews-trilho::-webkit-scrollbar-thumb {
+  background: rgba(255, 194, 74, 0.55);
+  border-radius: 99px;
 }
 
 .review-card {
+  flex: 0 0 auto;
+  width: clamp(290px, 32vw, 420px);
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 30px;
   display: flex;
   flex-direction: column;
+  scroll-snap-align: start;
   transition: all var(--transition-fast);
 }
 
 .review-card:hover {
   transform: translateY(-4px);
-  border-color: var(--border-cyan);
+  border-color: rgba(255, 194, 74, 0.45);
   background: var(--bg-surface-elevated);
 }
 
@@ -1633,7 +1933,7 @@ body {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0084FF 0%, #00F0FF 100%);
+  background: linear-gradient(135deg, var(--neon-brasa) 0%, var(--neon-ouro) 100%);
   color: var(--text-dark);
   font-family: var(--font-mono);
   font-weight: 700;
@@ -1644,7 +1944,7 @@ body {
 }
 
 .avatar--cyan {
-  background: linear-gradient(135deg, #00F0FF 0%, #10B981 100%);
+  background: linear-gradient(135deg, var(--neon-ouro) 0%, #10B981 100%);
 }
 
 .avatar--purple {
@@ -1660,7 +1960,7 @@ body {
 
 .review-tag {
   font-size: 0.72rem;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
 }
 
 .review-stars {
@@ -1702,7 +2002,7 @@ body {
 }
 
 .accordion-item.is-open {
-  border-color: var(--border-cyan);
+  border-color: rgba(255, 194, 74, 0.3);
 }
 
 .accordion-trigger {
@@ -1726,7 +2026,7 @@ body {
 }
 
 .acc-icon {
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
   font-size: 0.9rem;
   transition: transform var(--transition-fast);
 }
@@ -1794,7 +2094,8 @@ body {
   gap: 12px;
 }
 
-.btn-maps-link, .btn-insta-link {
+.btn-maps-link,
+.btn-insta-link {
   font-size: 0.85rem;
   color: var(--text-pure);
   text-decoration: none;
@@ -1807,9 +2108,9 @@ body {
 }
 
 .btn-maps-link:hover {
-  background: var(--neon-cyan);
+  background: var(--neon-ouro);
   color: var(--text-dark);
-  border-color: var(--neon-cyan);
+  border-color: var(--neon-ouro);
 }
 
 .btn-insta-link:hover {
@@ -1869,7 +2170,7 @@ body {
 }
 
 .footer-nav a:hover {
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
 }
 
 .footer-bottom {
@@ -1928,7 +2229,7 @@ body {
 
 .drawer-tag {
   font-size: 0.75rem;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
 }
 
 .drawer-title {
@@ -1955,7 +2256,7 @@ body {
 
 .btn-drawer-close:hover {
   color: var(--text-pure);
-  border-color: var(--neon-cyan);
+  border-color: var(--neon-ouro);
 }
 
 .drawer-body {
@@ -2017,8 +2318,8 @@ body {
 }
 
 .form-input:focus {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 12px var(--neon-cyan-glow);
+  border-color: var(--neon-ouro);
+  box-shadow: 0 0 12px var(--accent-gold-glow);
 }
 
 .sector-selector-grid {
@@ -2043,8 +2344,8 @@ body {
 }
 
 .sector-radio-card.is-selected {
-  border-color: var(--neon-cyan);
-  background: rgba(0, 240, 255, 0.08);
+  border-color: var(--neon-ouro);
+  background: rgba(255, 194, 74, 0.08);
 }
 
 .radio-card-title {
@@ -2057,7 +2358,7 @@ body {
   font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 900;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
   margin: 4px 0;
 }
 
@@ -2085,7 +2386,7 @@ body {
 }
 
 .btn-qty:hover {
-  background: var(--neon-cyan);
+  background: var(--neon-ouro);
   color: var(--text-dark);
 }
 
@@ -2129,12 +2430,12 @@ body {
 .total-price {
   font-family: var(--font-display);
   font-size: 1.4rem;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
 }
 
 .btn-checkout-next {
   width: 100%;
-  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--neon-brasa) 100%);
   color: var(--text-dark);
   font-family: var(--font-mono);
   font-size: 0.95rem;
@@ -2147,7 +2448,7 @@ body {
 }
 
 .btn-checkout-next:hover {
-  box-shadow: 0 0 25px var(--neon-cyan-glow);
+  box-shadow: 0 0 25px var(--accent-gold-glow);
   filter: brightness(1.1);
 }
 
@@ -2163,7 +2464,7 @@ body {
 .btn-step-back {
   background: none;
   border: none;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
   cursor: pointer;
   font-family: var(--font-mono);
 }
@@ -2189,8 +2490,8 @@ body {
 }
 
 .payment-tab-btn.is-active {
-  background: rgba(0, 240, 255, 0.1);
-  border-color: var(--neon-cyan);
+  background: rgba(255, 194, 74, 0.1);
+  border-color: var(--neon-ouro);
   color: var(--text-pure);
 }
 
@@ -2247,7 +2548,7 @@ body {
 }
 
 .btn-copy-pix:hover {
-  background: var(--neon-cyan);
+  background: var(--neon-ouro);
   color: var(--text-dark);
 }
 
@@ -2310,11 +2611,11 @@ body {
 
 .digital-ticket-card {
   background: #08090C;
-  border: 1px dashed var(--neon-cyan);
+  border: 1px dashed var(--neon-ouro);
   border-radius: var(--radius-md);
   padding: 24px;
   text-align: left;
-  box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 25px rgba(255, 194, 74, 0.15);
   margin-bottom: 24px;
 }
 
@@ -2383,7 +2684,23 @@ body {
   border-top: 1px dashed var(--border-subtle);
 }
 
-#ticket-qrcode-display {
+/* Um bloco por ingresso comprado. Com 1 ingresso a lista tem um item só e o
+   visual fica idêntico ao de antes; com 2+ eles se empilham separados. */
+.ticket-qr-item + .ticket-qr-item {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.ticket-qr-index {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.ticket-qr-box {
   display: inline-block;
   padding: 10px;
   background: #fff;
@@ -2391,11 +2708,164 @@ body {
   margin-bottom: 8px;
 }
 
+.ticket-qr-box img {
+  display: block;
+  width: 150px;
+  height: 150px;
+  image-rendering: pixelated;
+  border-radius: 4px;
+}
+
+/* Ingresso emitido mas com pagamento em conferência: não pode parecer
+   liberado, senão o cliente vai para a fila com um QR que a portaria recusa. */
+.ticket-status-badge.badge-aguardando {
+  color: #F59E0B;
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   PAINEL DO DONO • CONFERÊNCIA DE PAGAMENTOS
+   -------------------------------------------------------------------------- */
+.admin-sessao-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.admin-sessao-barra span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-sair-sessao {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: 5px;
+  padding: 5px 11px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.btn-sair-sessao:hover { color: var(--text-pure); border-color: var(--neon-ouro); }
+
+.admin-badge-contador {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 9px;
+  background: #F59E0B;
+  color: #08090C;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.admin-metricas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.metrica-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metrica-box.metrica-aguardando {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.32);
+}
+
+.metrica-rotulo { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.12em; }
+.metrica-valor { font-size: 1.15rem; font-weight: 700; color: #10B981; line-height: 1.2; }
+.metrica-aguardando .metrica-valor { color: #F59E0B; }
+.metrica-sub { font-size: 0.66rem; color: var(--text-muted); }
+
+.admin-lista-pendentes { margin-bottom: 14px; }
+
+.pendente-card {
+  background: rgba(18, 22, 34, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 9px;
+}
+
+.pendente-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+}
+
+.pendente-valor { color: var(--neon-ouro); white-space: nowrap; }
+
+.pendente-info {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.pendente-acoes { display: flex; gap: 7px; }
+
+.btn-confirmar-pgto,
+.btn-cancelar-pgto,
+.btn-zap-cliente {
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  border: 1px solid transparent;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-confirmar-pgto { flex: 1; background: #10B981; color: #08090C; }
+.btn-cancelar-pgto { background: transparent; border-color: rgba(239, 68, 68, 0.5); color: #FCA5A5; }
+.btn-zap-cliente { background: rgba(37, 211, 102, 0.15); border-color: rgba(37, 211, 102, 0.4); color: #25D366; flex: 0 0 auto; }
+.btn-confirmar-pgto:disabled, .btn-cancelar-pgto:disabled { opacity: 0.55; cursor: wait; }
+
+@media (max-width: 480px) {
+  .admin-metricas { grid-template-columns: 1fr; }
+}
+
+/* Falha na emissão: o cliente fica na etapa de pagamento e lê o motivo,
+   em vez de receber uma tela de sucesso com um código que não existe. */
+.checkout-erro-box {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid #EF4444;
+  border-radius: var(--radius-sm);
+  color: #FCA5A5;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
 .ticket-auth-code {
   display: block;
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--neon-cyan);
+  color: var(--neon-ouro);
   letter-spacing: 0.1em;
 }
 
@@ -2423,7 +2893,7 @@ body {
 }
 
 .btn-print-ticket {
-  background: var(--neon-cyan);
+  background: var(--neon-ouro);
   color: var(--text-dark);
   font-weight: 700;
   border: none;
@@ -2459,7 +2929,7 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border-cyan);
   border-radius: var(--radius-lg);
-  box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 50px rgba(255, 194, 74, 0.2);
   padding: 32px;
   max-height: 90vh;
   overflow-y: auto;
@@ -2500,13 +2970,19 @@ body {
   margin-bottom: 16px;
 }
 
+/* Com a 4ª aba (Pagamentos) as abas não cabem mais na largura do celular.
+   Rolagem lateral própria em vez de transbordar a página. */
 .admin-tabs {
   display: flex;
   gap: 8px;
   margin-bottom: 24px;
   border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.admin-tabs::-webkit-scrollbar { display: none; }
 
 .admin-tab-btn {
   background: none;
@@ -2518,11 +2994,17 @@ body {
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 480px) {
+  .admin-tab-btn { font-size: 0.76rem; padding: 7px 10px; }
 }
 
 .admin-tab-btn.is-active {
-  background: rgba(0, 240, 255, 0.1);
-  border-color: var(--neon-cyan);
+  background: rgba(255, 194, 74, 0.1);
+  border-color: var(--neon-ouro);
   color: var(--text-pure);
 }
 
@@ -2588,8 +3070,19 @@ body {
   justify-content: center;
   z-index: 9999;
   box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-  transition: all var(--transition-fast);
   text-decoration: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(24px);
+  transition: opacity 0.35s var(--ease-cine), transform 0.35s var(--ease-cine), visibility 0.35s var(--ease-cine), box-shadow 0.2s ease;
+}
+
+.whatsapp-float-btn.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .whatsapp-float-btn:hover {
@@ -2601,7 +3094,7 @@ body {
   position: absolute;
   right: 68px;
   background: var(--bg-surface);
-  border: 1px solid var(--border-cyan);
+  border: 1px solid rgba(255, 194, 74, 0.25);
   color: var(--text-pure);
   font-size: 0.75rem;
   padding: 6px 12px;
@@ -2619,6 +3112,116 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   14b. BOTÃO FLUTUANTE DE CADEADO • PORTARIA (INFERIOR ESQUERDO)
+   -------------------------------------------------------------------------- */
+.portaria-float-btn {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  width: 48px;
+  height: 48px;
+  background: rgba(17, 20, 29, 0.92);
+  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(24px);
+  transition: opacity 0.35s var(--ease-cine), transform 0.35s var(--ease-cine), visibility 0.35s var(--ease-cine), border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.portaria-float-btn.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.portaria-float-btn:hover {
+  background: rgba(255, 194, 74, 0.12);
+  border-color: rgba(255, 194, 74, 0.5);
+  color: var(--neon-ouro);
+  transform: scale(1.08);
+  box-shadow: 0 4px 20px rgba(255, 194, 74, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   14c. MODAL DA PORTARIA / VALIDADOR DE INGRESSOS
+   -------------------------------------------------------------------------- */
+.portaria-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 7, 9, 0.92);
+  backdrop-filter: blur(10px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.portaria-modal-card {
+  background: linear-gradient(170deg, #0D1117 0%, #121826 100%);
+  border: 1px solid rgba(255, 194, 74, 0.2);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 194, 74, 0.08);
+}
+
+.portaria-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portaria-auth-view {
+  padding: 10px 0;
+}
+
+.btn-scanner-action {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #CBD5E1;
+  font-size: 0.78rem;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.btn-scanner-action:hover {
+  background: rgba(255, 194, 74, 0.12);
+  border-color: var(--neon-ouro);
+  color: var(--neon-ouro);
+}
+
+@keyframes scanLaser {
+  0% { top: 15%; }
+  100% { top: 85%; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
    15. RESPONSIVIDADE & MEDIA QUERIES
    -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
@@ -2627,7 +3230,9 @@ body {
     gap: 20px;
   }
 
-  .shows-grid, .sectors-grid, .location-card {
+  .shows-grid,
+  .sectors-grid,
+  .location-card {
     grid-template-columns: 1fr;
   }
 
@@ -2652,16 +3257,117 @@ body {
 }
 
 @media (max-width: 768px) {
+
+  /* Percurso responsivo e ágil para toque no celular */
+  .produx-hero-scroll-stage {
+    height: 260vh;
+  }
+
+  /* Tokens com mais claridade e contraste no celular */
+  :root {
+    --bg-surface: #141824;
+    --bg-surface-elevated: #1b2132;
+    --bg-card: rgba(20, 24, 36, 0.94);
+    --text-slate: #CBD5E1;
+    --text-muted: #94A3B8;
+    --border-subtle: rgba(255, 255, 255, 0.14);
+    --border-cyan: rgba(255, 194, 74, 0.45);
+  }
+
+  /* Fundo preto puro e nítido no hero sem ofuscar */
+  .produx-sticky-viewport {
+    background: var(--bg-abyssal);
+  }
+
+  /* Ganho de brilho e nitidez nas fotos e vídeos no celular */
+  .party-slide {
+    filter: brightness(1.18) contrast(1.06) saturate(1.12);
+  }
+
+  .party-video-player {
+    filter: brightness(1.16) contrast(1.08) saturate(1.06);
+  }
+
+  .party-video-vignette {
+    background: linear-gradient(180deg, rgba(8, 9, 12, 0) 0%, rgba(8, 9, 12, 0.35) 100%);
+  }
+
+  .galeria-item img {
+    filter: brightness(1.18) contrast(1.06) saturate(1.1);
+  }
+
+  .show-flyer-img {
+    filter: brightness(1.1) contrast(1.05);
+  }
+
+  /* Letreiro Neon nítido, elegante e focado, sem ofuscar a tela */
+  .aura-neon {
+    text-shadow:
+      0 0 0.04em var(--neon-ouro),
+      0 0 0.12em rgba(255, 194, 74, 0.8),
+      0 0 0.28em rgba(255, 138, 15, 0.35);
+  }
+
+  .aura-neon .lockup-emblem,
+  .aura-emblem.aura-neon {
+    filter:
+      drop-shadow(0 0 0.03em var(--neon-ouro)) drop-shadow(0 0 0.1em rgba(255, 194, 74, 0.75));
+  }
+
+  .brand-emblem-svg {
+    filter:
+      drop-shadow(0 0 3px var(--neon-ouro)) drop-shadow(0 0 8px rgba(255, 138, 15, 0.6));
+  }
+
+  .brand-text {
+    text-shadow:
+      0 0 6px var(--neon-ouro),
+      0 0 14px rgba(255, 138, 15, 0.5);
+  }
+
   .navbar-nav {
     display: none;
   }
 
   .produx-hero-initial-header {
-    padding: 30px 20px;
+    padding: 20px 14px 0;
   }
 
+  .produx-hero-bottom-grid {
+    padding-bottom: max(68px, calc(48px + env(safe-area-inset-bottom, 24px)));
+    gap: 12px;
+  }
+
+  /* No celular a linha inteira só cabe com `vw` puro — qualquer piso em `rem`
+     estoura a largura e quebraria a frase em duas. O halo encolhe junto, senão
+     vira borrão em corpo pequeno. */
   .hero-punchline-text {
-    font-size: 1.8rem;
+    font-size: 4.35vw;
+    letter-spacing: 0.03em;
+    text-shadow:
+      0 0 0.05em var(--neon-ouro),
+      0 0 0.16em rgba(255, 194, 74, 0.9),
+      0 1px 10px rgba(0, 0, 0, 0.9);
+  }
+
+  .hero-scroll-indicator {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    margin-top: 0;
+  }
+
+  .section-tag {
+    color: var(--neon-ouro);
+    text-shadow: 0 0 10px rgba(255, 194, 74, 0.6);
+  }
+
+  .section-subtitle,
+  .show-description,
+  .sector-desc,
+  .cta-desc,
+  .faq-answer p,
+  .location-desc {
+    color: #CBD5E1;
   }
 
   /* 2.5rem em Montserrat Black é largo demais para 360px: "Informações"
@@ -2679,14 +3385,40 @@ body {
     overflow-wrap: break-word;
   }
 
-  /* Em tela estreita o rótulo não cabe numa linha. Com `nowrap` ele
-     transbordava o fundo laranja e a palavra "AGORA" ficava fora do botão;
-     aqui ele quebra e fica centralizado dentro do próprio botão. */
+  /* Cards com contraste e iluminação cênica no celular */
+  .show-card,
+  .sector-card,
+  .review-card,
+  .location-card,
+  .accordion-item {
+    background: rgba(18, 22, 34, 0.96);
+    border: 1px solid rgba(255, 194, 74, 0.24);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 18px rgba(255, 194, 74, 0.08);
+  }
+
+  .sector-card--vip {
+    border-color: rgba(139, 0, 0, 0.55);
+    background: linear-gradient(135deg, rgba(22, 26, 40, 0.96) 0%, rgba(40, 14, 14, 0.96) 100%);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 22px rgba(139, 0, 0, 0.3);
+  }
+
+  /* Botões com brilho e destaque cênico no celular */
+  .btn-show-buy,
+  .btn-quick-ticket,
+  .btn-sector:hover {
+    box-shadow: 0 0 22px var(--accent-gold-glow);
+  }
+
   .btn-action-primary {
     white-space: normal;
     font-size: 0.9rem;
     padding: 15px 20px;
     line-height: 1.35;
+    box-shadow: 0 0 30px rgba(234, 86, 13, 0.7);
+  }
+
+  .btn-sector--vip {
+    box-shadow: 0 0 25px var(--blood-red-glow);
   }
 
   .cta-badge {
@@ -2697,26 +3429,10 @@ body {
     font-size: 1.6rem;
   }
 
-  /* A pílula de status cabe numa linha só e encosta à esquerda: centralizada,
-     ela passava por baixo do botão do WhatsApp, que tem prioridade. */
-  .morph-status-pill {
-    font-size: 0.58rem;
-    padding: 5px 12px;
-    white-space: nowrap;
-    bottom: 14px;
-    left: 14px;
-    transform: none;
-    max-width: calc(100vw - 100px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
   .produx-hero-bottom-grid {
-    padding-bottom: 44px;
+    padding-bottom: max(68px, calc(48px + env(safe-area-inset-bottom, 24px)));
+    gap: 12px;
   }
-
-  /* No celular a moldura já está limitada por 92vw nos três estados, então
-     não há override de largura aqui: quebraria a proporção exata. */
 
   /* Fotos um pouco mais estreitas: encurta o trajeto lateral e deixa mais de
      uma foto visível por vez. */
@@ -2770,7 +3486,9 @@ body {
     scroll-behavior: auto;
   }
 
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;

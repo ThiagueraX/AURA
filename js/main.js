@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initGaleriaHorizontal();
   initFaqAccordion();
   initSmoothScroll();
+  initActiveNavHighlight();
+  initTransparentWhiteLogos();
 });
 
 /* Proporções reais de cada mídia que passa pela moldura do hero.
@@ -74,7 +76,6 @@ function initProduxHeroPuzzle() {
   const section = document.getElementById('hero-stage');
   const initialHeader = document.getElementById('hero-initial-header');
   const navbar = document.getElementById('navbar');
-  const statusText = document.getElementById('status-text');
 
   const photosLayer = document.getElementById('auto-party-photos-layer');
   const videoLayer = document.getElementById('auto-party-video-layer');
@@ -101,14 +102,14 @@ function initProduxHeroPuzzle() {
   // Dispersão inicial de cada peça: deslocamento, rotação, escala e desfoque.
   // A ordem acompanha o ladrilho definido no CSS (topo → chão).
   const shardConfigs = [
-    { tx: -30, ty: -20, tz: -170, rx: 13,  ry: -19, rz: -10, scale: 0.80, maxBlur: 7,  baseOp: 0.55 }, // 0: topo-esq
-    { tx: 32,  ty: -22, tz: -190, rx: 15,  ry: 21,  rz: 12,  scale: 0.79, maxBlur: 9,  baseOp: 0.55 }, // 1: topo-dir
-    { tx: 0,   ty: -6,  tz: 90,   rx: 0,   ry: 0,   rz: 0,   scale: 0.92, maxBlur: 0,  baseOp: 0.85 }, // 2: LETREIRO — nítido, chega à frente
-    { tx: -38, ty: 3,   tz: -230, rx: 0,   ry: -27, rz: -7,  scale: 0.73, maxBlur: 15, baseOp: 0.45 }, // 3: meio-esq
-    { tx: 40,  ty: 5,   tz: -250, rx: 0,   ry: 29,  rz: 9,   scale: 0.71, maxBlur: 17, baseOp: 0.45 }, // 4: meio-dir
-    { tx: -30, ty: 22,  tz: -195, rx: -14, ry: -16, rz: 9,   scale: 0.78, maxBlur: 10, baseOp: 0.50 }, // 5: baixo-esq
-    { tx: 32,  ty: 25,  tz: -210, rx: -16, ry: 18,  rz: -11, scale: 0.76, maxBlur: 12, baseOp: 0.50 }, // 6: baixo-dir
-    { tx: 0,   ty: 32,  tz: -150, rx: -21, ry: 0,   rz: 0,   scale: 0.84, maxBlur: 8,  baseOp: 0.55 }  // 7: chão
+    { tx: -30, ty: -20, tz: -170, rx: 13, ry: -19, rz: -10, scale: 0.80, maxBlur: 7, baseOp: 0.55 }, // 0: topo-esq
+    { tx: 32, ty: -22, tz: -190, rx: 15, ry: 21, rz: 12, scale: 0.79, maxBlur: 9, baseOp: 0.55 }, // 1: topo-dir
+    { tx: 0, ty: -6, tz: 90, rx: 0, ry: 0, rz: 0, scale: 0.92, maxBlur: 0, baseOp: 0.85 }, // 2: LETREIRO — nítido, chega à frente
+    { tx: -38, ty: 3, tz: -230, rx: 0, ry: -27, rz: -7, scale: 0.73, maxBlur: 15, baseOp: 0.45 }, // 3: meio-esq
+    { tx: 40, ty: 5, tz: -250, rx: 0, ry: 29, rz: 9, scale: 0.71, maxBlur: 17, baseOp: 0.45 }, // 4: meio-dir
+    { tx: -30, ty: 22, tz: -195, rx: -14, ry: -16, rz: 9, scale: 0.78, maxBlur: 10, baseOp: 0.50 }, // 5: baixo-esq
+    { tx: 32, ty: 25, tz: -210, rx: -16, ry: 18, rz: -11, scale: 0.76, maxBlur: 12, baseOp: 0.50 }, // 6: baixo-dir
+    { tx: 0, ty: 32, tz: -150, rx: -21, ry: 0, rz: 0, scale: 0.84, maxBlur: 8, baseOp: 0.55 }  // 7: chão
   ];
 
   let autoSequenceTimer = null;
@@ -146,23 +147,19 @@ function initProduxHeroPuzzle() {
     // ========================================================
     // 2. MONTAGEM DO QUEBRA-CABEÇA & INTERPOLAÇÃO DE DESFOQUE (BLUR)
     // ========================================================
-    // De 0.0 até 0.46: os pedaços focam e se unem perfeitamente.
-    // De 0.46 a 0.52 a fachada fica parada e inteira — é o momento em que o
-    // letreiro vetorial já pousou em cima do letreiro real.
-    const assembleProgress = Math.min(1, progress / 0.46);
+    // Montagem suave e dinâmica dos fragmentos
+    const assembleProgress = Math.min(1, progress / 0.42);
     const easeAssemble = suavizarNosDoisLados(assembleProgress);
     const factor = 1 - easeAssemble;
 
-    // A fachada só ACENDE depois que o logotipo vetorial já se apagou (ele
-    // some por volta de 0.26 — ver o cálculo de opacidade adiante). Enquanto
-    // os dois apareciam juntos, o letreiro da foto e o vetor conviviam quase
-    // do mesmo tamanho e o olho lia letra duplicada. Sem sobreposição, não há
-    // como fantasmear: um entra quando o outro já saiu.
-    const shardFadeIn = limitar((progress - 0.26) / 0.20);
+    // Os fragmentos começam a surgir suavemente logo no início do scroll
+    const shardFadeIn = limitar((progress - 0.03) / 0.25);
 
-    // Os fragmentos saem ANTES de a moldura começar a alargar (0.556), senão
-    // a fachada 9:16 apareceria cortada dentro de uma moldura já em 2:3.
-    const shardsFade = progress > 0.52 ? limitar(1 - (progress - 0.52) / 0.036) : 1;
+    // Os fragmentos se despedem quando a moldura começa a se abrir para as fotos
+    const shardsFade = progress > 0.46 ? limitar(1 - (progress - 0.46) / 0.07) : 1;
+
+    const isMobile = window.innerWidth <= 768;
+    const mobileFilterMod = isMobile ? ' brightness(1.22) contrast(1.08) saturate(1.12)' : '';
 
     shards.forEach((shard, idx) => {
       if (!shard) return;
@@ -175,12 +172,12 @@ function initProduxHeroPuzzle() {
       const curRz = cfg.rz * factor;
       const curScale = cfg.scale + (1 - cfg.scale) * easeAssemble;
       const curBlur = (cfg.maxBlur * factor).toFixed(1);
-      
-      // Zero opacidade no scroll 0 -> surge suavemente conforme o usuário começa a rolar
+
+      // Surge suavemente conforme o usuário começa a rolar
       const curOp = shardFadeIn * (cfg.baseOp + (1 - cfg.baseOp) * easeAssemble) * shardsFade;
 
       shard.style.transform = `translate3d(${curTx.toFixed(1)}vw, ${curTy.toFixed(1)}vh, ${curTz.toFixed(1)}px) rotateX(${curRx.toFixed(1)}deg) rotateY(${curRy.toFixed(1)}deg) rotateZ(${curRz.toFixed(1)}deg) scale(${curScale.toFixed(3)})`;
-      shard.style.filter = `blur(${curBlur}px)`;
+      shard.style.filter = `blur(${curBlur}px)${mobileFilterMod}`;
       shard.style.opacity = curOp.toFixed(2);
       shard.style.visibility = curOp > 0.005 ? 'visible' : 'hidden';
     });
@@ -188,18 +185,11 @@ function initProduxHeroPuzzle() {
     // ========================================================
     // 3. O ENCAIXE DO LETREIRO
     // ========================================================
-    // O logotipo começa grande no centro da tela e vai encolhendo até pousar
-    // exatamente sobre o letreiro real da fachada, que os fragmentos acabaram
-    // de montar. Depois ele se apaga e deixa o letreiro de verdade no lugar.
     if (letreiro && moldura) {
       const alvo = medirEncaixe();
 
       if (alvo) {
-        // Aproximação com desaceleração suave (expoente 1.5). A cúbica de
-        // antes levava o vetor para perto do tamanho final cedo demais e o
-        // deixava ali por um bom trecho do scroll — justamente a situação que
-        // produz o defeito descrito abaixo.
-        const t = limitar((progress - 0.02) / 0.44);
+        const t = limitar((progress - 0.01) / 0.42);
         const encaixe = 1 - Math.pow(1 - t, 1.5);
         const restante = 1 - encaixe; // 1 = tamanho de tela, 0 = pousado
         const escala = 1 + (alvo.escala - 1) * restante;
@@ -208,12 +198,7 @@ function initProduxHeroPuzzle() {
           `translate(${(alvo.dx * restante).toFixed(1)}px, ${(alvo.dy * restante).toFixed(1)}px) ` +
           `scale(${escala.toFixed(4)})`;
 
-        // A opacidade acompanha a ESCALA, não o scroll: o vetor chega a zero
-        // ainda ~68% maior que o letreiro da foto (restante 0.22), e o último
-        // trecho do encolhimento acontece já invisível. Combinado com a
-        // fachada que só acende a partir de 0.26, os dois nunca aparecem
-        // juntos — que é o que produzia a letra duplicada.
-        letreiro.style.opacity = limitar((restante - 0.22) / 0.28).toFixed(3);
+        letreiro.style.opacity = limitar((restante - 0.12) / 0.40).toFixed(3);
       }
 
       letreiro.classList.toggle('is-flutuando', progress < 0.04);
@@ -222,28 +207,26 @@ function initProduxHeroPuzzle() {
     // ========================================================
     // 4. ABERTURA DA MOLDURA: FACHADA 9:16 -> FOTOS 2:3 -> VÍDEO 16:9
     // ========================================================
-    // Cada mídia tem um formato diferente. Em vez de esticar ou cortar, a
-    // moldura assume o formato de quem está entrando em cena.
     if (palco) {
-      palco.classList.toggle('palco-fotos', progress >= 0.556 && progress < 0.74);
+      palco.classList.toggle('palco-fotos', progress >= 0.46 && progress < 0.74);
       palco.classList.toggle('palco-video', progress >= 0.74);
     }
 
     // ========================================================
     // 5. TRANSIÇÃO AUTOMÁTICA DE FOTOS E VÍDEO NO CLÍMAX
     // ========================================================
-    if (progress >= 0.55) {
+    if (progress >= 0.44) {
       if (!autoSequenceStarted) {
         startAutoClimaxSequence();
       }
 
-      // Rolando além de 0.74, o vídeo entra direto
       if (progress >= 0.74) {
         if (photosLayer) photosLayer.style.opacity = '0';
         if (videoLayer) videoLayer.style.opacity = '1';
+      } else {
+        if (photosLayer) photosLayer.style.opacity = '1';
       }
     } else {
-      // Se voltar o scroll para cima, reseta o clímax
       autoSequenceStarted = false;
       if (autoSequenceTimer) clearInterval(autoSequenceTimer);
       if (photosLayer) photosLayer.style.opacity = '0';
@@ -251,33 +234,20 @@ function initProduxHeroPuzzle() {
     }
 
     // ========================================================
-    // 6. INDICADOR DE STATUS MONOSPAÇADO
+    // 6. BOTÕES FLUTUANTES (WHATSAPP E PORTARIA)
+    // Aparecem SOMENTE após passar o scroll da introdução (hero),
+    // liberando a visualização da frase e indicador sem sobreposição.
     // ========================================================
-    if (statusText) {
-      const percent = Math.round(progress * 100);
-      if (percent >= 74) {
-        statusText.textContent = `[ AMBIENTE AURA AO VIVO • SHOWREEL ON ]`;
-        statusText.style.color = '#10B981';
-      } else if (percent >= 55) {
-        statusText.textContent = `[ POR DENTRO DA CASA • FOTOS REAIS ]`;
-        statusText.style.color = '#FFC24A';
-      } else if (percent >= 46) {
-        statusText.textContent = `[ FACHADA COMPLETA • LETREIRO ENCAIXADO ]`;
-        statusText.style.color = '#FFC24A';
-      } else {
-        statusText.textContent = `[ EXPERIÊNCIA AURA • FOCANDO FRAGMENTOS ${percent}% ]`;
-        statusText.style.color = '#00F0FF';
-      }
-    }
+    const btnZap = document.getElementById('btn-whatsapp-float');
+    const btnPortaria = document.getElementById('btn-portaria-float');
+    const deveMostrarFlutuantes = progress > 0.85 || rect.bottom <= windowH + 40;
+
+    if (btnZap) btnZap.classList.toggle('is-visible', deveMostrarFlutuantes);
+    if (btnPortaria) btnPortaria.classList.toggle('is-visible', deveMostrarFlutuantes);
+
   }
 
-  /* Calcula, a partir da geometria real da moldura, o quanto o letreiro
-     precisa crescer e se deslocar para preencher a tela no topo da página.
-     A caixa do letreiro é derivada das porcentagens (não do getBoundingClientRect
-     do próprio elemento), senão a transform já aplicada realimentaria a conta. */
-  const RESPIRO_TEXTO = 28; // folga mínima entre o filete e a frase
-  const MARGEM_TOPO = 24;   // margem do letreiro para o topo da tela
-
+  /* Calcula a geometria para o letreiro preencher a tela */
   function medirEncaixe() {
     const r = moldura.getBoundingClientRect();
     if (!r.width || !r.height) return null;
@@ -287,26 +257,22 @@ function initProduxHeroPuzzle() {
     const centroX = r.left + r.width * LETREIRO_NA_FOTO.x + largura / 2;
     const centroY = r.top + r.height * LETREIRO_NA_FOTO.y + altura / 2;
 
-    // O letreiro é dimensionado pelo espaço que o texto de apoio DEIXA, e não
-    // por uma fração fixa da altura da tela. O bloco de texto não encolhe — em
-    // telas baixas ele come quase tudo, e uma fração fixa fazia o letreiro
-    // passar por cima da frase (chegava a 221px de sobreposição num 320×568,
-    // e também quebrava em desktop 1024×768).
-    //
-    // `offsetTop` em vez de getBoundingClientRect: o cabeçalho do hero recebe
-    // um translateY durante a rolagem, e o retângulo medido acompanharia esse
-    // deslocamento, fazendo o alvo do letreiro andar sozinho.
-    const topoTexto = textoApoio ? textoApoio.offsetTop : window.innerHeight;
-    const faixa = Math.max(90, topoTexto - RESPIRO_TEXTO - MARGEM_TOPO);
+    const isMobile = window.innerWidth <= 768;
+    const margemTopo = isMobile ? 24 : 40;
+    const vertLivre = window.innerHeight * (isMobile ? 0.58 : 0.65);
 
-    const aberto = Math.min(
-      window.innerWidth * (window.innerWidth < 768 ? 0.86 : 0.62),
-      faixa * PROPORCAO_LOCKUP
-    );
+    // No celular o logotipo AURA fica bem amplo, nítido e centralizado
+    const aberto = isMobile
+      ? Math.min(window.innerWidth * 0.92, vertLivre * 1.55)
+      : Math.min(window.innerWidth * 0.65, Math.max(120, vertLivre) * PROPORCAO_LOCKUP);
+
+    const alturaAberta = aberto / PROPORCAO_LOCKUP;
+    // Centro óptico elevado para deixar espaço livre e respiro abaixo
+    const topoGrupo = Math.max(margemTopo, (window.innerHeight * (isMobile ? 0.35 : 0.40)) - (alturaAberta / 2));
 
     return {
       dx: window.innerWidth / 2 - centroX,
-      dy: (MARGEM_TOPO + faixa / 2) - centroY,
+      dy: (topoGrupo + alturaAberta / 2) - centroY,
       escala: aberto / largura
     };
   }
@@ -319,8 +285,8 @@ function initProduxHeroPuzzle() {
     let currentSlide = 0;
     const totalSlides = partySlides.length;
 
-    // 620ms por foto: rápido o bastante para ter energia de festa, lento o
-    // bastante para dar tempo de ver cada uma.
+    // Duração equilibrada para apreciar as fotos da balada
+    const slideDuration = window.innerWidth <= 768 ? 700 : 620;
     autoSequenceTimer = setInterval(() => {
       currentSlide++;
       if (currentSlide < totalSlides) {
@@ -328,12 +294,11 @@ function initProduxHeroPuzzle() {
           slide.classList.toggle('active', sIdx === currentSlide);
         });
       } else {
-        // Ao fim das fotos, revela automaticamente o vídeo
         clearInterval(autoSequenceTimer);
         if (photosLayer) photosLayer.style.opacity = '0';
         if (videoLayer) videoLayer.style.opacity = '1';
       }
-    }, 620);
+    }, slideDuration);
   }
 
   window.addEventListener('scroll', updateProduxScroll, { passive: true });
@@ -348,7 +313,6 @@ function initShowreelVideo() {
   const video = document.getElementById('ambient-video');
   const btnToggle = document.getElementById('btn-toggle-video');
   const soundIcon = document.getElementById('sound-icon');
-  const soundText = document.getElementById('sound-text');
 
   if (!video) return;
 
@@ -360,7 +324,7 @@ function initShowreelVideo() {
   // ícone precisa refletir isso já no carregamento.
   if (soundIcon) soundIcon.textContent = '🔈';
 
-  video.play().catch(() => {});
+  video.play().catch(() => { });
 
   if (btnToggle) {
     btnToggle.addEventListener('click', (e) => {
@@ -378,13 +342,11 @@ function initShowreelVideo() {
       video.muted = false;
       video.volume = VOLUME_AMBIENTE;
       if (soundIcon) soundIcon.textContent = '🔊';
-      if (soundText) soundText.textContent = '[ DESATIVAR SOM DA FESTA ]';
       if (btnToggle) btnToggle.style.borderColor = '#10B981';
     } else {
       video.muted = true;
       if (soundIcon) soundIcon.textContent = '🔈';
-      if (soundText) soundText.textContent = '[ ATIVAR SOM DA FESTA ]';
-      if (btnToggle) btnToggle.style.borderColor = '#00F0FF';
+      if (btnToggle) btnToggle.style.borderColor = 'var(--neon-ouro)';
     }
   }
 
@@ -394,7 +356,7 @@ function initShowreelVideo() {
     const observador = new IntersectionObserver((entradas) => {
       entradas.forEach((entrada) => {
         if (entrada.isIntersecting) {
-          video.play().catch(() => {});
+          video.play().catch(() => { });
         } else {
           video.pause();
         }
@@ -417,12 +379,12 @@ function initShowreelVideo() {
    do que entrega — no 390px de largura o percurso passaria de duas telas e
    meia só de fotos.
    -------------------------------------------------------------------------- */
-function initGaleriaHorizontal() {
-  const secao = document.getElementById('galeria');
-  const palco = document.getElementById('galeria-palco');
-  const trilho = document.getElementById('galeria-trilho');
-  const esteira = document.getElementById('galeria-esteira');
-  const barra = document.getElementById('galeria-barra');
+function initTrilhoHorizontal(secaoId, palcoId, trilhoId, esteiraId, barraId, modoClass) {
+  const secao = document.getElementById(secaoId);
+  const palco = document.getElementById(palcoId);
+  const trilho = document.getElementById(trilhoId);
+  const esteira = document.getElementById(esteiraId);
+  const barra = document.getElementById(barraId);
 
   if (!secao || !palco || !trilho || !esteira) return;
 
@@ -431,10 +393,8 @@ function initGaleriaHorizontal() {
   let ativo = false;
 
   function medir() {
-    // Vale em qualquer largura. Só quem pediu movimento reduzido no sistema
-    // continua com o arraste lateral nativo.
     ativo = !movimentoReduzido.matches;
-    secao.classList.toggle('modo-fixo', ativo);
+    secao.classList.toggle(modoClass, ativo);
 
     if (!ativo) {
       palco.style.height = '';
@@ -442,19 +402,11 @@ function initGaleriaHorizontal() {
       return;
     }
 
-    // Zera qualquer rolagem lateral herdada do modo de arraste, senão ela se
-    // soma ao deslocamento por transform e a primeira foto entra deslocada.
     trilho.scrollLeft = 0;
-
-    // Quanto a fila de fotos excede a largura visível — é esse o trajeto.
     percurso = Math.max(0, esteira.scrollWidth - trilho.clientWidth);
 
-    // Quanto de rolagem vertical o trajeto consome. No desktop é 1:1, que dá
-    // a sensação de arrastar com a própria mão. No celular a fila é bem mais
-    // longa que a tela, e 1:1 prenderia a rolagem por quase duas telas — aqui
-    // o trajeto é comprimido para caber em pouco mais de uma.
-    const teto = window.innerHeight * 1.2;
-    const rolagem = Math.min(percurso, Math.max(teto, percurso * 0.55));
+    const isMobile = window.innerWidth <= 740;
+    const rolagem = isMobile ? Math.max(window.innerHeight * 1.6, percurso * 0.92) : percurso;
 
     palco.style.height = (window.innerHeight + rolagem) + 'px';
     posicionar();
@@ -476,10 +428,13 @@ function initGaleriaHorizontal() {
   window.addEventListener('resize', medir);
   movimentoReduzido.addEventListener('change', medir);
 
-  // As fotos têm largura fixa em CSS, então dá para medir antes delas
-  // carregarem; ainda assim remedimos no load para cobrir mudança de fonte.
   medir();
   window.addEventListener('load', medir);
+}
+
+function initGaleriaHorizontal() {
+  initTrilhoHorizontal('galeria', 'galeria-palco', 'galeria-trilho', 'galeria-esteira', 'galeria-barra', 'modo-fixo');
+  initTrilhoHorizontal('reviews', 'reviews-palco', 'reviews-trilho', 'reviews-esteira', 'reviews-barra', 'modo-fixo-reviews');
 }
 
 /* --------------------------------------------------------------------------
@@ -532,3 +487,117 @@ function initSmoothScroll() {
     });
   });
 }
+
+/* --------------------------------------------------------------------------
+   7. DESTAQUE DE SEÇÃO ATIVA NA NAVBAR (SCROLL SPY)
+   --------------------------------------------------------------------------
+   Detecta qual seção está visível na tela e aplica a classe `is-active` no
+   link correspondente da navbar. Usa as âncoras do menu para mapear as IDs.
+   -------------------------------------------------------------------------- */
+function initActiveNavHighlight() {
+  const navItems = document.querySelectorAll('.navbar-nav .nav-item');
+  if (!navItems.length) return;
+
+  // Mapeia cada href para o item de navegação
+  const sectionMap = [];
+  navItems.forEach((item) => {
+    const href = item.getAttribute('href');
+    if (!href || !href.startsWith('#')) return;
+    const target = document.querySelector(href);
+    if (target) {
+      sectionMap.push({ el: target, navItem: item, id: href });
+    }
+  });
+
+  if (!sectionMap.length) return;
+
+  let activeId = null;
+
+  function updateActiveSection() {
+    const scrollY = window.scrollY;
+    const headerOffset = 120; // altura da navbar + margem
+    let current = null;
+
+    // Percorre de baixo para cima: a primeira seção cujo topo já passou
+    // pela linha do header é a ativa
+    for (let i = sectionMap.length - 1; i >= 0; i--) {
+      const rect = sectionMap[i].el.getBoundingClientRect();
+      if (rect.top <= headerOffset) {
+        current = sectionMap[i].id;
+        break;
+      }
+    }
+
+    // Se está no topo absoluto da página, nenhuma seção está ativa
+    if (scrollY < 200) current = null;
+
+    if (current !== activeId) {
+      activeId = current;
+      navItems.forEach((item) => {
+        const href = item.getAttribute('href');
+        item.classList.toggle('is-active', href === activeId);
+      });
+    }
+  }
+
+  window.addEventListener('scroll', updateActiveSection, { passive: true });
+  updateActiveSection();
+}
+
+/* --------------------------------------------------------------------------
+   8. INTEGRAÇÃO ORGÂNICA DOS LOGOS (REMOÇÃO AUTOMÁTICA DE FUNDO BRANCO)
+   -------------------------------------------------------------------------- */
+function initTransparentWhiteLogos() {
+  const images = document.querySelectorAll('.brand-logo-img');
+  images.forEach((img) => {
+    function process() {
+      if (img.dataset.bgCleaned) return;
+      img.dataset.bgCleaned = 'true';
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.naturalWidth || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        if (!canvas.width || !canvas.height) return;
+
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = imgData.data;
+
+        // Detecta se a imagem tem cantos brancos/claros (fundo retangular sólido)
+        const cantoTopoEsq = (d[0] > 200 && d[1] > 200 && d[2] > 200);
+        const cantoTopoDir = (d[(canvas.width - 1) * 4] > 200 && d[(canvas.width - 1) * 4 + 1] > 200 && d[(canvas.width - 1) * 4 + 2] > 200);
+        const temFundoBranco = cantoTopoEsq || cantoTopoDir || img.src.includes('absolut');
+
+        if (temFundoBranco) {
+          for (let i = 0; i < d.length; i += 4) {
+            // Se o pixel for claro/branco (fundo), torna 100% transparente
+            if (d[i] > 205 && d[i + 1] > 205 && d[i + 2] > 205) {
+              d[i + 3] = 0;
+            }
+          }
+          ctx.putImageData(imgData, 0, 0);
+          img.src = canvas.toDataURL('image/png');
+        }
+      } catch (e) {
+        console.warn('[Brands] Processamento de transparência de logo:', e);
+      }
+    }
+
+    if (img.complete && img.naturalWidth > 0) {
+      process();
+    } else {
+      img.addEventListener('load', process);
+    }
+  });
+}
+
+// Sincronização automática entre abas quando o Admin salva novos preços ou shows
+window.addEventListener('storage', (e) => {
+  if (e.key === 'aura_admin_config_v1' && typeof loadAdminConfig === 'function') {
+    loadAdminConfig();
+  }
+});
+
+
+
