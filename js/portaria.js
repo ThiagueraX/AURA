@@ -8,6 +8,7 @@ let currentCameraIndex = 0;
 let availableCameras = [];
 let isScanning = true;
 let isFlashOn = false;
+let modoOperacao = 'PORTARIA'; // 'PORTARIA' ou 'BAR'
 
 // Audio Context para Efeitos Sonoros Nativos de Validação
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -91,20 +92,11 @@ function initLoginPortaria() {
           if (btn) { btn.disabled = false; btn.textContent = 'Liberar Scanner →'; }
           document.getElementById('port-senha').value = '';
           operadorAtual = r.email || 'PORTARIA';
-          abrirScanner(r.email);
+          abrirSelecaoModo(r.email);
           return;
         }
       } catch (err) {
-        console.warn('[Portaria] Tentando login de contingência:', err);
-      }
-
-      // Fallback de contingência rápida para portaria
-      if (senha === 'aura2026' || senha === 'auramococa' || senha === 'auraportaria') {
-        if (btn) { btn.disabled = false; btn.textContent = 'Liberar Scanner →'; }
-        document.getElementById('port-senha').value = '';
-        operadorAtual = email || 'PORTARIA';
-        abrirScanner(email || 'portaria@auramococa.com.br');
-        return;
+        console.warn('[Portaria] Erro na autenticacao:', err);
       }
 
       if (btn) { btn.disabled = false; btn.textContent = 'Liberar Scanner →'; }
@@ -122,14 +114,52 @@ function initLoginPortaria() {
   }
 }
 
-function abrirScanner(email) {
+function abrirSelecaoModo(email) {
   const login = document.getElementById('portaria-login');
+  const selecao = document.getElementById('portaria-modo-selecao');
+  
+  if (login) login.style.display = 'none';
+  if (selecao) selecao.style.display = 'block';
+
+  const btnPortaria = document.getElementById('btn-modo-portaria');
+  const btnBar = document.getElementById('btn-modo-bar');
+
+  if (btnPortaria) {
+    btnPortaria.onclick = () => {
+      modoOperacao = 'PORTARIA';
+      abrirScanner(email);
+    };
+  }
+
+  if (btnBar) {
+    btnBar.onclick = () => {
+      modoOperacao = 'BAR';
+      abrirScanner(email);
+    };
+  }
+
+  const btnAdmin = document.getElementById('btn-modo-admin');
+  if (btnAdmin) {
+    btnAdmin.onclick = () => {
+      window.location.href = 'admin.html';
+    };
+  }
+}
+
+function abrirScanner(email) {
+  const selecao = document.getElementById('portaria-modo-selecao');
   const scanner = document.getElementById('portaria-scanner');
   const quem = document.getElementById('port-sessao-email');
+  const headerTitle = document.getElementById('header-modo-title');
 
-  if (login) login.style.display = 'none';
+  if (selecao) selecao.style.display = 'none';
   if (scanner) scanner.style.display = 'block';
   if (quem) quem.textContent = email || '';
+
+  if (headerTitle) {
+    headerTitle.textContent = modoOperacao === 'BAR' ? '• MODO BAR' : '• CHECK-IN PORTARIA';
+    headerTitle.style.color = modoOperacao === 'BAR' ? '#00F0FF' : '#8A9099';
+  }
 
   initPortariaStats();
   initQrScanner();
@@ -269,40 +299,55 @@ async function processarValidacao(codigo) {
     return;
   }
 
-  const res = await window.AuraDB.validarIngressoPortaria(cleanCode, operadorAtual);
+  if (modoOperacao === 'PORTARIA') {
+    const res = await window.AuraDB.validarIngressoPortaria(cleanCode, operadorAtual);
 
-  if (res.sucesso) {
-    playSound('success');
-    showResultCard(
-      'success',
-      '✓',
-      'ENTRADA AUTORIZADA',
-      'Ingresso oficial validado e baixado no sistema com sucesso!',
-      res.ingresso
-    );
-  } else {
-    playSound('error');
-
-    if (res.motivo === 'JA_UTILIZADO') {
-      showResultCard('error', '⛔', 'INGRESSO JÁ UTILIZADO', res.mensagem, res.ingresso);
-
-    } else if (res.motivo === 'NAO_PAGO') {
-      // Comprou de verdade, mas o PIX ainda não foi conferido pelo dono.
-      // Não é fraude nem erro de leitura — é caso de chamar o responsável.
-      showResultCard('warning', '⏳', 'PAGAMENTO NÃO CONFIRMADO', res.mensagem, res.ingresso);
-
-    } else if (res.motivo === 'SEM_PERMISSAO') {
-      showResultCard('warning', '🔒', 'SESSÃO EXPIRADA',
-        'Faça login de novo para continuar validando.', null);
-
-    } else {
+    if (res.sucesso) {
+      playSound('success');
       showResultCard(
-        'error',
-        '⚠️',
-        'INGRESSO INVÁLIDO',
-        res.mensagem,
-        { codigo_validador: cleanCode, titular_nome: 'Não Identificado', setor: 'N/A' }
+        'success',
+        '✓',
+        'ENTRADA AUTORIZADA',
+        'Ingresso validado com sucesso.',
+        res.ingresso
       );
+    } else {
+      playSound('error');
+      if (res.motivo === 'JA_UTILIZADO') {
+        showResultCard('error', '⛔', 'INGRESSO JÁ UTILIZADO', res.mensagem, res.ingresso);
+      } else if (res.motivo === 'NAO_PAGO') {
+        showResultCard('warning', '⏳', 'PAGAMENTO NÃO CONFIRMADO', res.mensagem, res.ingresso);
+      } else if (res.motivo === 'SEM_PERMISSAO') {
+        showResultCard('warning', '🔒', 'SESSÃO EXPIRADA', 'Faça login de novo para continuar validando.', null);
+      } else {
+        showResultCard('error', '⚠️', 'INGRESSO INVÁLIDO', res.mensagem, { codigo_validador: cleanCode, titular_nome: 'Não Identificado', setor: 'N/A' });
+      }
+    }
+  } else if (modoOperacao === 'BAR') {
+    const res = await window.AuraDB.validarComboBar(cleanCode, operadorAtual);
+
+    if (res.sucesso) {
+      playSound('success');
+      showResultCard(
+        'success',
+        '🍾',
+        'COMBO AUTORIZADO',
+        'Entregue o combo ao cliente!',
+        res.ingresso
+      );
+    } else {
+      playSound('error');
+      if (res.motivo === 'JA_RESGATADO') {
+        showResultCard('error', '⛔', 'COMBO JÁ RESGATADO', res.mensagem, null);
+      } else if (res.motivo === 'SEM_COMBO') {
+        showResultCard('warning', '🤷‍♂️', 'SEM COMBO', res.mensagem, null);
+      } else if (res.motivo === 'NAO_ENTROU') {
+        showResultCard('error', '🛑', 'NÃO ENTROU NA CASA', res.mensagem, null);
+      } else if (res.motivo === 'SEM_PERMISSAO') {
+        showResultCard('warning', '🔒', 'SESSÃO EXPIRADA', 'Faça login de novo para continuar validando.', null);
+      } else {
+        showResultCard('error', '⚠️', 'ERRO AO RESGATAR', res.mensagem, null);
+      }
     }
   }
 
@@ -310,7 +355,99 @@ async function processarValidacao(codigo) {
 }
 
 /**
- * 4. EXIBIÇÃO DO CARD DE RESULTADO
+ * 4. DETECÇÃO DE COMBOS E CARDS FÍSICOS DE PORTARIA
+ */
+function extrairComboDoIngresso(ingresso) {
+  if (!ingresso) return null;
+  const setor = (ingresso.setor || '').toUpperCase();
+
+  if (setor.includes('BLACK LABEL') || setor.includes('CARD DOURADO') || (setor.includes('WHISKY') && setor.includes('BLACK'))) {
+    return {
+      cardNome: 'CARD DOURADO',
+      corCard: '#FFC24A',
+      classe: 'alert-card-gold',
+      produto: 'Combo Johnnie Walker Black Label 12 Anos',
+      detalhes: '1L Black Label + 5 Red Bulls + Gelo Coco + Copos AURA'
+    };
+  }
+  if (setor.includes('RED LABEL') || setor.includes('CARD ÂMBAR') || setor.includes('CARD AMBAR') || (setor.includes('WHISKY') && setor.includes('RED'))) {
+    return {
+      cardNome: 'CARD ÂMBAR',
+      corCard: '#FF8A0F',
+      classe: 'alert-card-amber',
+      produto: 'Combo Johnnie Walker Red Label',
+      detalhes: '1L Red Label + 5 Red Bulls + Gelo Coco + Copos'
+    };
+  }
+  if (setor.includes('CIROC') || setor.includes('CÎROC') || setor.includes('AZUL ROYAL')) {
+    return {
+      cardNome: 'CARD AZUL ROYAL',
+      corCard: '#3B82F6',
+      classe: 'alert-card-royal-blue',
+      produto: 'Combo Cîroc Ultra Premium Vodka',
+      detalhes: '750ml Cîroc + 6 Red Bulls + Balde + Taças'
+    };
+  }
+  if (setor.includes('ABSOLUT') || setor.includes('CARD AZUL') || setor.includes('VODKA')) {
+    return {
+      cardNome: 'CARD AZUL',
+      corCard: '#00F0FF',
+      classe: 'alert-card-blue',
+      produto: 'Combo Absolut Vodka',
+      detalhes: '1L Absolut + 5 Red Bulls + Gelo + Copos'
+    };
+  }
+  if (setor.includes('TANQUERAY') || setor.includes('CARD VERMELHO') || setor.includes('GIN')) {
+    return {
+      cardNome: 'CARD VERMELHO',
+      corCard: '#EF4444',
+      classe: 'alert-card-red',
+      produto: 'Combo Gin Tanqueray London Dry',
+      detalhes: '750ml Tanqueray + 5 Tônicas + Especiarias + Taças'
+    };
+  }
+  if (setor.includes('CHANDON') || setor.includes('PASSION') || setor.includes('CARD ROSA') || setor.includes('ESPUMANTE')) {
+    return {
+      cardNome: 'CARD ROSA',
+      corCard: '#EC4899',
+      classe: 'alert-card-pink',
+      produto: 'Chandon Passion On The Rocks',
+      detalhes: '750ml Chandon + Balde com Gelo Especial + Taças'
+    };
+  }
+  if (setor.includes('CORONA') || setor.includes('VERDE LIMÃO') || setor.includes('VERDE LIMAO')) {
+    return {
+      cardNome: 'CARD VERDE LIMÃO',
+      corCard: '#EAB308',
+      classe: 'alert-card-lime',
+      produto: 'Balde Corona Extra (6x com Limão)',
+      detalhes: '6x Corona 330ml no Balde de Gelo + Limão Tahiti'
+    };
+  }
+  if (setor.includes('HEINEKEN') || setor.includes('CARD VERDE') || setor.includes('BALDE')) {
+    return {
+      cardNome: 'CARD VERDE',
+      corCard: '#10B981',
+      classe: 'alert-card-green',
+      produto: 'Balde Heineken (6x Long Neck)',
+      detalhes: '6x Long Necks 330ml no Balde com Gelo Moído'
+    };
+  }
+  if (setor.includes('RED BULL') || setor.includes('CARD CIANO')) {
+    return {
+      cardNome: 'CARD CIANO',
+      corCard: '#06B6D4',
+      classe: 'alert-card-cyan',
+      produto: 'Combo 5x Red Bull Energy Drink',
+      detalhes: '5x Latas 250ml no Baldinho de Gelo'
+    };
+  }
+
+  return null;
+}
+
+/**
+ * 5. EXIBIÇÃO DO CARD DE RESULTADO
  */
 function showResultCard(tipo, icone, titulo, mensagem, ingresso = null) {
   const card = document.getElementById('result-card');
@@ -318,6 +455,7 @@ function showResultCard(tipo, icone, titulo, mensagem, ingresso = null) {
   const elTitle = document.getElementById('result-title');
   const elMsg = document.getElementById('result-msg');
   const elDetails = document.getElementById('result-details');
+  const comboAlert = document.getElementById('portaria-combo-alert');
 
   const detNome = document.getElementById('det-nome');
   const detSetor = document.getElementById('det-setor');
@@ -326,9 +464,6 @@ function showResultCard(tipo, icone, titulo, mensagem, ingresso = null) {
   if (!card) return;
 
   card.className = `result-card status-${tipo}`;
-  // A folha de estilo mostra o card pela classe status-*, mas um display:none
-  // inline (deixado por resetForNextScan) tem prioridade sobre ela e mantinha
-  // o card invisível da segunda leitura em diante.
   card.style.removeProperty('display');
   if (elIcon) elIcon.textContent = icone;
   if (elTitle) elTitle.textContent = titulo;
@@ -339,8 +474,56 @@ function showResultCard(tipo, icone, titulo, mensagem, ingresso = null) {
     if (detNome) detNome.textContent = ingresso.titular_nome || '-';
     if (detSetor) detSetor.textContent = (ingresso.setor || '-').toUpperCase();
     if (detCodigo) detCodigo.textContent = ingresso.codigo_validador || '-';
+
+    // Lógica de Alertas Visuais com base no Modo de Operação
+    if (tipo === 'success' && comboAlert) {
+      const comboInfo = extrairComboDoIngresso(ingresso);
+      
+      if (modoOperacao === 'PORTARIA') {
+        if (comboInfo) {
+          comboAlert.innerHTML = `
+            <div class="portaria-no-combo-badge font-mono" style="border-color: #00F0FF; color: #00F0FF;">
+              ✓ ENTRADA LIBERADA • CLIENTE POSSUI COMBO NO SISTEMA
+            </div>
+          `;
+        } else {
+          comboAlert.innerHTML = `
+            <div class="portaria-no-combo-badge font-mono">
+              ✓ ENTRADA SIMPLES • SEM COMBO
+            </div>
+          `;
+        }
+        comboAlert.style.display = 'block';
+      } 
+      else if (modoOperacao === 'BAR') {
+        if (comboInfo) {
+          comboAlert.innerHTML = `
+            <div class="portaria-combo-alert-box ${comboInfo.classe}">
+              <div class="portaria-alert-top font-mono">
+                <span>🚨</span>
+                <strong>ATENÇÃO BAR • ENTREGAR AGORA:</strong>
+              </div>
+              <div class="portaria-alert-card-title">
+                ${comboInfo.produto.toUpperCase()}
+              </div>
+              <div class="portaria-alert-warn font-mono">
+                ✓ Resgate confirmado no sistema. Pode entregar as bebidas ao cliente!
+              </div>
+            </div>
+          `;
+          comboAlert.style.display = 'block';
+        }
+      }
+    } else if (comboAlert) {
+      comboAlert.innerHTML = '';
+      comboAlert.style.display = 'none';
+    }
   } else {
     if (elDetails) elDetails.style.display = 'none';
+    if (comboAlert) {
+      comboAlert.innerHTML = '';
+      comboAlert.style.display = 'none';
+    }
   }
 
   card.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -348,11 +531,15 @@ function showResultCard(tipo, icone, titulo, mensagem, ingresso = null) {
 
 function resetForNextScan() {
   const card = document.getElementById('result-card');
+  const comboAlert = document.getElementById('portaria-combo-alert');
+
   if (card) {
-    // Sem a classe status-*, a regra base .result-card já esconde o card.
-    // Esconder por estilo inline aqui é o que travava a próxima exibição.
     card.className = 'result-card';
     card.style.removeProperty('display');
+  }
+  if (comboAlert) {
+    comboAlert.innerHTML = '';
+    comboAlert.style.display = 'none';
   }
 
   isScanning = true;

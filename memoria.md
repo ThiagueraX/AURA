@@ -96,3 +96,44 @@ Documento centralizador de inteligência de dados, registros cadastrais, acervo 
 
 ## 📸 4. Imagem 4K Oficial do Scroll Morphing
 - **URL Direto (2340 × 4160 px):** `https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkZXZqrc0T8ZFoYeSekOSNtFShWifl80QMZGs9dNgdcvbxF_pRSiF8lkLHud2gzpC8YEO_f-kTqAHIyeWPar6njVh0Nzv5w2AOVsXwsCdW63bDB-znWMW04p5n1yxvI7-ZAC_4o-Funhn4=s0`
+
+---
+
+## 🍸 5. Sistema de Venda Casada de Combos & Identificação Física por Cards na Portaria
+
+1. **Seleção Opcional no Checkout:**
+   - Durante a compra de ingressos (Pista ou Camarote), o cliente pode adicionar opcionalmente combos e garrafas com desconto antecipado.
+   - O subtotal do pedido soma os ingressos e o combo escolhido, gerando um PIX único com o valor integral.
+
+2. **Tabela de Combos & Cores de Cards Físicos de Portaria:**
+   - 🟡 **CARD DOURADO**: Combo Johnnie Walker Black Label 12 Anos (+ R$ 380,00)
+   - 🟡 **CARD ÂMBAR**: Combo Johnnie Walker Red Label (+ R$ 290,00)
+   - 🔵 **CARD AZUL**: Combo Absolut Vodka Suéca (+ R$ 310,00)
+   - 🔵 **CARD AZUL ROYAL**: Combo Cîroc Ultra Premium Vodka (+ R$ 440,00)
+   - 🔴 **CARD VERMELHO**: Combo Gin Tanqueray London Dry (+ R$ 340,00)
+   - 🟣 **CARD ROSA**: Chandon Passion On The Rocks (+ R$ 210,00)
+   - 🟢 **CARD VERDE**: Balde Heineken 6x Long Neck (+ R$ 84,00)
+   - 🟢 **CARD VERDE LIMÃO**: Balde Corona Extra 6x com Limão (+ R$ 90,00)
+   - ⚡ **CARD CIANO**: Combo 5x Red Bull Energy Drink (+ R$ 95,00)
+
+3. **Operação e Fluxo de Entrega na Portaria (`portaria.html`):**
+   - Ao ler o QR Code do cliente na entrada, o scanner valida o ingresso e exibe um alerta visual pulsante e colorido com a instrução exata:
+     `🚨 ATENÇÃO PORTARIA • ENTREGAR AO CLIENTE: 💳 [CARD COR] - [NOME DO COMBO]`
+   - O porteiro entrega o cartão/papel físico colorido correspondente para o cliente.
+   - O cliente se dirige ao Bar da AURA e troca o Card Físico pelo seu Combo / Garrafas geladas.
+   - Se for entrada simples sem combo, a portaria exibe: `✓ ENTRADA SIMPLES • SEM COMBO`.
+
+4. **Voucher Digital & WhatsApp:**
+   - O comprovante na tela, o link do voucher (`ingresso.html`) e o disparo do WhatsApp contêm o selo de identificação do combo e a instrução clara para retirar o card físico na portaria.
+
+## 🍹 5. Cardápio Interativo VIP de Bebidas & Combos (`#cardapio`)
+
+- **Integração no Carrossel de Marcas:** Cada marca do ticker possui micro-interação no hover com badge `[ VER COMBOS ↗ ]` e abre o modal/gaveta VIP filtrado na respectiva categoria.
+- **Categorias e Filtros:**
+  - 🥃 **Whiskies:** Black Label 12 Anos (R$ 380), Red Label (R$ 290), Gold Label Reserve (R$ 580), Jack Daniel's No. 7 (R$ 360).
+  - 🍸 **Vodkas & Gins:** Absolut Vodka 1L (R$ 310), Cîroc Ultra Premium 750ml (R$ 440), Gin Tanqueray + Tônica & Especiarias (R$ 340).
+  - 🍾 **Espumantes:** Chandon Passion On The Rocks (R$ 210), Chandon Réserve Brut (R$ 190), Chandon Brut Rosé (R$ 220).
+  - 🍺 **Baldes de Cerveja:** Balde Heineken 6x 330ml (R$ 84), Balde Corona Extra 6x com Limão (R$ 90), Doses individuais (R$ 16 / R$ 17).
+  - ⚡ **Energéticos & Não Alcoólicos:** Combo 5x Red Bull 250ml (R$ 95), Red Bull avulso (R$ 22), Gelo de Coco (R$ 12), Refrigerantes / Água (R$ 8 a R$ 10).
+- **Ação Direta:** Botão de reserva instantânea no WhatsApp formatado especificamente para cada combo para camarotes e bistrôs.
+

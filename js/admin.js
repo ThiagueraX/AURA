@@ -18,6 +18,7 @@ const defaultAdminConfig = {
     id: SHOW_LORENAH_ID,
     title: 'LORENAH IN AURA',
     date: 'SÁBADO, 22 DE AGOSTO • 21:00 (SHOW 00:00)',
+    dateBadge: 'SÁBADO 22/08',
     flyer: 'https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg',
     desc: 'Com o sertanejo emocionante de @lorenahoficial e os maiores sucessos do funk premium, a noite promete ser histórica na AURA. Estrutura completa de camarotes e som de festival.',
     pricePista: 40,
@@ -28,8 +29,11 @@ const defaultAdminConfig = {
     id: SHOW_NEXT_ID,
     title: 'AURA SATURDAY SESSIONS',
     date: 'SÁBADO SEGUINTE • 21:00',
+    dateBadge: 'PRÉ-VENDA',
     desc: 'Lineup especial com DJs convidados do circuito paulista e estrutura de lasers ampliada. Já disponível para compra antecipada no lote promocional.',
     price: 35,
+    pricePista: 35,
+    priceCamarote: 75,
     badge: 'PRÉ-VENDA'
   },
   isSoldOut: false
@@ -209,6 +213,60 @@ function applyConfigToDOM(config) {
       updateCheckoutTotals();
     }
   }
+
+  // Atualiza o visual do botão de controle do painel Admin
+  const btnToggleSoldout = document.getElementById('btn-toggle-soldout');
+  if (btnToggleSoldout) {
+    if (config.isSoldOut) {
+      btnToggleSoldout.textContent = '🔴 VENDAS PAUSADAS (CLIQUE PARA REABRIR)';
+      btnToggleSoldout.style.color = '#ef4444';
+      btnToggleSoldout.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+    } else {
+      btnToggleSoldout.textContent = '🟢 VENDAS ABERTAS (CLIQUE PARA PAUSAR/ESGOTAR)';
+      btnToggleSoldout.style.color = 'var(--neon-cyan)';
+      btnToggleSoldout.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+    }
+  }
+
+  // Trava os botões de compra no site inteiro se as vendas estiverem pausadas
+  const buyBtns = document.querySelectorAll('#btn-open-checkout-main, #btn-header-buy, .btn-action-primary, .btn-show-buy, .btn-sector');
+  buyBtns.forEach((btn) => {
+    // Não travar botões do próprio painel admin
+    if (btn.closest('.admin-modal') || btn.closest('.admin-lotes-control') || btn.closest('#form-admin-login')) return;
+    
+    // Não travar o botão de Pré-Venda do próximo show
+    const oc = btn.getAttribute('onclick') || '';
+    if (oc.includes("'next'")) return;
+    
+    if (config.isSoldOut) {
+      if (!btn.dataset.originalText) {
+        btn.dataset.originalText = btn.innerHTML; // Salva o HTML original (com ícones se houver)
+      }
+      btn.disabled = true;
+      
+      // Se for botão pequeno do cabeçalho, usa texto curto para não quebrar o layout
+      if (btn.classList.contains('btn-quick-ticket') || btn.id === 'btn-header-buy') {
+        btn.innerHTML = '🔒 INGRESSOS';
+      } else {
+        btn.innerHTML = '🔒 VENDAS PAUSADAS / ESGOTADAS';
+      }
+      
+      btn.title = 'VENDAS PAUSADAS / ESGOTADAS';
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+      // Removido pointer-events: none para permitir que o tooltip (title) apareça no hover
+      btn.style.pointerEvents = 'auto';
+    } else {
+      btn.disabled = false;
+      if (btn.dataset.originalText) {
+        btn.innerHTML = btn.dataset.originalText;
+      }
+      btn.title = ''; // Limpa o tooltip quando reativado
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      btn.style.pointerEvents = 'auto';
+    }
+  });
 }
 
 function openAdminModal() {
@@ -428,13 +486,16 @@ function initAdminModal() {
     btnSaveLotes.addEventListener('click', async () => {
       const config = getStoredConfig();
       const selectedLote = document.getElementById('adm-select-lote').value;
+      const esgotado = /ESGOTAD/i.test(selectedLote);
+      
       config.activeShow.badge = selectedLote;
+      config.isSoldOut = esgotado; // Sincroniza o bloqueio global de vendas
+
       saveConfigLocal(config);
       applyConfigToDOM(config);
 
       if (window.AuraDB) {
         try {
-          const esgotado = /ESGOTAD/i.test(selectedLote);
           await window.AuraDB.updateLoteStatus(config.activeShow.id || SHOW_LORENAH_ID, {
             nome_lote: selectedLote,
             status: esgotado ? 'ESGOTADO' : 'ATIVO'
@@ -443,6 +504,22 @@ function initAdminModal() {
       }
 
       alert(`✓ Lote atualizado com sucesso para: "${selectedLote}"!`);
+    });
+  }
+
+  // Toggle de Vendas Abertas / Pausadas
+  const btnToggleSoldout = document.getElementById('btn-toggle-soldout');
+  if (btnToggleSoldout) {
+    btnToggleSoldout.addEventListener('click', () => {
+      const config = getStoredConfig();
+      config.isSoldOut = !config.isSoldOut;
+      saveConfigLocal(config);
+      applyConfigToDOM(config);
+
+      // Aqui você poderia adicionar a chamada para salvar no Supabase também, se desejar
+      // await window.AuraDB.updateLoteStatus(...)
+
+      alert(`✓ Vendas ${config.isSoldOut ? 'PAUSADAS / ESGOTADAS' : 'REABERTAS'} com sucesso! Todos os botões de compra do site foram atualizados.`);
     });
   }
 }
@@ -575,3 +652,9 @@ function populateAdminFields() {
 
 window.openAdminModal = openAdminModal;
 window.closeAdminModal = closeAdminModal;
+window.AuraConfig = {
+  getStoredConfig,
+  saveConfigLocal,
+  getCurrentConfig: () => currentConfig,
+  defaultAdminConfig
+};

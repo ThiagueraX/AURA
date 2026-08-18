@@ -36,6 +36,15 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
     }
 
     body {
@@ -45,6 +54,8 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     .font-mono { font-family: 'DM Mono', monospace; }
@@ -223,14 +234,21 @@
     /* Tabs de Navegação */
     .admin-tabs {
       display: flex;
+      flex-wrap: nowrap;
       gap: 10px;
       border-bottom: 1px solid var(--border-subtle);
       margin-bottom: 28px;
       overflow-x: auto;
       padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .admin-tabs::-webkit-scrollbar {
+      display: none;
     }
 
     .tab-btn {
+      flex-shrink: 0;
       background: transparent;
       border: none;
       border-bottom: 2px solid transparent;
@@ -692,7 +710,51 @@
           </div>
 
           <button type="submit" class="btn-save-primary" id="btn-save-show">
-            💾 Salvar Alterações no Site
+            💾 Salvar Show Principal
+          </button>
+        </form>
+      </div>
+
+      <div class="config-card" style="margin-top: 24px;">
+        <h2 class="section-title font-mono" style="margin-bottom: 20px;">
+          ⚡ DETALHES DO PRÓXIMO SHOW / PRÉ-VENDA
+        </h2>
+
+        <form id="form-show-next">
+          <div class="form-group">
+            <label class="form-label font-mono">TÍTULO DO PRÓXIMO EVENTO</label>
+            <input type="text" id="adm-next-title" class="form-input" required />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label font-mono">DATA &amp; HORÁRIO</label>
+              <input type="text" id="adm-next-date" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label font-mono">STATUS / BADGE</label>
+              <input type="text" id="adm-next-badge" class="form-input" value="PRÉ-VENDA" required />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label font-mono">VALOR LOTE PROMOCIONAL PISTA (R$)</label>
+              <input type="number" step="1" id="adm-next-price" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label font-mono">VALOR CAMAROTE PRÉ-VENDA (R$)</label>
+              <input type="number" step="1" id="adm-next-price-camarote" class="form-input" value="75" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label font-mono">DESCRIÇÃO DA PRÉ-VENDA</label>
+            <textarea id="adm-next-desc" class="form-input" rows="2"></textarea>
+          </div>
+
+          <button type="submit" class="btn-save-primary" id="btn-save-next-show">
+            💾 Salvar Próximo Show &amp; Pré-Venda
           </button>
         </form>
       </div>
@@ -702,7 +764,7 @@
 
   <!-- SUPABASE JS SDK & CLIENT -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-client.js?v=20260815_40"></script>
+  <script src="js/supabase-client.js?v=20260816_01"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -723,12 +785,6 @@
           showAdminDashboard();
           return;
         }
-      }
-
-      // Senha rápida de contingência (caso o Auth remoto não esteja ativo)
-      const tokenLocal = sessionStorage.getItem('aura_admin_authed');
-      if (tokenLocal === 'true') {
-        showAdminDashboard();
       }
     }
 
@@ -756,28 +812,16 @@
                 if (papel === 'dono') {
                   showAdminDashboard();
                   return;
+                } else {
+                  errBox.textContent = 'Acesso Negado: Sua conta não tem privilégios de Administrador.';
+                  errBox.style.display = 'block';
+                  window.AuraAuth.sair();
+                  return;
                 }
               }
             }
 
-            // Fallback de segurança local com senha do dono
-            const cleanPass = pass.toLowerCase();
-            const cleanEmail = email.toLowerCase();
-            if (
-              cleanPass === 'aura2026' ||
-              cleanPass === 'auramococa' ||
-              cleanPass === 'aura' ||
-              cleanPass === 'admin' ||
-              cleanPass === 'dono' ||
-              cleanPass === 'dono2026' ||
-              cleanEmail.includes('dono')
-            ) {
-              sessionStorage.setItem('aura_admin_authed', 'true');
-              showAdminDashboard();
-              return;
-            }
-
-            errBox.textContent = 'E-mail ou senha inválidos. A senha padrão do Dono é: aura2026';
+            errBox.textContent = 'E-mail ou senha inválidos.';
             errBox.style.display = 'block';
           } catch (err) {
             console.error('[Admin] Erro no login:', err);
@@ -840,6 +884,14 @@
           btn.textContent = 'Salvando...';
 
           try {
+            const titulo = document.getElementById('adm-show-title').value.trim();
+            const dataShow = document.getElementById('adm-show-date').value.trim();
+            const flyer = document.getElementById('adm-show-flyer').value.trim();
+            const desc = document.getElementById('adm-show-desc').value.trim();
+            const badge = document.getElementById('adm-show-badge').value.trim() || '1º LOTE ATIVO';
+            const pPista = parseFloat(document.getElementById('adm-price-pista').value) || 40;
+            const pCamarote = parseFloat(document.getElementById('adm-price-camarote').value) || 90;
+
             const configAtual = (() => {
               try {
                 const s = localStorage.getItem('aura_admin_config_v1');
@@ -851,7 +903,8 @@
               activeShow: {
                 id: currentShowId,
                 title: titulo,
-                date: document.getElementById('adm-show-date').value,
+                date: dataShow,
+                dateBadge: 'SÁBADO 22/08',
                 flyer: flyer,
                 desc: desc,
                 badge: badge,
@@ -862,10 +915,14 @@
                 id: 'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
                 title: 'AURA SATURDAY SESSIONS',
                 date: 'SÁBADO SEGUINTE • 21:00',
-                desc: 'Lineup especial com DJs convidados.',
+                dateBadge: 'PRÉ-VENDA',
+                desc: 'Lineup especial com DJs convidados do circuito paulista e estrutura de lasers ampliada.',
                 price: 35,
+                pricePista: 35,
+                priceCamarote: 75,
                 badge: 'PRÉ-VENDA'
-              }
+              },
+              isSoldOut: false
             };
 
             localStorage.setItem('aura_admin_config_v1', JSON.stringify(novaConfig));
@@ -880,13 +937,84 @@
               } catch (e) {}
             }
 
-            alert('✓ Alterações salvas com sucesso! Os novos preços e dados do show já estão ativos no site e nos ingressos.');
+            alert('✓ Show Principal salvo com sucesso! Os novos preços e dados já estão ativos no site e no checkout.');
           } catch (err) {
             console.error('[Admin] Erro ao salvar show:', err);
             alert('Falha ao salvar. Verifique os dados inseridos.');
           } finally {
             btn.disabled = false;
-            btn.textContent = '💾 Salvar Alterações no Site';
+            btn.textContent = '💾 Salvar Show Principal';
+          }
+        });
+      }
+
+      const formShowNext = document.getElementById('form-show-next');
+      if (formShowNext) {
+        formShowNext.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById('btn-save-next-show');
+          btn.disabled = true;
+          btn.textContent = 'Salvando...';
+
+          try {
+            const nextTitle = document.getElementById('adm-next-title').value.trim();
+            const nextDate = document.getElementById('adm-next-date').value.trim();
+            const nextBadge = document.getElementById('adm-next-badge').value.trim() || 'PRÉ-VENDA';
+            const nextPrice = parseFloat(document.getElementById('adm-next-price').value) || 35;
+            const nextCamarote = parseFloat(document.getElementById('adm-next-price-camarote').value) || 75;
+            const nextDesc = document.getElementById('adm-next-desc').value.trim();
+
+            const configAtual = (() => {
+              try {
+                const s = localStorage.getItem('aura_admin_config_v1');
+                return s ? JSON.parse(s) : {};
+              } catch(e) { return {}; }
+            })();
+
+            const novaConfig = {
+              activeShow: configAtual.activeShow || {
+                id: currentShowId,
+                title: 'LORENAH IN AURA',
+                date: 'SÁBADO, 22 DE AGOSTO • 21:00 (SHOW 00:00)',
+                dateBadge: 'SÁBADO 22/08',
+                flyer: 'https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg',
+                desc: 'Com o sertanejo emocionante de @lorenahoficial...',
+                badge: '1º LOTE ATIVO',
+                pricePista: 40,
+                priceCamarote: 90
+              },
+              nextShow: {
+                id: (configAtual.nextShow && configAtual.nextShow.id) || 'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
+                title: nextTitle,
+                date: nextDate,
+                dateBadge: nextBadge,
+                desc: nextDesc,
+                price: nextPrice,
+                pricePista: nextPrice,
+                priceCamarote: nextCamarote,
+                badge: nextBadge
+              },
+              isSoldOut: false
+            };
+
+            localStorage.setItem('aura_admin_config_v1', JSON.stringify(novaConfig));
+
+            if (window.AuraDB) {
+              try {
+                await window.AuraDB.updateShow(novaConfig.nextShow.id, {
+                  titulo: nextTitle,
+                  descricao: nextDesc
+                });
+              } catch (e) {}
+            }
+
+            alert('✓ Próximo Show / Pré-Venda salvo com sucesso! Os valores e datas da pré-venda já estão ativos no site e no checkout.');
+          } catch (err) {
+            console.error('[Admin] Erro ao salvar pré-venda:', err);
+            alert('Falha ao salvar pré-venda. Verifique os dados inseridos.');
+          } finally {
+            btn.disabled = false;
+            btn.textContent = '💾 Salvar Próximo Show & Pré-Venda';
           }
         });
       }
@@ -1022,6 +1150,23 @@
             document.getElementById('adm-show-badge').value = cfg.activeShow.badge || '1º LOTE ATIVO';
             document.getElementById('adm-price-pista').value = cfg.activeShow.pricePista || 40;
             document.getElementById('adm-price-camarote').value = cfg.activeShow.priceCamarote || 90;
+          }
+          if (cfg && cfg.nextShow) {
+            const fNextTitle = document.getElementById('adm-next-title');
+            const fNextDate = document.getElementById('adm-next-date');
+            const fNextBadge = document.getElementById('adm-next-badge');
+            const fNextPrice = document.getElementById('adm-next-price');
+            const fNextCam = document.getElementById('adm-next-price-camarote');
+            const fNextDesc = document.getElementById('adm-next-desc');
+
+            if (fNextTitle) fNextTitle.value = cfg.nextShow.title || 'AURA SATURDAY SESSIONS';
+            if (fNextDate) fNextDate.value = cfg.nextShow.date || 'SÁBADO SEGUINTE • 21:00';
+            if (fNextBadge) fNextBadge.value = cfg.nextShow.badge || 'PRÉ-VENDA';
+            if (fNextPrice) fNextPrice.value = cfg.nextShow.price || cfg.nextShow.pricePista || 35;
+            if (fNextCam) fNextCam.value = cfg.nextShow.priceCamarote || 75;
+            if (fNextDesc) fNextDesc.value = cfg.nextShow.desc || '';
+          }
+          if (cfg && cfg.activeShow) {
             formPreenchido = true;
             return;
           }
@@ -1038,6 +1183,23 @@
           document.getElementById('adm-show-badge').value = '1º LOTE ATIVO';
           document.getElementById('adm-price-pista').value = 40;
           document.getElementById('adm-price-camarote').value = 90;
+
+          const n = shows.find(x => x.is_proximo) || shows[1];
+          if (n) {
+            const fNextTitle = document.getElementById('adm-next-title');
+            const fNextDate = document.getElementById('adm-next-date');
+            const fNextBadge = document.getElementById('adm-next-badge');
+            const fNextPrice = document.getElementById('adm-next-price');
+            const fNextCam = document.getElementById('adm-next-price-camarote');
+            const fNextDesc = document.getElementById('adm-next-desc');
+
+            if (fNextTitle) fNextTitle.value = n.titulo || 'AURA SATURDAY SESSIONS';
+            if (fNextDate) fNextDate.value = 'SÁBADO SEGUINTE • 21:00';
+            if (fNextBadge) fNextBadge.value = 'PRÉ-VENDA';
+            if (fNextPrice) fNextPrice.value = 35;
+            if (fNextCam) fNextCam.value = 75;
+            if (fNextDesc) fNextDesc.value = n.descricao || '';
+          }
           formPreenchido = true;
         }
       } catch (e) {}

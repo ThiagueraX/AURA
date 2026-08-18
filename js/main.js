@@ -56,16 +56,20 @@ function initCustomCursor() {
   }
   requestAnimationFrame(renderCursor);
 
-  const hoverElements = document.querySelectorAll('[data-cursor], a, button, .show-card-media, .auto-party-video-layer');
-  hoverElements.forEach((el) => {
-    el.addEventListener('mouseenter', () => {
+  document.addEventListener('mouseover', (e) => {
+    const target = e.target.closest('[data-cursor], a, button, .show-card-media, .auto-party-video-layer, .brand-square-card');
+    if (target) {
       cursor.classList.add('is-hovering');
-      const label = el.getAttribute('data-cursor') || 'AURA';
+      const label = target.getAttribute('data-cursor') || (target.classList.contains('brand-square-card') ? 'COMBOS' : 'AURA');
       if (badge) badge.textContent = label;
-    });
-    el.addEventListener('mouseleave', () => {
+    }
+  });
+
+  document.addEventListener('mouseout', (e) => {
+    const target = e.target.closest('[data-cursor], a, button, .show-card-media, .auto-party-video-layer, .brand-square-card');
+    if (target) {
       cursor.classList.remove('is-hovering');
-    });
+    }
   });
 }
 

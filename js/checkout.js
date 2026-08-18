@@ -11,21 +11,129 @@ const checkoutState = {
   sector: 'Pista',
   pricePerTicket: 40,
   quantity: 1,
+  combo: null, // Combo opcional selecionado pelo cliente
   customer: {
     name: '',
     cpf: '',
     email: '',
     whatsapp: ''
   },
+  cpf: '',
+  isProcessing: false,
+  stripe: null,
+  cardElement: null,
   paymentMethod: 'pix',
   ticketCode: '',
   codigoValidador: '',
   codigosValidadores: [],
   codigoPedido: '',
   aguardandoPagamento: true,
-  isProcessing: false,
   emitindo: false
 };
+
+// Tabela Oficial de Combos Antecipados & Cards Físicos de Portaria
+const LISTA_COMBOS_CHECKOUT = [
+  {
+    id: 'none',
+    titulo: 'Apenas Ingresso (Sem Combo)',
+    descricao: 'Acesso padrão à casa sem bebidas inclusas',
+    preco: 0,
+    cardNome: null,
+    cardCor: null,
+    cardClasse: null,
+    tag: 'PADRÃO'
+  },
+  {
+    id: 'combo-black-label',
+    titulo: 'Combo Black Label 12 Anos',
+    descricao: '1L Black Label + 5 Red Bulls + Gelo de Coco + Copos AURA',
+    preco: 380.00,
+    cardNome: 'CARD DOURADO',
+    cardCor: '#FFC24A',
+    cardClasse: 'card-gold',
+    tag: '★ MAIS PEDIDO VIP'
+  },
+  {
+    id: 'combo-red-label',
+    titulo: 'Combo Red Label',
+    descricao: '1L Red Label + 5 Red Bulls + Gelo de Coco + Copos',
+    preco: 290.00,
+    cardNome: 'CARD ÂMBAR',
+    cardCor: '#FF8A0F',
+    cardClasse: 'card-amber',
+    tag: 'CLÁSSICO DA NOITE'
+  },
+  {
+    id: 'combo-absolut',
+    titulo: 'Combo Absolut Vodka',
+    descricao: '1L Absolut + 5 Red Bulls (Tropical/Trad.) + Gelo + Copos',
+    preco: 310.00,
+    cardNome: 'CARD AZUL',
+    cardCor: '#00F0FF',
+    cardClasse: 'card-blue',
+    tag: 'VODKA VIP'
+  },
+  {
+    id: 'combo-ciroc',
+    titulo: 'Combo Cîroc Ultra Premium',
+    descricao: '750ml Cîroc + 6 Red Bulls + Balde Iluminado + Taças',
+    preco: 440.00,
+    cardNome: 'CARD AZUL ROYAL',
+    cardCor: '#3B82F6',
+    cardClasse: 'card-royal-blue',
+    tag: '💎 ULTRA PREMIUM'
+  },
+  {
+    id: 'combo-tanqueray',
+    titulo: 'Combo Gin Tanqueray',
+    descricao: '750ml Tanqueray + 5 Tônicas + Especiarias + Taças Gin AURA',
+    preco: 340.00,
+    cardNome: 'CARD VERMELHO',
+    cardCor: '#EF4444',
+    cardClasse: 'card-red',
+    tag: 'GIN & TONIC'
+  },
+  {
+    id: 'combo-chandon-passion',
+    titulo: 'Chandon Passion On The Rocks',
+    descricao: '750ml Chandon Passion + Balde de Gelo Especial + 4 Taças',
+    preco: 210.00,
+    cardNome: 'CARD ROSA',
+    cardCor: '#EC4899',
+    cardClasse: 'card-pink',
+    tag: '★ ON THE ROCKS'
+  },
+  {
+    id: 'combo-heineken',
+    titulo: 'Balde Heineken (6 Long Necks)',
+    descricao: '6x Garrafas Heineken 330ml no Balde com Gelo Moído',
+    preco: 84.00,
+    cardNome: 'CARD VERDE',
+    cardCor: '#10B981',
+    cardClasse: 'card-green',
+    tag: 'CERVEJA GELADA'
+  },
+  {
+    id: 'combo-corona',
+    titulo: 'Balde Corona Extra (6 com Limão)',
+    descricao: '6x Corona 330ml no Balde de Gelo + Fatias de Limão Tahiti',
+    preco: 90.00,
+    cardNome: 'CARD VERDE LIMÃO',
+    cardCor: '#EAB308',
+    cardClasse: 'card-lime',
+    tag: 'COM LIMÃO TAHITI'
+  },
+  {
+    id: 'combo-redbull-5x',
+    titulo: 'Combo 5x Red Bull Energy Drink',
+    descricao: '5x Latas 250ml (Sabores à escolha) no Baldinho de Gelo',
+    preco: 95.00,
+    cardNome: 'CARD CIANO',
+    cardCor: '#06B6D4',
+    cardClasse: 'card-cyan',
+    tag: 'ENERGIA'
+  }
+];
 
 // Tabela de Preços Oficiais de Segurança (Anti-Tampering)
 const SETORES_OFICIAIS = {
@@ -138,23 +246,7 @@ function initCheckoutEvents() {
   }
 
   // Seleção de Setores com Proteção Anti-Tampering
-  const sectorCards = document.querySelectorAll('.sector-radio-card');
-  sectorCards.forEach((card) => {
-    card.addEventListener('click', () => {
-      sectorCards.forEach((c) => c.classList.remove('is-selected'));
-      card.classList.add('is-selected');
-      const radio = card.querySelector('input[type="radio"]');
-      if (radio) radio.checked = true;
-
-      const sectorName = card.getAttribute('data-sector') || 'Pista';
-      const rawPrice = parseFloat(card.getAttribute('data-price'));
-
-      checkoutState.sector = sectorName;
-      checkoutState.pricePerTicket = Number.isFinite(rawPrice) && rawPrice > 0 ? rawPrice : 40;
-
-      updateCheckoutTotals();
-    });
-  });
+  bindSectorCards();
 
   // Quantidade de Ingressos (Trava: 1 a 10)
   const btnMinus = document.getElementById('btn-qty-minus');
@@ -268,6 +360,9 @@ function initCheckoutEvents() {
       if (contentCard) contentCard.style.display = 'block';
       if (contentPix) contentPix.style.display = 'none';
       checkoutState.paymentMethod = 'card';
+      
+      // Inicializa o Stripe Element quando a aba for aberta pela primeira vez
+      initStripeElement();
     });
   }
 
@@ -320,13 +415,7 @@ function initCheckoutEvents() {
         btnSubmit.disabled = true;
       }
 
-      await emitDigitalTicket();
-
-      checkoutState.isProcessing = false;
-      if (btnSubmit) {
-        btnSubmit.textContent = 'Pagar com Cartão de Crédito 💳';
-        btnSubmit.disabled = false;
-      }
+      await processStripePayment(btnSubmit);
     });
   }
 
@@ -338,6 +427,140 @@ function initCheckoutEvents() {
     });
   }
 }
+
+// --------------------------------------------------------------------------------------
+// STRIPE INTEGRATION LOGIC
+// --------------------------------------------------------------------------------------
+function initStripeElement() {
+  // Evitar dupla inicialização
+  if (checkoutState.stripe || !window.Stripe) return;
+  
+  // Inicializa a Stripe com a Publishable Key de Teste
+  checkoutState.stripe = Stripe('pk_test_51U5WRs3Rrnsnb48pwbOaVfCo5yUDf3mti0pMoAvm0H1fxDl3avKmDUSfvB8CCEeAOZSsPHGNeDru0UOntI4sN2qz00hhuf3mrx');
+  const elements = checkoutState.stripe.elements();
+  
+  // Customização para o Dark Mode do site
+  const style = {
+    base: {
+      color: '#fff',
+      fontFamily: '"SF Mono", "Consolas", monospace',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+        color: '#aab7c4'
+      }
+    },
+    invalid: {
+      color: '#ff4a4a',
+      iconColor: '#ff4a4a'
+    }
+  };
+  
+  checkoutState.cardElement = elements.create('card', { style: style, hidePostalCode: true });
+  checkoutState.cardElement.mount('#card-element');
+  
+  checkoutState.cardElement.on('change', function(event) {
+    const displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+}
+
+async function processStripePayment(btnSubmit) {
+  try {
+    const totalEmCentavos = Math.round(getCheckoutTotalValor() * 100);
+    
+    // 1. Chamar a Edge Function do Supabase para criar o PaymentIntent
+    // Nota: Esta função precisa estar ativa no painel do Supabase!
+    const response = await fetch('https://sgfyxmajpdgynsicmzdb.supabase.co/functions/v1/stripe-payment', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        action: 'create',
+        amount: totalEmCentavos, 
+        currency: 'brl',
+        description: 'Ingresso AURA Mococa'
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.error) {
+      throw new Error(data.error || "Erro no servidor de pagamento. O servidor Edge Function está online?");
+    }
+
+    if (!data || !data.clientSecret) {
+      throw new Error("Resposta inválida do servidor Stripe.");
+    }
+
+    // 2. Confirmar o pagamento no cliente passando os dados do cartão
+    const result = await checkoutState.stripe.confirmCardPayment(data.clientSecret, {
+      payment_method: {
+        card: checkoutState.cardElement,
+        billing_details: {
+          name: checkoutState.nome
+        }
+      }
+    });
+
+    if (result.error) {
+      // Erro na aprovação do cartão (ex: sem saldo, recusado)
+      const displayError = document.getElementById('card-errors');
+      displayError.textContent = result.error.message;
+      resetCardButton(btnSubmit);
+    } else {
+      // Sucesso total! Cartão aprovado.
+      if (result.paymentIntent.status === 'succeeded') {
+        await emitDigitalTicket();
+        
+        // Avisa o servidor para marcar como APROVADO no banco de dados!
+        try {
+          await fetch('https://sgfyxmajpdgynsicmzdb.supabase.co/functions/v1/stripe-payment', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action: 'confirm',
+              paymentIntentId: data.paymentIntentId,
+              codigoPedido: checkoutState.codigoPedido
+            })
+          });
+        } catch (e) {
+          console.error("Falha ao confirmar no banco de dados", e);
+        }
+
+        resetCardButton(btnSubmit, '✓ Cartão Aprovado!');
+        
+        // Força a tela a ficar Verde (Aprovado) imediatamente,
+        checkoutState.aguardandoPagamento = false;
+        atualizarTelaParaAprovado();
+      }
+    }
+
+  } catch (err) {
+    console.error("Erro Stripe:", err);
+    const displayError = document.getElementById('card-errors');
+    displayError.textContent = "Falha ao processar pagamento: " + err.message;
+    resetCardButton(btnSubmit);
+  }
+}
+
+function resetCardButton(btn, text = 'Pagar com Cartão de Crédito 💳') {
+  checkoutState.isProcessing = false;
+  if (btn) {
+    btn.textContent = text;
+    btn.disabled = false;
+  }
+}
+
 
 /**
  * Zera o resultado da emissão anterior.
@@ -392,7 +615,248 @@ function esconderErroCheckout() {
   }
 }
 
-function openCheckout() {
+/**
+ * Configuração e Seleção de Shows e Setores (Show Ativo vs Pré-Venda)
+ */
+function getActiveAdminConfig() {
+  if (window.AuraConfig && typeof window.AuraConfig.getStoredConfig === 'function') {
+    return window.AuraConfig.getStoredConfig();
+  }
+  if (typeof currentConfig !== 'undefined' && currentConfig && currentConfig.activeShow) {
+    return currentConfig;
+  }
+  try {
+    const saved = localStorage.getItem('aura_admin_config_v1');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return {
+    activeShow: {
+      id: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      title: 'Lorenah in Aura • Sertanejo & Funk',
+      date: 'Sábado, 22 de Agosto • 21:00',
+      dateBadge: 'SÁBADO 22/08',
+      pricePista: 40,
+      priceCamarote: 90,
+      badge: '1º LOTE ATIVO'
+    },
+    nextShow: {
+      id: 'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
+      title: 'AURA Saturday Sessions',
+      date: 'Sábado Seguinte • 21:00',
+      dateBadge: 'PRÉ-VENDA',
+      price: 35,
+      pricePista: 35,
+      priceCamarote: 75,
+      badge: 'PRÉ-VENDA'
+    }
+  };
+}
+
+function renderComboSelector() {
+  const container = document.getElementById('checkout-combo-selector-container');
+  if (!container) return;
+
+  container.innerHTML = LISTA_COMBOS_CHECKOUT.map((combo) => {
+    const isSelected = (!checkoutState.combo && combo.id === 'none') || (checkoutState.combo && checkoutState.combo.id === combo.id);
+    const precoTxt = combo.preco > 0 ? `+ R$ ${combo.preco.toFixed(2).replace('.', ',')}` : 'Grátis (Sem combo)';
+    const cardBadgeTxt = combo.cardNome ? `🏷️ ${combo.cardNome}` : 'ENTRADA SIMPLES';
+
+    return `
+      <label class="combo-select-card ${isSelected ? 'is-selected' : ''} ${combo.cardClasse || ''}" data-combo-id="${combo.id}">
+        <input type="radio" name="checkout_combo_opt" value="${combo.id}" ${isSelected ? 'checked' : ''} />
+        <div class="combo-select-content">
+          <div class="combo-select-top">
+            <span class="combo-select-title">${combo.titulo}</span>
+            <span class="combo-select-price font-display">${precoTxt}</span>
+          </div>
+          <p class="combo-select-desc font-mono">${combo.descricao}</p>
+          <div class="combo-select-bottom">
+            <span class="combo-chip-badge font-mono" style="${combo.cardCor ? `border-color:${combo.cardCor}; color:${combo.cardCor};` : ''}">
+              ${cardBadgeTxt}
+            </span>
+            ${combo.tag ? `<span class="combo-tag-badge font-mono">${combo.tag}</span>` : ''}
+          </div>
+        </div>
+      </label>
+    `;
+  }).join('');
+
+  bindComboSelector();
+}
+
+function bindComboSelector() {
+  const cards = document.querySelectorAll('.combo-select-card');
+  cards.forEach((card) => {
+    card.onclick = () => {
+      cards.forEach((c) => c.classList.remove('is-selected'));
+      card.classList.add('is-selected');
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+
+      const comboId = card.getAttribute('data-combo-id');
+      if (comboId && comboId !== 'none') {
+        const item = LISTA_COMBOS_CHECKOUT.find(c => c.id === comboId);
+        checkoutState.combo = item || null;
+      } else {
+        checkoutState.combo = null;
+      }
+
+      updateCheckoutTotals();
+    };
+  });
+}
+
+function getCheckoutTotalValor() {
+  const ingressos = Number(checkoutState.pricePerTicket || 0) * Number(checkoutState.quantity || 1);
+  const combo = (checkoutState.combo && Number.isFinite(checkoutState.combo.preco)) ? Number(checkoutState.combo.preco) : 0;
+  return ingressos + combo;
+}
+
+function bindSectorCards() {
+  const sectorCards = document.querySelectorAll('.sector-radio-card');
+  sectorCards.forEach((card) => {
+    card.onclick = () => {
+      sectorCards.forEach((c) => c.classList.remove('is-selected'));
+      card.classList.add('is-selected');
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+
+      const sectorName = card.getAttribute('data-sector') || 'Pista';
+      const rawPrice = parseFloat(card.getAttribute('data-price'));
+
+      checkoutState.sector = sectorName;
+      if (Number.isFinite(rawPrice) && rawPrice > 0) {
+        checkoutState.pricePerTicket = rawPrice;
+      }
+
+      updateCheckoutTotals();
+    };
+  });
+}
+
+function configureCheckoutForShow(targetShow = 'active', preselectedSector = null) {
+  const config = getActiveAdminConfig();
+  const isNext = (
+    targetShow === 'next' ||
+    targetShow === 'prevenda' ||
+    targetShow === 'pre-venda' ||
+    (typeof targetShow === 'string' && (
+      targetShow.toLowerCase().includes('saturday') ||
+      targetShow.toLowerCase().includes('sessions') ||
+      targetShow.toLowerCase().includes('pré-venda') ||
+      targetShow.toLowerCase().includes('prevenda') ||
+      targetShow.toLowerCase().includes('proximo') ||
+      targetShow.toLowerCase().includes('próximo')
+    ))
+  );
+
+  const eventBadgeEl = document.getElementById('checkout-event-badge');
+  const eventNameEl = document.getElementById('checkout-event-name');
+  const sectorContainer = document.getElementById('checkout-sector-selector-grid') || document.querySelector('.sector-selector-grid');
+
+  if (isNext) {
+    const nextCfg = config.nextShow || {};
+    const nextPrice = Number(nextCfg.price || nextCfg.pricePista) || 35;
+    const nextCamarote = Number(nextCfg.priceCamarote) || 75;
+
+    checkoutState.showId = nextCfg.id || 'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e';
+    checkoutState.eventName = nextCfg.title || 'AURA Saturday Sessions';
+    checkoutState.eventDate = nextCfg.date || 'Sábado Seguinte • 21:00';
+    checkoutState.badge = nextCfg.badge || 'PRÉ-VENDA';
+
+    if (eventBadgeEl) {
+      eventBadgeEl.textContent = `⚡ PRÉ-VENDA • ${nextCfg.date || 'SÁBADO SEGUINTE'}`;
+      eventBadgeEl.style.color = '#00F0FF';
+      eventBadgeEl.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+      eventBadgeEl.style.background = 'rgba(0, 240, 255, 0.1)';
+    }
+    if (eventNameEl) {
+      eventNameEl.textContent = checkoutState.eventName;
+    }
+
+    const isCamarote = preselectedSector === 'Camarote';
+    if (sectorContainer) {
+      sectorContainer.innerHTML = `
+        <label class="sector-radio-card ${isCamarote ? '' : 'is-selected'}" data-sector="Pista" data-price="${nextPrice}">
+          <input type="radio" name="checkout_sector" value="Pista" ${isCamarote ? '' : 'checked'} />
+          <div class="radio-card-content">
+            <div class="radio-card-title">Lote Promocional (Pista)</div>
+            <div class="radio-card-price">R$ ${nextPrice.toFixed(2).replace('.', ',')}</div>
+            <div class="radio-card-desc font-mono">Acesso antecipado com desconto de pré-venda</div>
+          </div>
+        </label>
+
+        <label class="sector-radio-card ${isCamarote ? 'is-selected' : ''}" data-sector="Camarote" data-price="${nextCamarote}">
+          <input type="radio" name="checkout_sector" value="Camarote" ${isCamarote ? 'checked' : ''} />
+          <div class="radio-card-content">
+            <div class="radio-card-title">Camarote VIP Pré-Venda</div>
+            <div class="radio-card-price">R$ ${nextCamarote.toFixed(2).replace('.', ',')}</div>
+            <div class="radio-card-desc font-mono">Vista VIP elevada + Pulseira exclusiva</div>
+          </div>
+        </label>
+      `;
+      bindSectorCards();
+    }
+
+    checkoutState.sector = isCamarote ? 'Camarote' : 'Pista';
+    checkoutState.pricePerTicket = isCamarote ? nextCamarote : nextPrice;
+  } else {
+    const actCfg = config.activeShow || {};
+    const pricePista = Number(actCfg.pricePista) || 40;
+    const priceCamarote = Number(actCfg.priceCamarote) || 90;
+
+    checkoutState.showId = actCfg.id || 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
+    if (typeof targetShow === 'string' && targetShow !== 'active' && !isNext) {
+      checkoutState.eventName = sanitizeText(targetShow);
+    } else {
+      checkoutState.eventName = actCfg.title || 'Lorenah in Aura • Sertanejo & Funk';
+    }
+    checkoutState.eventDate = actCfg.date || 'Sábado, 22 de Agosto • 21:00';
+    checkoutState.badge = actCfg.badge || '1º LOTE ATIVO';
+
+    if (eventBadgeEl) {
+      eventBadgeEl.textContent = actCfg.dateBadge || 'SÁBADO 22/08';
+      eventBadgeEl.style.color = '#FFC24A';
+      eventBadgeEl.style.borderColor = 'rgba(255, 194, 74, 0.4)';
+      eventBadgeEl.style.background = 'rgba(255, 194, 74, 0.12)';
+    }
+    if (eventNameEl) {
+      eventNameEl.textContent = checkoutState.eventName;
+    }
+
+    const isCamarote = preselectedSector === 'Camarote';
+    if (sectorContainer) {
+      sectorContainer.innerHTML = `
+        <label class="sector-radio-card ${isCamarote ? '' : 'is-selected'}" data-sector="Pista" data-price="${pricePista}">
+          <input type="radio" name="checkout_sector" value="Pista" ${isCamarote ? '' : 'checked'} />
+          <div class="radio-card-content">
+            <div class="radio-card-title">Pista Geral</div>
+            <div class="radio-card-price">R$ ${pricePista.toFixed(2).replace('.', ',')}</div>
+            <div class="radio-card-desc font-mono">Acesso ao salão e pista</div>
+          </div>
+        </label>
+
+        <label class="sector-radio-card ${isCamarote ? 'is-selected' : ''}" data-sector="Camarote" data-price="${priceCamarote}">
+          <input type="radio" name="checkout_sector" value="Camarote" ${isCamarote ? 'checked' : ''} />
+          <div class="radio-card-content">
+            <div class="radio-card-title">Camarote VIP</div>
+            <div class="radio-card-price">R$ ${priceCamarote.toFixed(2).replace('.', ',')}</div>
+            <div class="radio-card-desc font-mono">Vista elevada + Pulseira VIP</div>
+          </div>
+        </label>
+      `;
+      bindSectorCards();
+    }
+
+    checkoutState.sector = isCamarote ? 'Camarote' : 'Pista';
+    checkoutState.pricePerTicket = isCamarote ? priceCamarote : pricePista;
+  }
+
+  // Renderiza a lista de combos disponíveis
+  renderComboSelector();
+}
+
+function openCheckout(targetShow = 'active') {
   const modal = document.getElementById('checkout-modal');
   if (!modal) return;
 
@@ -401,15 +865,9 @@ function openCheckout() {
   limparDadosDoCliente();
   esconderErroCheckout();
   checkoutState.quantity = 1;
+  checkoutState.combo = null;
 
-  // Obtém o preço atualizado do card selecionado
-  const selectedCard = document.querySelector('.sector-radio-card.is-selected');
-  if (selectedCard) {
-    const rawPrice = parseFloat(selectedCard.getAttribute('data-price'));
-    if (Number.isFinite(rawPrice) && rawPrice > 0) {
-      checkoutState.pricePerTicket = rawPrice;
-    }
-  }
+  configureCheckoutForShow(targetShow);
 
   goToStep('step-selection');
   updateCheckoutTotals();
@@ -418,19 +876,59 @@ function openCheckout() {
   document.body.style.overflow = 'hidden';
 }
 
-function openCheckoutWithShow(showTitle) {
-  checkoutState.eventName = sanitizeText(showTitle);
-  const eventNameEl = document.getElementById('checkout-event-name');
-  if (eventNameEl) eventNameEl.textContent = checkoutState.eventName;
-  openCheckout();
+function openCheckoutWithShow(showIdentifier) {
+  openCheckout(showIdentifier);
 }
 
 function openCheckoutWithSector(sectorName) {
-  openCheckout();
-  const card = document.querySelector(`.sector-radio-card[data-sector="${sectorName}"]`);
-  if (card) {
-    card.click();
+  const modal = document.getElementById('checkout-modal');
+  if (!modal) return;
+
+  limparEmissaoAnterior();
+  limparDadosDoCliente();
+  esconderErroCheckout();
+  checkoutState.quantity = 1;
+  checkoutState.combo = null;
+
+  configureCheckoutForShow('active', sectorName);
+
+  goToStep('step-selection');
+  updateCheckoutTotals();
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function openCheckoutWithCombo(comboId) {
+  const modal = document.getElementById('checkout-modal');
+  if (!modal) return;
+
+  limparEmissaoAnterior();
+  limparDadosDoCliente();
+  esconderErroCheckout();
+  checkoutState.quantity = 1;
+  
+  // Pre-select the combo
+  if (comboId && comboId !== 'none') {
+    const item = LISTA_COMBOS_CHECKOUT.find(c => c.id === comboId);
+    checkoutState.combo = item || null;
+  } else {
+    checkoutState.combo = null;
   }
+
+  configureCheckoutForShow('active');
+
+  // Skip straight to the Combo Step (step 3) or just open Step 1?
+  // Since they MUST select a ticket, we open Step 1, but the combo is already pre-selected.
+  goToStep('step-selection');
+  
+  // Update the UI so the combo is visually selected
+  renderComboSelector();
+  updateCheckoutTotals();
+
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeCheckout() {
@@ -458,11 +956,26 @@ function updateCheckoutTotals() {
   const qtyEl = document.getElementById('qty-val');
   const subtotalEl = document.getElementById('txt-subtotal');
   const totalEl = document.getElementById('txt-total');
+  const comboRowEl = document.getElementById('subtotal-combo-row');
+  const comboDescEl = document.getElementById('txt-subtotal-combo-desc');
+  const comboValEl = document.getElementById('txt-subtotal-combo-val');
 
-  const total = checkoutState.pricePerTicket * checkoutState.quantity;
+  const ingressosSubtotal = checkoutState.pricePerTicket * checkoutState.quantity;
+  const total = getCheckoutTotalValor();
 
   if (qtyEl) qtyEl.textContent = checkoutState.quantity;
-  if (subtotalEl) subtotalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+  if (subtotalEl) subtotalEl.textContent = `R$ ${ingressosSubtotal.toFixed(2).replace('.', ',')}`;
+
+  if (comboRowEl && comboDescEl && comboValEl) {
+    if (checkoutState.combo && checkoutState.combo.preco > 0) {
+      comboRowEl.style.display = 'flex';
+      comboDescEl.textContent = `+ ${checkoutState.combo.titulo} (${checkoutState.combo.cardNome}):`;
+      comboValEl.textContent = `R$ ${checkoutState.combo.preco.toFixed(2).replace('.', ',')}`;
+    } else {
+      comboRowEl.style.display = 'none';
+    }
+  }
+
   if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
 }
 
@@ -524,7 +1037,7 @@ let pollingPagamentoInterval = null;
 function renderPixQRCode() {
   const container = document.getElementById('pix-qrcode-render');
   const copyInput = document.getElementById('pix-copy-input');
-  const total = (checkoutState.pricePerTicket * checkoutState.quantity).toFixed(2);
+  const total = getCheckoutTotalValor().toFixed(2);
 
   const pixPayload = gerarPayloadPixEMV({
     chave: 'auramococa@gmail.com',
@@ -642,9 +1155,6 @@ function tocarSomSucesso() {
  * 5. EMISSÃO BLINDADA DE INGRESSO E GRAVAÇÃO NO SUPABASE
  */
 async function emitDigitalTicket() {
-  // Trava no próprio motor de emissão, e não só no botão. Ela protege contra
-  // qualquer caminho que chame a função duas vezes (dois handlers no mesmo
-  // botão, toque duplo no celular, chamada solta pelo console).
   if (checkoutState.emitindo) {
     console.warn('[Checkout] Emissão já em andamento — chamada duplicada ignorada.');
     return false;
@@ -660,9 +1170,6 @@ async function emitDigitalTicket() {
 
 /**
  * Grava pedido + ingressos no banco e só então mostra o ingresso.
- * Regra: se a gravação não concluir, o cliente NÃO vê tela de sucesso.
- * Um QR que não existe no banco é pior do que uma mensagem de erro — ele só
- * seria descoberto na portaria, com o cliente já na fila.
  */
 async function gravarEEmitirIngressos() {
   limparEmissaoAnterior();
@@ -676,18 +1183,19 @@ async function gravarEEmitirIngressos() {
   }
 
   try {
-    // Pedido e ingressos são criados numa transação só, do lado do servidor.
-    // O preço aplicado é o do banco: o que vai daqui é ignorado, então mexer
-    // no data-price pelo DevTools não muda o valor cobrado.
+    const comboAtivo = checkoutState.combo && checkoutState.combo.preco > 0;
+
     const r = await window.AuraDB.criarPedido({
       showId: checkoutState.showId,
-      setor: checkoutState.sector,
+      setor: checkoutState.sector, // Setor base limpo (ex: "Pista") para o Supabase validar
       quantidade: checkoutState.quantity,
       nome: checkoutState.customer.name,
       cpf: checkoutState.customer.cpf,
       email: checkoutState.customer.email,
       whatsapp: checkoutState.customer.whatsapp,
-      metodo: checkoutState.paymentMethod === 'card' ? 'CARTAO' : 'PIX'
+      metodo: checkoutState.paymentMethod === 'card' ? 'CARTAO' : 'PIX',
+      comboNome: comboAtivo ? `${checkoutState.combo.cardNome}: ${checkoutState.combo.titulo}` : null,
+      comboPreco: comboAtivo ? checkoutState.combo.preco : 0
     });
 
     if (!r || !r.ok) {
@@ -712,16 +1220,12 @@ async function gravarEEmitirIngressos() {
     checkoutState.codigoPedido = r.codigo_pedido || '';
     checkoutState.aguardandoPagamento = r.status_pagamento !== 'APROVADO';
 
-    // Valor oficial do banco — pode diferir do que a tela mostrava se o dono
-    // acabou de trocar o preço do lote.
-    if (r.valor_total != null) {
-      checkoutState.pricePerTicket = Number(r.preco_unitario) || checkoutState.pricePerTicket;
-      const totalEl = document.getElementById('txt-total');
-      const subEl = document.getElementById('txt-subtotal');
-      const fmt = `R$ ${Number(r.valor_total).toFixed(2).replace('.', ',')}`;
-      if (totalEl) totalEl.textContent = fmt;
-      if (subEl) subEl.textContent = fmt;
-    }
+    const totalReal = getCheckoutTotalValor();
+    const totalEl = document.getElementById('txt-total');
+    const subEl = document.getElementById('txt-subtotal');
+    const fmt = `R$ ${totalReal.toFixed(2).replace('.', ',')}`;
+    if (totalEl) totalEl.textContent = fmt;
+    if (subEl) subEl.textContent = fmt;
   } catch (err) {
     console.error('[Checkout] Erro ao criar pedido:', err);
     mostrarErroCheckout(
@@ -742,19 +1246,15 @@ async function gravarEEmitirIngressos() {
 }
 
 /**
- * Monta a tela de sucesso: um QR Code por ingresso comprado.
- * Cada ingresso tem código próprio no banco — mostrar só o primeiro faria os
- * demais serem barrados na portaria como "já utilizado".
+ * Monta a tela de sucesso: um QR Code por ingresso comprado + Banner do Combo/Card
  */
 function renderIngressosEmitidos() {
   const outEvent = document.getElementById('ticket-out-event');
   const outDateTime = document.getElementById('ticket-out-datetime');
   const outName = document.getElementById('ticket-out-name');
   const outSector = document.getElementById('ticket-out-sector');
+  const comboBannerContainer = document.getElementById('ticket-out-combo-container');
 
-  // O ingresso só abre a portaria depois que o dono confere o PIX na conta
-  // dele. Dizer "entrada válida" antes disso mandaria o cliente para a fila
-  // com um QR que a portaria vai recusar.
   const badge = document.getElementById('ticket-status-badge');
   const titulo = document.getElementById('success-title');
   const desc = document.getElementById('success-desc');
@@ -786,6 +1286,29 @@ function renderIngressosEmitidos() {
   if (outDateTime) outDateTime.textContent = checkoutState.eventDate.toUpperCase();
   if (outName) outName.textContent = checkoutState.customer.name || 'Cliente AURA';
   if (outSector) outSector.textContent = `${checkoutState.sector.toUpperCase()} (${checkoutState.quantity}x)`;
+
+  // Banner do Combo e Card Físico de Portaria
+  if (comboBannerContainer) {
+    if (checkoutState.combo && checkoutState.combo.preco > 0) {
+      comboBannerContainer.innerHTML = `
+        <div class="ticket-combo-card-banner ${checkoutState.combo.cardClasse}">
+          <div class="combo-banner-top font-mono">
+            <span class="combo-banner-chip" style="background:${checkoutState.combo.cardCor}"></span>
+            <strong>RETIRADA NA PORTARIA: ${checkoutState.combo.cardNome}</strong>
+          </div>
+          <div class="combo-banner-name">${checkoutState.combo.titulo}</div>
+          <div class="combo-banner-desc font-mono">${checkoutState.combo.descricao}</div>
+          <div class="combo-banner-action font-mono">
+            ⚡ <strong>Apresente seu QR Code ao porteiro</strong> para receber seu <strong>${checkoutState.combo.cardNome}</strong> físico e resgatar suas garrafas no Bar da AURA.
+          </div>
+        </div>
+      `;
+      comboBannerContainer.style.display = 'block';
+    } else {
+      comboBannerContainer.innerHTML = '';
+      comboBannerContainer.style.display = 'none';
+    }
+  }
 
   const lista = document.getElementById('ticket-qr-lista');
   if (!lista) return;
@@ -823,7 +1346,7 @@ function renderIngressosEmitidos() {
 }
 
 /**
- * 6. DISPARO DE INGRESSO NO WHATSAPP DO CLIENTE
+ * 6. DISPARO DE INGRESSO NO WHATSAPP DO CLIENTE COM SUPORTE A COMBOS E CARDS
  */
 function sendTicketToWhatsApp() {
   const codigos = checkoutState.codigosValidadores;
@@ -836,7 +1359,6 @@ function sendTicketToWhatsApp() {
   const zap = (checkoutState.customer.whatsapp || '').replace(/\D/g, '');
   const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
 
-  // Um link por ingresso: cada QR abre o voucher do seu próprio código
   const blocos = codigos
     .map((codigo, i) => {
       const link = `${baseUrl}ingresso.html?v=${encodeURIComponent(codigo)}`;
@@ -847,6 +1369,12 @@ function sendTicketToWhatsApp() {
     })
     .join('\n\n');
 
+  const blocoComboZap = (checkoutState.combo && checkoutState.combo.preco > 0)
+    ? `\n*Combo Incluso:* ${checkoutState.combo.titulo} (R$ ${checkoutState.combo.preco.toFixed(2).replace('.', ',')})
+🍸 *Atenção:* Para retirar as suas bebidas, basta apresentar este mesmo QR Code diretamente no balcão do Bar!
+________________________________________\n`
+    : '';
+
   const texto = encodeURIComponent(
 `*INGRESSO OFICIAL - AURA MOCOCA*
 ________________________________________
@@ -855,7 +1383,7 @@ ________________________________________
 *Data:* ${checkoutState.eventDate}
 *Titular:* ${checkoutState.customer.name}
 *Setor:* ${checkoutState.sector.toUpperCase()} (${codigos.length}x)
-________________________________________
+${blocoComboZap}________________________________________
 
 ${blocos}
 ________________________________________
@@ -869,7 +1397,10 @@ ________________________________________
 *Instrucoes para Entrada:*
 1. Abra cada link acima e mostre o QR Code na portaria.
 2. Cada QR Code libera UMA entrada. Envie o link certo para cada pessoa.
-3. Entrada permitida apenas para maiores de 18 anos com RG/CNH original.
+${checkoutState.combo && checkoutState.combo.preco > 0 ? `3. Apresente este mesmo QR Code no balcão do Bar para retirar seu combo.\n4. Entrada permitida apenas para maiores de 18 anos com RG/CNH original.` : `3. Entrada permitida apenas para maiores de 18 anos com RG/CNH original.`}
+
+⚠️ *ALERTA DE SEGURANÇA:*
+Seu QR Code é o seu ingresso e o seu combo! NUNCA tire print e envie para outras pessoas. Se o seu QR Code for escaneado por outra pessoa primeiro, ele perderá a validade. A casa não se responsabiliza por ingressos ou combos roubados por compartilhamento de prints!
 
 *Endereco:* Av. Joao Batista Lima Figueiredo, 2707 - Mococa/SP
 
@@ -884,7 +1415,9 @@ _Ingresso digital oficial emitido por AURA MOCOCA_`
 window.openCheckout = openCheckout;
 window.openCheckoutWithShow = openCheckoutWithShow;
 window.openCheckoutWithSector = openCheckoutWithSector;
+window.openCheckoutWithCombo = openCheckoutWithCombo;
 window.closeCheckout = closeCheckout;
 window.goToStep = goToStep;
 window.emitDigitalTicket = emitDigitalTicket;
 window.sendTicketToWhatsApp = sendTicketToWhatsApp;
+

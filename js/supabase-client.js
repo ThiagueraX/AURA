@@ -118,7 +118,7 @@ async function chamarRpc(nome, params = {}, { autenticado = false } = {}) {
         motivo: semPermissao ? 'SEM_PERMISSAO' : 'ERRO_SERVIDOR',
         mensagem: semPermissao
           ? 'Sua sessão expirou ou você não tem permissão. Faça login de novo.'
-          : 'Erro de comunicação com o servidor.'
+          : `Erro de comunicação com o servidor (HTTP ${res.status}). Detalhes: ${texto.slice(0, 150)}`
       };
     }
     return corpo || { ok: false, motivo: 'RESPOSTA_VAZIA' };
@@ -222,7 +222,7 @@ async function fetchAuraLotes(showId) {
 // O preço é decidido pelo banco; o que o navegador manda é ignorado.
 // ═══════════════════════════════════════════════════════════════
 
-async function criarPedidoAura({ showId, setor, quantidade, nome, cpf, email, whatsapp, metodo }) {
+async function criarPedidoAura({ showId, setor, quantidade, nome, cpf, email, whatsapp, metodo, comboNome, comboPreco }) {
   return await chamarRpc('aura_criar_pedido', {
     p_show_id: showId,
     p_setor: setor,
@@ -231,7 +231,9 @@ async function criarPedidoAura({ showId, setor, quantidade, nome, cpf, email, wh
     p_cpf: cpf,
     p_email: email,
     p_whatsapp: whatsapp,
-    p_metodo: metodo
+    p_metodo: metodo,
+    p_combo_nome: comboNome || null,
+    p_combo_preco: comboPreco || 0
   });
 }
 
@@ -325,6 +327,13 @@ async function validarIngressoPortaria(codigoValidador, operador = 'PORTARIA') {
   }, { autenticado: true });
 }
 
+async function validarComboBar(codigoValidador, operador = 'BAR') {
+  return await chamarRpc('aura_resgatar_combo', {
+    p_codigo: codigoValidador,
+    p_operador: operador
+  }, { autenticado: true });
+}
+
 async function fetchResumoPortaria(showId) {
   const r = await chamarRpc('aura_resumo_portaria', { p_show_id: showId || null }, { autenticado: true });
   if (!r.ok) return { total: 0, validados: 0, restantes: 0, aguardando_pagamento: 0 };
@@ -348,6 +357,7 @@ window.AuraDB = {
   cancelarPedido: cancelarPedido,
   // portaria
   validarIngressoPortaria: validarIngressoPortaria,
+  validarComboBar: validarComboBar,
   fetchResumoPortaria: fetchResumoPortaria
 };
 

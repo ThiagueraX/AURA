@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="AURA Portaria" />
 
   <!-- Estilos da Portaria -->
-  <link rel="stylesheet" href="css/style.css?v=20260814_21" />
+  <link rel="stylesheet" href="css/style.css?v=20260816_02" />
   <style>
     /* Estilos Específicos do Validador de Portaria */
     body.portaria-body {
@@ -340,6 +340,120 @@
       line-height: 1.6;
     }
 
+    /* Alert de Combo para o Porteiro Entregar Card Físico */
+    .portaria-combo-alert-box {
+      border-radius: 12px;
+      padding: 16px;
+      margin: 14px 0;
+      text-align: center;
+      animation: alertPulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes alertPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+      50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(255, 255, 255, 0.4); }
+    }
+
+    .alert-card-gold {
+      background: linear-gradient(135deg, rgba(255, 194, 74, 0.25), rgba(20, 16, 8, 0.95));
+      border: 3px solid #FFC24A;
+      box-shadow: 0 0 30px rgba(255, 194, 74, 0.4);
+    }
+    .alert-card-amber {
+      background: linear-gradient(135deg, rgba(255, 138, 15, 0.25), rgba(20, 14, 8, 0.95));
+      border: 3px solid #FF8A0F;
+      box-shadow: 0 0 30px rgba(255, 138, 15, 0.4);
+    }
+    .alert-card-blue {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(8, 16, 24, 0.95));
+      border: 3px solid #00F0FF;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+    }
+    .alert-card-royal-blue {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(8, 14, 28, 0.95));
+      border: 3px solid #3B82F6;
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+    }
+    .alert-card-red {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(24, 8, 8, 0.95));
+      border: 3px solid #EF4444;
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    }
+    .alert-card-pink {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(24, 8, 20, 0.95));
+      border: 3px solid #EC4899;
+      box-shadow: 0 0 30px rgba(236, 72, 153, 0.4);
+    }
+    .alert-card-green {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(8, 24, 16, 0.95));
+      border: 3px solid #10B981;
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+    }
+    .alert-card-lime {
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(24, 20, 8, 0.95));
+      border: 3px solid #EAB308;
+      box-shadow: 0 0 30px rgba(234, 179, 8, 0.4);
+    }
+    .alert-card-cyan {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(8, 20, 24, 0.95));
+      border: 3px solid #06B6D4;
+      box-shadow: 0 0 30px rgba(6, 182, 212, 0.4);
+    }
+
+    .portaria-alert-top {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #FFF;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .portaria-alert-card-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .alert-card-gold .portaria-alert-card-title { color: #FFC24A; }
+    .alert-card-amber .portaria-alert-card-title { color: #FF8A0F; }
+    .alert-card-blue .portaria-alert-card-title { color: #00F0FF; }
+    .alert-card-royal-blue .portaria-alert-card-title { color: #60A5FA; }
+    .alert-card-red .portaria-alert-card-title { color: #F87171; }
+    .alert-card-pink .portaria-alert-card-title { color: #F472B6; }
+    .alert-card-green .portaria-alert-card-title { color: #34D399; }
+    .alert-card-lime .portaria-alert-card-title { color: #FACC15; }
+    .alert-card-cyan .portaria-alert-card-title { color: #22D3EE; }
+
+    .portaria-alert-prod {
+      font-size: 0.9rem;
+      color: #FFFFFF;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .portaria-alert-warn {
+      font-size: 0.75rem;
+      color: #CBD5E1;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      padding: 6px 10px;
+    }
+
+    .portaria-no-combo-badge {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 0.75rem;
+      color: #8A9099;
+      margin: 10px 0;
+      text-align: center;
+    }
+
     .btn-next-scan {
       width: 100%;
       background: #10B981;
@@ -400,7 +514,7 @@
   <header class="portaria-header">
     <div class="portaria-title-block">
       <span style="font-family: 'Italiana', serif; font-size: 1.4rem; color: #FFF4D6; letter-spacing: 0.2em;">AURA</span>
-      <span class="font-mono" style="font-size: 0.75rem; color: #8A9099;">• CHECK-IN PORTARIA</span>
+      <span class="font-mono" id="header-modo-title" style="font-size: 0.75rem; color: #8A9099;">• CENTRAL DA EQUIPE</span>
     </div>
 
     <div style="display: flex; align-items: center; gap: 8px;">
@@ -438,6 +552,24 @@
         Liberar Scanner →
       </button>
     </form>
+  </div>
+
+  <!-- SELEÇÃO DE MODO (PORTARIA OU BAR) -->
+  <div class="portaria-login-tela" id="portaria-modo-selecao" style="display: none;">
+    <div class="portaria-login-card" style="text-align: center;">
+      <h2 class="portaria-login-titulo">Selecione a Operação</h2>
+      <p class="portaria-login-desc font-mono">Em qual setor você está trabalhando agora?</p>
+
+      <button type="button" class="btn-portaria-entrar font-mono" id="btn-modo-portaria" style="margin-bottom: 12px; background: #10B981; color: #08090C;">
+        🟢 MODO PORTARIA (Entrada)
+      </button>
+      <button type="button" class="btn-portaria-entrar font-mono" id="btn-modo-bar" style="margin-bottom: 12px; background: #00F0FF; color: #08090C;">
+        🍸 MODO BAR (Resgate Combo)
+      </button>
+      <button type="button" class="btn-portaria-entrar font-mono" id="btn-modo-admin" style="background: #FFC24A; color: #08090C;">
+        👑 PAINEL DO DONO (Caixa & PIX)
+      </button>
+    </div>
   </div>
 
   <main class="portaria-container" id="portaria-scanner" style="display: none;">
@@ -493,6 +625,9 @@
       <h2 class="result-title" id="result-title">ENTRADA LIBERADA</h2>
       <p class="font-mono" id="result-msg" style="font-size: 0.85rem; color: #CBD5E1;"></p>
 
+      <!-- ALERTA DE ENTREGA DE CARD DE COMBO FÍSICO -->
+      <div id="portaria-combo-alert"></div>
+
       <div class="result-detail-box" id="result-details">
         <div><strong>TITULAR:</strong> <span id="det-nome">-</span></div>
         <div><strong>SETOR:</strong> <span id="det-setor" style="color: #00F0FF; font-weight: bold;">-</span></div>
@@ -516,7 +651,7 @@
   </main>
 
   <!-- SUPABASE CLIENT & SCRIPT DE PORTARIA -->
-  <script src="js/supabase-client.js?v=20260815_40"></script>
-  <script src="js/portaria.js?v=20260815_41"></script>
+  <script src="js/supabase-client.js?v=20260817_01"></script>
+  <script src="js/portaria.js?v=20260817_01"></script>
 </body>
 </html>

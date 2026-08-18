@@ -14,7 +14,20 @@
   <meta name="theme-color" content="#060709" />
 
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
 
     body {
       background: #060709;
@@ -26,6 +39,8 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     .font-mono { font-family: 'DM Mono', monospace; }
@@ -210,6 +225,92 @@
       color: #94A3B8;
     }
 
+    /* Banner de Combo e Card de Retirada */
+    .voucher-combo-box {
+      border-radius: 10px;
+      padding: 14px;
+      margin: 16px 0;
+      text-align: left;
+    }
+    .voucher-combo-box.card-gold {
+      background: linear-gradient(135deg, rgba(255, 194, 74, 0.18), rgba(20, 16, 8, 0.95));
+      border: 2px solid #FFC24A;
+    }
+    .voucher-combo-box.card-amber {
+      background: linear-gradient(135deg, rgba(255, 138, 15, 0.18), rgba(20, 14, 8, 0.95));
+      border: 2px solid #FF8A0F;
+    }
+    .voucher-combo-box.card-blue {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.18), rgba(8, 16, 24, 0.95));
+      border: 2px solid #00F0FF;
+    }
+    .voucher-combo-box.card-royal-blue {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(8, 14, 28, 0.95));
+      border: 2px solid #3B82F6;
+    }
+    .voucher-combo-box.card-red {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(24, 8, 8, 0.95));
+      border: 2px solid #EF4444;
+    }
+    .voucher-combo-box.card-pink {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(24, 8, 20, 0.95));
+      border: 2px solid #EC4899;
+    }
+    .voucher-combo-box.card-green {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(8, 24, 16, 0.95));
+      border: 2px solid #10B981;
+    }
+    .voucher-combo-box.card-lime {
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.18), rgba(24, 20, 8, 0.95));
+      border: 2px solid #EAB308;
+    }
+    .voucher-combo-box.card-cyan {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(8, 20, 24, 0.95));
+      border: 2px solid #06B6D4;
+    }
+
+    .v-combo-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #FFF;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .v-combo-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+    .v-combo-chip {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .card-gold .v-combo-chip { background: rgba(255, 194, 74, 0.2); color: #FFC24A; border: 1px solid #FFC24A; }
+    .card-amber .v-combo-chip { background: rgba(255, 138, 15, 0.2); color: #FF8A0F; border: 1px solid #FF8A0F; }
+    .card-blue .v-combo-chip { background: rgba(0, 240, 255, 0.2); color: #00F0FF; border: 1px solid #00F0FF; }
+    .card-royal-blue .v-combo-chip { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid #3B82F6; }
+    .card-red .v-combo-chip { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; }
+    .card-pink .v-combo-chip { background: rgba(236, 72, 153, 0.2); color: #F472B6; border: 1px solid #EC4899; }
+    .card-green .v-combo-chip { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
+    .card-lime .v-combo-chip { background: rgba(234, 179, 8, 0.2); color: #FACC15; border: 1px solid #EAB308; }
+    .card-cyan .v-combo-chip { background: rgba(6, 182, 212, 0.2); color: #22D3EE; border: 1px solid #06B6D4; }
+
+    .v-combo-hint {
+      font-size: 0.72rem;
+      color: #94A3B8;
+      line-height: 1.4;
+    }
+
     /* Botão Salvar */
     .voucher-actions {
       margin-top: 16px;
@@ -276,6 +377,9 @@
           </div>
         </div>
 
+        <!-- Banner de Combo e Card de Retirada na Portaria -->
+        <div id="voucher-combo-box" style="display: none;"></div>
+
         <!-- QR CODE REAL ESCANEAVEL -->
         <div class="voucher-qr-section">
           <img id="voucher-qr-img" src="" alt="QR Code do Ingresso" />
@@ -305,7 +409,7 @@
   </div>
 
   <!-- SUPABASE CLIENT -->
-  <script src="js/supabase-client.js?v=20260814_21"></script>
+  <script src="js/supabase-client.js?v=20260816_01"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -413,11 +517,104 @@
         }
       }
 
+      // Banner de Combo e Card de Retirada Física na Portaria
+      const comboContainer = document.getElementById('voucher-combo-box');
+      if (comboContainer) {
+        const comboInfo = extrairComboDoIngresso(ingresso);
+        if (comboInfo) {
+          comboContainer.className = `voucher-combo-box ${comboInfo.classe}`;
+          comboContainer.innerHTML = `
+            <div class="v-combo-tag font-mono">
+              <span>🏷️ COMBO INCLUSO NO PEDIDO:</span>
+            </div>
+            <div class="v-combo-title">${comboInfo.produto}</div>
+            <span class="v-combo-chip font-mono">💳 RETIRAR NA PORTARIA: ${comboInfo.cardNome}</span>
+            <p class="v-combo-hint font-mono">
+              Ao apresentar este QR Code na portaria, o segurança entregará seu <strong>${comboInfo.cardNome}</strong> físico para resgatar no Bar da casa.
+            </p>
+          `;
+          comboContainer.style.display = 'block';
+        } else {
+          comboContainer.style.display = 'none';
+        }
+      }
+
       // QR Code real gerado via API publica
       if (elQrImg) {
         const qrData = encodeURIComponent(ingresso.codigo_validador);
         elQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrData}&format=png&margin=8`;
       }
+    }
+
+    function extrairComboDoIngresso(ingresso) {
+      if (!ingresso) return null;
+      const setor = (ingresso.setor || '').toUpperCase();
+
+      if (setor.includes('BLACK LABEL') || setor.includes('CARD DOURADO') || (setor.includes('WHISKY') && setor.includes('BLACK'))) {
+        return {
+          cardNome: 'CARD DOURADO',
+          classe: 'card-gold',
+          produto: 'Combo Johnnie Walker Black Label 12 Anos'
+        };
+      }
+      if (setor.includes('RED LABEL') || setor.includes('CARD ÂMBAR') || setor.includes('CARD AMBAR') || (setor.includes('WHISKY') && setor.includes('RED'))) {
+        return {
+          cardNome: 'CARD ÂMBAR',
+          classe: 'card-amber',
+          produto: 'Combo Johnnie Walker Red Label'
+        };
+      }
+      if (setor.includes('CIROC') || setor.includes('CÎROC') || setor.includes('AZUL ROYAL')) {
+        return {
+          cardNome: 'CARD AZUL ROYAL',
+          classe: 'card-royal-blue',
+          produto: 'Combo Cîroc Ultra Premium Vodka'
+        };
+      }
+      if (setor.includes('ABSOLUT') || setor.includes('CARD AZUL') || setor.includes('VODKA')) {
+        return {
+          cardNome: 'CARD AZUL',
+          classe: 'card-blue',
+          produto: 'Combo Absolut Vodka'
+        };
+      }
+      if (setor.includes('TANQUERAY') || setor.includes('CARD VERMELHO') || setor.includes('GIN')) {
+        return {
+          cardNome: 'CARD VERMELHO',
+          classe: 'card-red',
+          produto: 'Combo Gin Tanqueray London Dry'
+        };
+      }
+      if (setor.includes('CHANDON') || setor.includes('PASSION') || setor.includes('CARD ROSA') || setor.includes('ESPUMANTE')) {
+        return {
+          cardNome: 'CARD ROSA',
+          classe: 'card-pink',
+          produto: 'Chandon Passion On The Rocks'
+        };
+      }
+      if (setor.includes('CORONA') || setor.includes('VERDE LIMÃO') || setor.includes('VERDE LIMAO')) {
+        return {
+          cardNome: 'CARD VERDE LIMÃO',
+          classe: 'card-lime',
+          produto: 'Balde Corona Extra (6x com Limão)'
+        };
+      }
+      if (setor.includes('HEINEKEN') || setor.includes('CARD VERDE') || setor.includes('BALDE')) {
+        return {
+          cardNome: 'CARD VERDE',
+          classe: 'card-green',
+          produto: 'Balde Heineken (6x Long Neck)'
+        };
+      }
+      if (setor.includes('RED BULL') || setor.includes('CARD CIANO')) {
+        return {
+          cardNome: 'CARD CIANO',
+          classe: 'card-cyan',
+          produto: 'Combo 5x Red Bull Energy Drink'
+        };
+      }
+
+      return null;
     }
 
     let pollingVoucherInterval = null;

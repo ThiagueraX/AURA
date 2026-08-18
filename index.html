@@ -27,7 +27,7 @@
   <meta name="theme-color" content="#08090C" />
 
   <!-- Folha de Estilos Principal -->
-  <link rel="stylesheet" href="css/style.css?v=20260815_47" />
+  <link rel="stylesheet" href="css/style.css?v=20260816_02" />
 </head>
 <body>
 
@@ -77,7 +77,7 @@
       <nav class="navbar-nav font-mono" aria-label="Navegação Principal">
         <a href="#shows" class="nav-item">[ SHOWS ]</a>
         <a href="#ingressos" class="nav-item nav-item--highlight">[ INGRESSOS ]</a>
-        <a href="#setores" class="nav-item">[ CAMAROTES ]</a>
+        <a href="#cardapio" class="nav-item">[ COMBOS &amp; BEBIDAS ]</a>
         <a href="#galeria" class="nav-item">[ A CASA ]</a>
         <a href="#reviews" class="nav-item">[ AVALIAÇÕES ]</a>
         <a href="#faq" class="nav-item">[ REGRAS 18+ ]</a>
@@ -252,7 +252,7 @@
           
           <!-- SHOW PRINCIPAL ATIVO: LORENAH IN AURA -->
           <article class="show-card show-card--featured" id="card-active-show">
-            <div class="show-card-media" onclick="openCheckoutWithShow('Lorenah in Aura • Sertanejo & Funk')">
+            <div class="show-card-media" onclick="openCheckoutWithShow('active')">
               <img 
                 src="https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg" 
                 alt="Flyer Oficial Lorenah in Aura" 
@@ -285,7 +285,7 @@
                   <span class="price-label font-mono">A partir de:</span>
                   <span class="price-val" id="show-active-price">R$ 40,00</span>
                 </div>
-                <button type="button" class="btn-show-buy" onclick="openCheckoutWithShow('Lorenah in Aura • Sertanejo & Funk')">
+                <button type="button" class="btn-show-buy" onclick="openCheckoutWithShow('active')">
                   Garantir Ingresso →
                 </button>
               </div>
@@ -294,7 +294,7 @@
 
           <!-- PRÓXIMO SHOW EM FILA / PRÉ-VENDA -->
           <article class="show-card" id="card-next-show">
-            <div class="show-card-media" onclick="openCheckoutWithShow('AURA Saturday Sessions')">
+            <div class="show-card-media" onclick="openCheckoutWithShow('next')">
               <div class="upcoming-flyer-placeholder">
                 <div class="upcoming-emblem">⚡</div>
                 <div class="font-mono highlight-cyan">[ PRÓXIMA ATRAÇÃO ]</div>
@@ -321,7 +321,7 @@
                   <span class="price-label font-mono">Lote Promocional:</span>
                   <span class="price-val" id="show-next-price">R$ 35,00</span>
                 </div>
-                <button type="button" class="btn-show-buy btn-show-buy--secondary" onclick="openCheckoutWithShow('AURA Saturday Sessions')">
+                <button type="button" class="btn-show-buy btn-show-buy--secondary" onclick="openCheckoutWithShow('next')">
                   Garantir Pré-Venda →
                 </button>
               </div>
@@ -415,63 +415,82 @@
     <!-- ======================================================== -->
     <!-- SEÇÃO 4: CARROSSEL DE BEBIDAS & MARCAS PREMIUM (TICKER)  -->
     <!-- ======================================================== -->
-    <section class="brands-section" aria-label="Marcas Parceiras Servidas na Casa">
+    <section class="brands-section" aria-label="Marcas Parceiras Servidas na Casa" id="cardapio">
       <div class="brands-container">
         <div class="brands-header text-center">
           <div class="brands-title-tag font-mono">[ CARDÁPIO EXCLUSIVO DE MARCAS ]</div>
           <h2 class="brands-main-title font-display">BEBIDAS &amp; COMBOS ORIGINAIS</h2>
-          <p class="brands-subtitle">Trabalhamos exclusivamente com marcas premium e rótulos 100% certificados.</p>
+          <p class="brands-subtitle">Trabalhamos exclusivamente com marcas premium e rótulos 100% certificados. Clique em qualquer marca para ver os combos.</p>
+          <div class="brands-action-wrapper">
+            <button type="button" class="btn-open-cardapio-all font-mono" onclick="openCardapio('todos')" data-cursor="CARDÁPIO">
+              <span>🍾 ABRIR CARDÁPIO COMPLETO DE COMBOS &amp; BEBIDAS →</span>
+            </button>
+          </div>
         </div>
         
         <div class="brands-marquee-wrapper">
           <div class="brands-track">
             <!-- Grupo 1 -->
             <div class="brands-track-group">
-              <div class="brand-square-card" title="Red Bull">
+              <div class="brand-square-card" title="Red Bull - Ver Combos & Energéticos" role="button" tabindex="0" onclick="openCardapio('redbull')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/red_bul-removebg-preview.png_2K_202608151228.jpeg_2K_202608151259__1_-removebg-preview.png" alt="Red Bull" class="brand-logo-img logo--redbull" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Johnnie Walker">
+              <div class="brand-square-card" title="Johnnie Walker - Ver Combos de Whisky" role="button" tabindex="0" onclick="openCardapio('whisky')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/walker__1_-removebg-preview.png_2K_202608151227.jpeg" alt="Johnnie Walker" class="brand-logo-img logo--walker" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Absolut Vodka">
+              <div class="brand-square-card" title="Absolut Vodka - Ver Combos de Vodka" role="button" tabindex="0" onclick="openCardapio('vodka')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/absolut-removebg-preview.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Absolut Vodka" class="brand-logo-img logo--absolut" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Cîroc">
+              <div class="brand-square-card" title="Cîroc - Ver Combos Ultra Premium" role="button" tabindex="0" onclick="openCardapio('vodka')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/images.jpg_2K_202608151259__1_-removebg-preview.png" alt="Cîroc" class="brand-logo-img logo--ciroc" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Heineken">
+              <div class="brand-square-card" title="Heineken - Ver Baldes de Cerveja" role="button" tabindex="0" onclick="openCardapio('cerveja')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/heineken-removebg-preview__1_.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Heineken" class="brand-logo-img logo--heineken" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER BALDES ↗</span>
               </div>
-              <div class="brand-square-card" title="Chandon">
+              <div class="brand-square-card" title="Chandon - Ver Espumantes & Garrafas" role="button" tabindex="0" onclick="openCardapio('espumante')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/chandon-removebg-preview.png_2K_202608151227.jpeg" alt="Chandon" class="brand-logo-img logo--chandon" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER ESPUMANTES ↗</span>
               </div>
-              <div class="brand-square-card" title="Corona Extra">
+              <div class="brand-square-card" title="Corona Extra - Ver Baldes com Limão" role="button" tabindex="0" onclick="openCardapio('cerveja')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/corona-removebg-preview.png" alt="Corona Extra" class="brand-logo-img logo--corona" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER BALDES ↗</span>
               </div>
             </div>
 
             <!-- Grupo 2 (Looping Infinito Perfeito & Contínuo) -->
             <div class="brands-track-group" aria-hidden="true">
-              <div class="brand-square-card" title="Red Bull">
+              <div class="brand-square-card" title="Red Bull - Ver Combos & Energéticos" role="button" tabindex="0" onclick="openCardapio('redbull')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/red_bul-removebg-preview.png_2K_202608151228.jpeg_2K_202608151259__1_-removebg-preview.png" alt="Red Bull" class="brand-logo-img logo--redbull" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Johnnie Walker">
+              <div class="brand-square-card" title="Johnnie Walker - Ver Combos de Whisky" role="button" tabindex="0" onclick="openCardapio('whisky')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/walker__1_-removebg-preview.png_2K_202608151227.jpeg" alt="Johnnie Walker" class="brand-logo-img logo--walker" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Absolut Vodka">
+              <div class="brand-square-card" title="Absolut Vodka - Ver Combos de Vodka" role="button" tabindex="0" onclick="openCardapio('vodka')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/absolut-removebg-preview.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Absolut Vodka" class="brand-logo-img logo--absolut" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Cîroc">
+              <div class="brand-square-card" title="Cîroc - Ver Combos Ultra Premium" role="button" tabindex="0" onclick="openCardapio('vodka')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/images.jpg_2K_202608151259__1_-removebg-preview.png" alt="Cîroc" class="brand-logo-img logo--ciroc" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER COMBOS ↗</span>
               </div>
-              <div class="brand-square-card" title="Heineken">
+              <div class="brand-square-card" title="Heineken - Ver Baldes de Cerveja" role="button" tabindex="0" onclick="openCardapio('cerveja')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/heineken-removebg-preview__1_.png_2K_202608151227.jpeg_2K_202608151259-removebg-preview.png" alt="Heineken" class="brand-logo-img logo--heineken" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER BALDES ↗</span>
               </div>
-              <div class="brand-square-card" title="Chandon">
+              <div class="brand-square-card" title="Chandon - Ver Espumantes & Garrafas" role="button" tabindex="0" onclick="openCardapio('espumante')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/chandon-removebg-preview.png_2K_202608151227.jpeg" alt="Chandon" class="brand-logo-img logo--chandon" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER ESPUMANTES ↗</span>
               </div>
-              <div class="brand-square-card" title="Corona Extra">
+              <div class="brand-square-card" title="Corona Extra - Ver Baldes com Limão" role="button" tabindex="0" onclick="openCardapio('cerveja')" data-cursor="COMBOS">
                 <img src="imagens/bebidas/corona-removebg-preview.png" alt="Corona Extra" class="brand-logo-img logo--corona" loading="lazy" />
+                <span class="brand-click-hint font-mono">VER BALDES ↗</span>
               </div>
             </div>
           </div>
@@ -840,7 +859,7 @@
 
           <div class="form-group">
             <label class="form-label font-mono">1. SELECIONE SEU SETOR:</label>
-            <div class="sector-selector-grid">
+            <div class="sector-selector-grid" id="checkout-sector-selector-grid">
               
               <label class="sector-radio-card is-selected" data-sector="Pista" data-price="40">
                 <input type="radio" name="checkout_sector" value="Pista" checked />
@@ -873,10 +892,27 @@
             </div>
           </div>
 
+          <!-- 3. SELEÇÃO OPCIONAL DE COMBO / GARRAFA ANTECIPADA -->
+          <div class="form-group checkout-combos-group">
+            <div class="checkout-combo-header">
+              <label class="form-label font-mono">3. ADICIONAR COMBO / GARRAFA? (OPCIONAL):</label>
+              <span class="checkout-combo-badge font-mono">🍸 RETIRADA DIRETO NO BAR</span>
+            </div>
+            <p class="checkout-combo-hint font-mono">Ao comprar junto, você apresenta o seu <strong>QR Code</strong> diretamente no Bar da AURA para retirar seu combo, sem precisar passar pelo caixa.</p>
+            
+            <div class="combo-selector-scroll font-mono" id="checkout-combo-selector-container">
+              <!-- Renderizado dinamicamente pelo js/checkout.js -->
+            </div>
+          </div>
+
           <div class="order-subtotal-card">
             <div class="subtotal-row font-mono">
-              <span>Subtotal:</span>
+              <span>Ingressos:</span>
               <span id="txt-subtotal">R$ 40,00</span>
+            </div>
+            <div class="subtotal-row font-mono" id="subtotal-combo-row" style="display: none;">
+              <span id="txt-subtotal-combo-desc">+ Combo Selecionado:</span>
+              <span class="highlight-cyan font-bold" id="txt-subtotal-combo-val">R$ 0,00</span>
             </div>
             <div class="subtotal-row font-mono">
               <span>Taxa de Emissão Online:</span>
@@ -975,23 +1011,15 @@
 
           <div class="payment-content" id="pay-content-card" style="display: none;">
             <form id="form-card-payment">
+              <!-- STRIPE ELEMENTS CONTAINER -->
               <div class="form-group">
-                <label for="card-num" class="form-label font-mono">NÚMERO DO CARTÃO</label>
-                <input type="text" id="card-num" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19" required />
+                <label class="form-label font-mono">DADOS DO CARTÃO (SECURE BY STRIPE)</label>
+                <div id="card-element" style="padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;"></div>
+                <div id="card-errors" role="alert" style="color: #ff4a4a; font-size: 0.85rem; margin-top: 8px;"></div>
               </div>
 
-              <div class="form-row">
-                <div class="form-group flex-1">
-                  <label for="card-exp" class="form-label font-mono">VALIDADE</label>
-                  <input type="text" id="card-exp" class="form-input" placeholder="MM/AA" maxlength="5" required />
-                </div>
-                <div class="form-group flex-1">
-                  <label for="card-cvv" class="form-label font-mono">CVV</label>
-                  <input type="text" id="card-cvv" class="form-input" placeholder="123" maxlength="4" required />
-                </div>
-              </div>
-
-              <div class="form-group">
+              <!-- A Stripe não lida nativamente com dropdown de parcelamento no Element básico, então gerenciamos nós mesmos para passar ao PaymentIntent -->
+              <div class="form-group" style="margin-top: 16px;">
                 <label for="card-installments" class="form-label font-mono">PARCELAMENTO</label>
                 <select id="card-installments" class="form-input">
                   <option value="1">1x sem juros</option>
@@ -1034,6 +1062,9 @@
                 </div>
               </div>
 
+              <!-- Banner de Combo e Card de Retirada Física na Portaria -->
+              <div id="ticket-out-combo-container" style="display: none; margin-bottom: 16px;"></div>
+
               <!-- Um QR Code por ingresso comprado. Cada um tem código próprio
                    no banco: o QR do ingresso 1 não libera a entrada do 2. -->
               <div class="ticket-qrcode-wrapper">
@@ -1058,6 +1089,52 @@
           </div>
         </div>
 
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL / DRAWER: CARDÁPIO VIP DE BEBIDAS & COMBOS (AURA)  -->
+  <!-- ======================================================== -->
+  <div id="cardapio-modal" class="cardapio-modal-overlay" aria-hidden="true">
+    <div class="cardapio-drawer" id="cardapio-drawer" role="dialog" aria-modal="true" aria-labelledby="cardapio-modal-title">
+      
+      <div class="cardapio-header">
+        <div>
+          <div class="cardapio-tag font-mono">[ AURA MOCOCA • CARDÁPIO OFICIAL VIP ]</div>
+          <h3 class="cardapio-title" id="cardapio-modal-title">Combos &amp; Bebidas Premium</h3>
+        </div>
+        <button type="button" class="btn-cardapio-close" id="btn-close-cardapio" aria-label="Fechar cardápio" onclick="closeCardapio()">✕</button>
+      </div>
+
+      <!-- Barra de Filtros e Busca Rápida -->
+      <div class="cardapio-nav-bar">
+        <div class="cardapio-tabs-scroll font-mono">
+          <button type="button" class="cardapio-tab-btn is-active" data-filter="todos" onclick="filtrarCardapio('todos')">✨ Todos os Combos</button>
+          <button type="button" class="cardapio-tab-btn" data-filter="whisky" onclick="filtrarCardapio('whisky')">🥃 Whiskies</button>
+          <button type="button" class="cardapio-tab-btn" data-filter="vodka" onclick="filtrarCardapio('vodka')">🍸 Vodkas &amp; Gins</button>
+          <button type="button" class="cardapio-tab-btn" data-filter="espumante" onclick="filtrarCardapio('espumante')">🍾 Espumantes</button>
+          <button type="button" class="cardapio-tab-btn" data-filter="cerveja" onclick="filtrarCardapio('cerveja')">🍺 Baldes de Cerveja</button>
+          <button type="button" class="cardapio-tab-btn" data-filter="redbull" onclick="filtrarCardapio('redbull')">⚡ Energéticos &amp; Doses</button>
+        </div>
+        
+        <div class="cardapio-search-box">
+          <input type="text" id="cardapio-search-input" class="cardapio-search-input font-mono" placeholder="🔍 Buscar combo, bebida ou marca (ex: Black Label, Cîroc, Heineken)..." oninput="buscarNoCardapio(this.value)" />
+        </div>
+      </div>
+
+      <!-- Corpo com Grade de Combos -->
+      <div class="cardapio-body">
+        <div class="cardapio-grid" id="cardapio-grid-container">
+          <!-- Renderizado dinamicamente pelo js/cardapio.js -->
+        </div>
+        
+        <!-- Avisos e Rodapé Legal -->
+        <div class="cardapio-legal-footer font-mono">
+          <p>⚠️ <strong>Avisos da Casa:</strong> Todos os combos acompanham balde térmico/acrílico oficial, gelo cristalino e copos/taças personalizadas da AURA. Pedidos podem ser reservados antecipadamente para camarotes e bistrôs.</p>
+          <p class="highlight-muted">🔞 Proibida a venda e o consumo de bebidas alcoólicas para menores de 18 anos. Se beber, não dirija. Volte de aplicativo ou motorista da rodada.</p>
+        </div>
       </div>
 
     </div>
@@ -1277,11 +1354,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js?v=20260815_46"></script>
 
+  <!-- Stripe JS -->
+  <script src="https://js.stripe.com/v3/"></script>
+
   <!-- SCRIPTS DA APLICAÇÃO & BLINDAGEM DE CÓDIGO -->
-  <script src="js/security.js?v=20260815_46"></script>
-  <script src="js/main.js?v=20260815_46"></script>
-  <script src="js/checkout.js?v=20260815_46"></script>
-  <script src="js/admin.js?v=20260815_46"></script>
+  <script src="js/security.js?v=20260816_01"></script>
+  <script src="js/main.js?v=20260816_01"></script>
+  <script src="js/cardapio.js?v=20260816_01"></script>
+  <script src="js/admin.js?v=20260816_01"></script>
+  <script src="js/checkout.js?v=20260816_01"></script>
 
 </body>
 </html>

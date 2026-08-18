@@ -92,6 +92,16 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scrollbar-width: none; /* Firefox: oculta barra de rolagem */
+  -ms-overflow-style: none; /* IE / Edge: oculta barra de rolagem */
+}
+
+/* Oculta barras de rolagem nativas no Chrome, Edge, Safari e Opera */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
 html {
@@ -101,6 +111,8 @@ html {
   color: var(--text-white);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 body {
@@ -110,6 +122,8 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   position: relative;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .font-mono {
@@ -1559,7 +1573,7 @@ body {
     inset 0 0 15px rgba(255, 194, 74, 0.12);
   flex-shrink: 0;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: default;
+  cursor: pointer !important;
 }
 
 .brand-logo-img {
@@ -1596,6 +1610,59 @@ body {
 .brand-square-card:hover .brand-logo-img {
   opacity: 1;
   transform: scale(1.05);
+}
+
+.brand-click-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(255, 194, 74, 0.95);
+  color: #000;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
+.brand-square-card:hover .brand-click-hint {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.brands-header .brands-action-wrapper {
+  margin-top: 22px;
+}
+
+.btn-open-cardapio-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 194, 74, 0.08);
+  border: 1.5px solid rgba(255, 194, 74, 0.5);
+  color: #FFC24A;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 194, 74, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-open-cardapio-all:hover {
+  background: linear-gradient(135deg, #FFC24A 0%, #FF8A0F 100%);
+  color: #000000;
+  border-color: #FFC24A;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 194, 74, 0.4), 0 0 25px rgba(255, 194, 74, 0.3);
 }
 
 /* --------------------------------------------------------------------------
@@ -2263,6 +2330,14 @@ body {
   padding: 28px;
   overflow-y: auto;
   flex-grow: 1;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.drawer-body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .checkout-event-summary {
@@ -2933,6 +3008,14 @@ body {
   padding: 32px;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.admin-card::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .admin-header {
@@ -2970,19 +3053,15 @@ body {
   margin-bottom: 16px;
 }
 
-/* Com a 4ª aba (Pagamentos) as abas não cabem mais na largura do celular.
-   Rolagem lateral própria em vez de transbordar a página. */
+/* Painel agora usa flex-wrap em vez de scroll horizontal pra facilitar o clique no PC/Mobile */
 .admin-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 24px;
   border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 12px;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-
-.admin-tabs::-webkit-scrollbar { display: none; }
 
 .admin-tab-btn {
   background: none;
@@ -2995,7 +3074,6 @@ body {
   cursor: pointer;
   transition: all var(--transition-fast);
   white-space: nowrap;
-  flex: 0 0 auto;
 }
 
 @media (max-width: 480px) {
@@ -3559,4 +3637,752 @@ textarea:focus-visible,
   .btn-quick-ticket .btn-icon {
     display: none;
   }
+}
+
+/* --------------------------------------------------------------------------
+   18. MODAL & CARDÁPIO VIP DE BEBIDAS E COMBOS (PADRÃO PRODUX AURA)
+   -------------------------------------------------------------------------- */
+.cardapio-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+  padding: 20px;
+}
+
+.cardapio-modal-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cardapio-drawer {
+  width: 100%;
+  max-width: 920px;
+  max-height: 90vh;
+  background: #08090C;
+  border: 1.5px solid rgba(255, 194, 74, 0.45);
+  border-radius: 24px;
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.95),
+    0 0 40px rgba(255, 194, 74, 0.15),
+    inset 0 0 20px rgba(255, 194, 74, 0.05);
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.96) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.cardapio-modal-overlay.is-open .cardapio-drawer {
+  transform: scale(1) translateY(0);
+}
+
+.cardapio-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0D0F17;
+  gap: 16px;
+}
+
+.cardapio-tag {
+  font-size: 0.72rem;
+  color: #FFC24A;
+  margin-bottom: 4px;
+}
+
+.cardapio-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.btn-cardapio-close {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #8A9099;
+  font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-cardapio-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #FFF;
+  border-color: #EF4444;
+  transform: rotate(90deg);
+}
+
+/* Barra de Abas e Pesquisa */
+.cardapio-nav-bar {
+  padding: 16px 28px;
+  background: #0A0C12;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cardapio-tabs-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.cardapio-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cardapio-tab-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: #8E96A4;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.cardapio-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFF;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cardapio-tab-btn.is-active {
+  background: rgba(255, 194, 74, 0.15);
+  border-color: #FFC24A;
+  color: #FFC24A;
+  box-shadow: 0 0 15px rgba(255, 194, 74, 0.2);
+}
+
+.cardapio-search-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: #FFF;
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cardapio-search-input:focus {
+  border-color: #00F0FF;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);
+}
+
+/* Corpo e Grade de Itens */
+.cardapio-body {
+  padding: 24px 28px 28px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cardapio-body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.cardapio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.combo-card {
+  background: #0E111A;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.combo-card:hover {
+  background: #131724;
+  border-color: rgba(255, 194, 74, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.combo-card.is-featured {
+  border-color: rgba(255, 194, 74, 0.45);
+  background: linear-gradient(180deg, #131726 0%, #0E111A 100%);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 194, 74, 0.05);
+}
+
+.combo-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.combo-brand-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #8E96A4;
+  letter-spacing: 0.05em;
+}
+
+.combo-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.badge-gold {
+  background: rgba(255, 194, 74, 0.15);
+  color: #FFC24A;
+  border: 1px solid rgba(255, 194, 74, 0.4);
+}
+
+.badge-gold-shine {
+  background: linear-gradient(135deg, rgba(255, 194, 74, 0.3) 0%, rgba(255, 138, 15, 0.3) 100%);
+  color: #FFF4D6;
+  border: 1px solid #FFC24A;
+  box-shadow: 0 0 10px rgba(255, 194, 74, 0.3);
+}
+
+.badge-cyan {
+  background: rgba(0, 240, 255, 0.12);
+  color: #00F0FF;
+  border: 1px solid rgba(0, 240, 255, 0.35);
+}
+
+.badge-cyan-glow {
+  background: rgba(0, 240, 255, 0.2);
+  color: #E6FFFF;
+  border: 1px solid #00F0FF;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.badge-amber {
+  background: rgba(255, 138, 15, 0.15);
+  color: #FF8A0F;
+  border: 1px solid rgba(255, 138, 15, 0.4);
+}
+
+.badge-pink {
+  background: rgba(244, 114, 182, 0.15);
+  color: #F472B6;
+  border: 1px solid rgba(244, 114, 182, 0.4);
+}
+
+.badge-green {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.badge-muted {
+  background: rgba(255, 255, 255, 0.05);
+  color: #8E96A4;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.combo-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.combo-subtitle {
+  font-size: 0.74rem;
+  color: #8E96A4;
+  margin-bottom: 14px;
+}
+
+.combo-items-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.combo-items-label {
+  font-size: 0.65rem;
+  color: #FFC24A;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.combo-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combo-items-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: #D1D5DB;
+  line-height: 1.35;
+}
+
+.combo-item-check {
+  color: #10B981;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.combo-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.combo-price-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.combo-price-label {
+  font-size: 0.62rem;
+  color: #8E96A4;
+}
+
+.combo-price-val {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #FFC24A;
+}
+
+.btn-combo-order {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--neon-brasa) 100%);
+  color: var(--text-dark);
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(255, 138, 0, 0.3);
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-combo-order:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%);
+  box-shadow: 0 6px 20px var(--neon-cyan-glow);
+  color: var(--text-pure);
+}
+
+.cardapio-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: #8E96A4;
+}
+
+.cardapio-empty-state .empty-icon {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+}
+
+.btn-cardapio-reset {
+  margin-top: 14px;
+  background: rgba(255, 194, 74, 0.15);
+  border: 1px solid #FFC24A;
+  color: #FFC24A;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cardapio-legal-footer {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 0.72rem;
+  color: #8E96A4;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardapio-legal-footer .highlight-muted {
+  color: #6B7280;
+}
+
+@media (max-width: 768px) {
+  .cardapio-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .cardapio-drawer {
+    max-height: 88vh;
+    border-radius: 24px 24px 0 0;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .cardapio-header {
+    padding: 18px 20px;
+  }
+
+  .cardapio-nav-bar {
+    padding: 12px 20px;
+  }
+
+  .cardapio-body {
+    padding: 18px 20px 24px;
+  }
+
+  .cardapio-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* ========================================================
+   SELETOR DE COMBOS NO CHECKOUT & CARDS DE IDENTIFICAÇÃO FÍSICA
+   ======================================================== */
+.checkout-combos-group {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.checkout-combo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.checkout-combo-badge {
+  background: rgba(255, 194, 74, 0.12);
+  border: 1px solid rgba(255, 194, 74, 0.4);
+  color: #FFC24A;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.checkout-combo-hint {
+  font-size: 0.74rem;
+  color: #94A3B8;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+.checkout-combo-hint strong {
+  color: #F2F2F2;
+}
+
+.combo-selector-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.combo-selector-scroll::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.combo-select-card {
+  position: relative;
+  display: block;
+  cursor: pointer;
+  background: rgba(18, 22, 34, 0.7);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.combo-select-card:hover {
+  background: rgba(26, 31, 46, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.combo-select-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.combo-select-card.is-selected {
+  background: rgba(26, 32, 48, 0.98);
+  border-color: #00F0FF;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.18), inset 0 0 15px rgba(0, 240, 255, 0.05);
+}
+
+.combo-select-card.card-gold.is-selected {
+  border-color: #FFC24A;
+  box-shadow: 0 0 20px rgba(255, 194, 74, 0.25), inset 0 0 15px rgba(255, 194, 74, 0.06);
+}
+
+.combo-select-card.card-amber.is-selected {
+  border-color: #FF8A0F;
+  box-shadow: 0 0 20px rgba(255, 138, 15, 0.25);
+}
+
+.combo-select-card.card-blue.is-selected {
+  border-color: #00F0FF;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+}
+
+.combo-select-card.card-royal-blue.is-selected {
+  border-color: #3B82F6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+}
+
+.combo-select-card.card-red.is-selected {
+  border-color: #EF4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+}
+
+.combo-select-card.card-pink.is-selected {
+  border-color: #EC4899;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.25);
+}
+
+.combo-select-card.card-green.is-selected {
+  border-color: #10B981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+
+.combo-select-card.card-lime.is-selected {
+  border-color: #EAB308;
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.25);
+}
+
+.combo-select-card.card-cyan.is-selected {
+  border-color: #06B6D4;
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+}
+
+.combo-select-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.combo-select-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.25;
+}
+
+.combo-select-price {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #FFC24A;
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+}
+
+.combo-select-desc {
+  font-size: 0.72rem;
+  color: #8E96A4;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.combo-select-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.combo-chip-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #CBD5E1;
+  letter-spacing: 0.04em;
+}
+
+.combo-tag-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #FFC24A;
+  background: rgba(255, 194, 74, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* BANNER DE COMBO DENTRO DO VOUCHER DIGITAL */
+.ticket-combo-card-banner {
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: left;
+  margin-bottom: 14px;
+  background: rgba(18, 22, 34, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+
+.ticket-combo-card-banner.card-gold {
+  background: linear-gradient(135deg, rgba(255, 194, 74, 0.15), rgba(20, 16, 8, 0.95));
+  border-color: #FFC24A;
+}
+
+.ticket-combo-card-banner.card-amber {
+  background: linear-gradient(135deg, rgba(255, 138, 15, 0.15), rgba(20, 14, 8, 0.95));
+  border-color: #FF8A0F;
+}
+
+.ticket-combo-card-banner.card-blue {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(8, 16, 24, 0.95));
+  border-color: #00F0FF;
+}
+
+.ticket-combo-card-banner.card-royal-blue {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(8, 14, 28, 0.95));
+  border-color: #3B82F6;
+}
+
+.ticket-combo-card-banner.card-red {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(24, 8, 8, 0.95));
+  border-color: #EF4444;
+}
+
+.ticket-combo-card-banner.card-pink {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(24, 8, 20, 0.95));
+  border-color: #EC4899;
+}
+
+.ticket-combo-card-banner.card-green {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(8, 24, 16, 0.95));
+  border-color: #10B981;
+}
+
+.ticket-combo-card-banner.card-lime {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(24, 20, 8, 0.95));
+  border-color: #EAB308;
+}
+
+.ticket-combo-card-banner.card-cyan {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(8, 20, 24, 0.95));
+  border-color: #06B6D4;
+}
+
+.combo-banner-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: #FFF;
+  margin-bottom: 4px;
+}
+
+.combo-banner-chip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.combo-banner-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+}
+
+.combo-banner-desc {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.combo-banner-action {
+  font-size: 0.72rem;
+  color: #CBD5E1;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  padding: 6px 8px;
+  line-height: 1.35;
 }
