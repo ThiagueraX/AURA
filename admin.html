@@ -2,8 +2,9 @@
 <html lang="pt-BR" class="dark-theme">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>AURA MOCOCA • Painel Administrativo</title>
+  <!-- Zoom liberado de propósito: o dono usa este painel no celular, na porta da casa. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURA MOCOCA • Painel do Dono</title>
   <meta name="robots" content="noindex, nofollow" />
 
   <!-- Tipografia Oficial -->
@@ -545,6 +546,259 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ─────────────────────────────────────────────────────────────
+       CAIXA DE AVISO
+       Substitui os alert(): alert bloqueia a tela e some ao clicar,
+       e o dono precisa conseguir LER o motivo de uma falha de gravação.
+       ───────────────────────────────────────────────────────────── */
+    .admin-aviso {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .admin-aviso[hidden] { display: none; }
+
+    .admin-aviso.is-ok {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.55);
+      color: #6EE7B7;
+    }
+
+    .admin-aviso.is-erro {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.55);
+      color: #FCA5A5;
+    }
+
+    .admin-aviso-texto {
+      flex: 1;
+      white-space: pre-line;
+    }
+
+    .admin-aviso-fechar {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 1.05rem;
+      line-height: 1;
+      padding: 2px 4px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .admin-aviso-fechar:hover { opacity: 1; }
+
+    /* Texto de apoio dos formulários */
+    .admin-help {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .admin-help strong { color: #D6DBE3; }
+
+    /* ── Controle de vendas (pausar / reabrir) ── */
+    .vendas-card {
+      border-color: rgba(0, 240, 255, 0.3);
+    }
+
+    .btn-vendas {
+      border: none;
+      border-radius: 10px;
+      padding: 14px 22px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-vendas[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-vendas.is-pausar {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #EF4444;
+      color: #F87171;
+    }
+
+    .btn-vendas.is-pausar:hover:not([disabled]) {
+      background: #EF4444;
+      color: #FFF;
+    }
+
+    .btn-vendas.is-reabrir {
+      background: #10B981;
+      color: #000;
+    }
+
+    .btn-vendas.is-reabrir:hover:not([disabled]) {
+      background: #34D399;
+    }
+
+    .vendas-estado {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+
+    .vendas-estado.is-pausado { color: #F87171; font-weight: 700; }
+    .vendas-estado.is-aberto { color: #6EE7B7; }
+
+    /* ── Editor de lotes (preço, selo e quantidade por setor) ── */
+    .lote-grid {
+      display: grid;
+      gap: 14px;
+      margin: 6px 0 20px;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    }
+
+    /* Cada setor é um cartão com preço, capacidade e nome do lote. O que for
+       digitado aqui vai para `aura_lotes` — é o preço que o site cobra. */
+    .lote-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .lote-card-topo {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+
+    .lote-card-topo strong {
+      color: var(--neon-cyan, #00F0FF);
+      text-transform: uppercase;
+    }
+
+    .lote-vendidos {
+      color: #8A9099;
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    .lote-selo-pausado {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: #F87171;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+    }
+
+    .pending-selo-expirado {
+      display: inline-block;
+      margin: 4px 0 8px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      color: #FFC24A;
+      background: rgba(255, 194, 74, 0.12);
+      border: 1px solid rgba(255, 194, 74, 0.45);
+    }
+
+    .lote-row {
+      display: grid;
+      grid-template-columns: 120px 1.4fr 0.9fr 0.9fr;
+      gap: 14px;
+      align-items: flex-end;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .lote-row.is-esgotado { border-color: rgba(239, 68, 68, 0.4); }
+
+    .lote-setor {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neon-gold);
+      padding-bottom: 12px;
+    }
+
+    .lote-setor small {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    .lote-campo { display: flex; flex-direction: column; }
+
+    /* ── Pedidos pendentes ── */
+    .pending-card.is-expirado {
+      border-color: rgba(255, 138, 15, 0.65);
+      background: rgba(255, 138, 15, 0.04);
+    }
+
+    .pending-topo-linha {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .selo-expirado {
+      background: rgba(255, 138, 15, 0.15);
+      border: 1px solid var(--neon-amber);
+      color: var(--neon-amber);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .pending-nota-expirado {
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--neon-amber);
+      margin-top: 10px;
+      max-width: 62ch;
+    }
+
+    .pending-combo {
+      color: var(--neon-cyan);
+    }
+
+    @media (max-width: 768px) {
+      .lote-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .lote-setor {
+        grid-column: 1 / -1;
+        padding-bottom: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -595,7 +849,14 @@
 
   <!-- Painel Principal do Administrador -->
   <main id="main-admin-panel" class="admin-container" style="display: none;">
-    
+
+    <!-- Caixa de aviso: toda gravação responde aqui, verde ou vermelha.
+         O texto é sempre escrito com textContent (pode vir do banco). -->
+    <div id="admin-aviso" class="admin-aviso" role="status" aria-live="polite" hidden>
+      <span class="admin-aviso-texto"></span>
+      <button type="button" class="admin-aviso-fechar" id="btn-fechar-aviso" aria-label="Fechar aviso">✕</button>
+    </div>
+
     <!-- Métricas do Dashboard -->
     <div class="metrics-grid">
       <div class="metric-card gold-border">
@@ -664,169 +925,276 @@
       </div>
     </section>
 
-    <!-- ABA 2: Configuração de Shows e Lotes -->
+    <!-- ABA 2: Show em cartaz, lotes e controle de vendas -->
     <section id="tab-show-config" class="admin-tab-content" style="display: none;">
+
+      <!-- Pausar / reabrir vendas: grava em aura_lotes.status, não no navegador -->
+      <div class="config-card vendas-card">
+        <h2 class="section-title font-mono" style="margin-bottom: 14px;">
+          🚦 SITUAÇÃO DAS VENDAS
+        </h2>
+        <p class="vendas-estado" id="vendas-estado-texto">Lendo a situação dos lotes no banco...</p>
+        <button type="button" class="btn-vendas is-pausar" id="btn-toggle-vendas" disabled>
+          Carregando...
+        </button>
+        <p class="admin-help">
+          Pausar marca <strong>todos os lotes deste show como ESGOTADO no banco</strong>: o site
+          para de vender para qualquer pessoa, em qualquer aparelho. Reabrir devolve todos
+          para ATIVO. Os ingressos já emitidos continuam valendo na portaria.
+        </p>
+      </div>
+
+      <!-- SHOW EM CARTAZ -->
       <div class="config-card">
         <h2 class="section-title font-mono" style="margin-bottom: 20px;">
-          📅 DETALHES DO SHOW PRINCIPAL
+          📅 SHOW EM CARTAZ
         </h2>
 
         <form id="form-show-active">
           <div class="form-group">
-            <label class="form-label font-mono">TÍTULO DO SHOW</label>
+            <label class="form-label font-mono" for="adm-show-title">TÍTULO DO SHOW</label>
             <input type="text" id="adm-show-title" class="form-input" required />
           </div>
 
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label font-mono">DATA &amp; HORÁRIO</label>
-              <input type="text" id="adm-show-date" class="form-input" required />
+              <label class="form-label font-mono" for="adm-show-data">DATA DO EVENTO</label>
+              <input type="datetime-local" id="adm-show-data" class="form-input" />
             </div>
             <div class="form-group">
-              <label class="form-label font-mono">STATUS DO LOTE (BADGE)</label>
-              <input type="text" id="adm-show-badge" class="form-input" required />
+              <label class="form-label font-mono" for="adm-show-abertura">ABERTURA DOS PORTÕES</label>
+              <input type="text" id="adm-show-abertura" class="form-input" placeholder="21:00" />
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
-              <label class="form-label font-mono">PREÇO PISTA (R$)</label>
-              <input type="number" step="1" id="adm-price-pista" class="form-input" required />
+              <label class="form-label font-mono" for="adm-show-horario">HORÁRIO DO SHOW</label>
+              <input type="text" id="adm-show-horario" class="form-input" placeholder="00:00" />
             </div>
             <div class="form-group">
-              <label class="form-label font-mono">PREÇO CAMAROTE (R$)</label>
-              <input type="number" step="1" id="adm-price-camarote" class="form-input" required />
+              <label class="form-label font-mono" for="adm-show-flyer">FLYER / FOTO DO EVENTO (URL)</label>
+              <input type="url" id="adm-show-flyer" class="form-input" />
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label font-mono">FLYER / FOTO DO EVENTO (URL)</label>
-            <input type="url" id="adm-show-flyer" class="form-input" required />
+            <label class="form-label font-mono" for="adm-show-desc">DESCRIÇÃO DO EVENTO</label>
+            <textarea id="adm-show-desc" class="form-input" rows="3"></textarea>
+          </div>
+
+          <h3 class="form-label font-mono" style="margin: 22px 0 10px;">
+            🎟️ LOTES, PREÇOS E LOTAÇÃO DESTE SHOW
+          </h3>
+          <div class="lote-grid" id="lotes-ativo"></div>
+
+          <button type="submit" class="btn-save-primary" id="btn-save-show">
+            💾 Salvar show e lotes
+          </button>
+          <p class="admin-help">
+            O preço que o cliente paga sai daqui: o checkout lê <strong>aura_lotes</strong> no
+            servidor e ignora qualquer valor vindo do navegador.
+          </p>
+        </form>
+      </div>
+
+      <!-- PRÓXIMO SHOW / PRÉ-VENDA -->
+      <div class="config-card" style="margin-top: 24px;">
+        <h2 class="section-title font-mono" style="margin-bottom: 20px;">
+          ⚡ PRÓXIMO SHOW / PRÉ-VENDA
+        </h2>
+
+        <div id="next-show-indisponivel" class="admin-help" hidden>
+          Nenhum próximo show cadastrado no banco. Para abrir uma pré-venda é preciso criar o
+          show antes — este painel edita shows existentes, não cria shows novos.
+        </div>
+
+        <form id="form-show-next">
+          <div class="form-group">
+            <label class="form-label font-mono" for="adm-next-title">TÍTULO DO PRÓXIMO EVENTO</label>
+            <input type="text" id="adm-next-title" class="form-input" />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label font-mono" for="adm-next-data">DATA DO EVENTO</label>
+              <input type="datetime-local" id="adm-next-data" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label font-mono" for="adm-next-abertura">ABERTURA DOS PORTÕES</label>
+              <input type="text" id="adm-next-abertura" class="form-input" placeholder="21:00" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label font-mono" for="adm-next-horario">HORÁRIO DO SHOW</label>
+              <input type="text" id="adm-next-horario" class="form-input" placeholder="00:00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label font-mono" for="adm-next-flyer">FLYER / FOTO (URL)</label>
+              <input type="url" id="adm-next-flyer" class="form-input" />
+            </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label font-mono">DESCRIÇÃO DO EVENTO</label>
-            <textarea id="adm-show-desc" class="form-input" rows="3" required></textarea>
+            <label class="form-label font-mono" for="adm-next-desc">DESCRIÇÃO DA PRÉ-VENDA</label>
+            <textarea id="adm-next-desc" class="form-input" rows="2"></textarea>
           </div>
 
-          <button type="submit" class="btn-save-primary" id="btn-save-show">
-            💾 Salvar Show Principal
+          <h3 class="form-label font-mono" style="margin: 22px 0 10px;">
+            🎟️ LOTES E PREÇOS DA PRÉ-VENDA
+          </h3>
+          <div class="lote-grid" id="lotes-proximo"></div>
+
+          <button type="submit" class="btn-save-primary" id="btn-save-next-show">
+            💾 Salvar próximo show e lotes
           </button>
         </form>
       </div>
 
       <div class="config-card" style="margin-top: 24px;">
-        <h2 class="section-title font-mono" style="margin-bottom: 20px;">
-          ⚡ DETALHES DO PRÓXIMO SHOW / PRÉ-VENDA
+        <h2 class="section-title font-mono" style="margin-bottom: 14px;">
+          🔄 RECARREGAR DO BANCO
         </h2>
-
-        <form id="form-show-next">
-          <div class="form-group">
-            <label class="form-label font-mono">TÍTULO DO PRÓXIMO EVENTO</label>
-            <input type="text" id="adm-next-title" class="form-input" required />
-          </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label font-mono">DATA &amp; HORÁRIO</label>
-              <input type="text" id="adm-next-date" class="form-input" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label font-mono">STATUS / BADGE</label>
-              <input type="text" id="adm-next-badge" class="form-input" value="PRÉ-VENDA" required />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label font-mono">VALOR LOTE PROMOCIONAL PISTA (R$)</label>
-              <input type="number" step="1" id="adm-next-price" class="form-input" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label font-mono">VALOR CAMAROTE PRÉ-VENDA (R$)</label>
-              <input type="number" step="1" id="adm-next-price-camarote" class="form-input" value="75" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label font-mono">DESCRIÇÃO DA PRÉ-VENDA</label>
-            <textarea id="adm-next-desc" class="form-input" rows="2"></textarea>
-          </div>
-
-          <button type="submit" class="btn-save-primary" id="btn-save-next-show">
-            💾 Salvar Próximo Show &amp; Pré-Venda
-          </button>
-        </form>
+        <p class="admin-help" style="margin-top: 0;">
+          Os formulários acima são preenchidos uma vez, na entrada, para não apagar o que você
+          está digitando. Use este botão para descartar o que está na tela e reler tudo do banco.
+        </p>
+        <button type="button" class="btn-refresh font-mono" id="btn-recarregar-config" style="margin-top: 14px;">
+          🔄 Reler shows e lotes
+        </button>
       </div>
+
     </section>
 
   </main>
 
   <!-- SUPABASE JS SDK & CLIENT -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-client.js?v=20260816_01"></script>
+  <script src="js/supabase-client.js?v=20260818_01"></script>
 
   <script>
+    /**
+     * PAINEL DO DONO — AURA MOCOCA
+     *
+     * Este é o ÚNICO painel do proprietário. Existia um segundo, embutido no
+     * index.html, que divergiu deste: um tinha porta dos fundos de senha, o
+     * outro tinha injeção de HTML; um salvava preço no banco, o outro não.
+     * Aquele foi removido.
+     *
+     * Três regras que governam o arquivo:
+     *
+     *  1. NADA DE innerHTML COM DADO DO BANCO. Qualquer pessoa pode chamar
+     *     `aura_criar_pedido` pela API pública e gravar um nome com HTML
+     *     dentro. Se esse nome for montado por template string aqui, o script
+     *     roda no navegador do dono, dentro da sessão que confirma pagamentos.
+     *
+     *  2. NADA DE "SALVO COM SUCESSO" SEM CONFERIR. A RLS não dá erro quando
+     *     bloqueia um UPDATE: devolve zero linhas com HTTP 200. Toda gravação
+     *     devolve { ok, mensagem } e o aviso só fica verde se ok for true.
+     *
+     *  3. NENHUMA SENHA AQUI. Quem autentica é o Supabase Auth; quem autoriza
+     *     é o papel gravado em `aura_papeis`.
+     */
+
+    // ─────────────────────────────────────────────────────────────
+    // ESTADO
+    // ─────────────────────────────────────────────────────────────
+    const estado = {
+      showAtivo: null,
+      showProximo: null,
+      lotesAtivo: [],
+      lotesProximo: [],
+      carregando: false,
+      formulariosPreenchidos: false
+    };
+
+    let intervaloPainel = null;
+
+    const INTERVALO_PAINEL_MS = 15000;
+
     document.addEventListener('DOMContentLoaded', () => {
       initAdminPanel();
     });
 
-    let currentShowId = 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
-    let pollingAdminInterval = null;
-
     async function initAdminPanel() {
       initAuthEvents();
       initTabNavigation();
+      initAvisos();
 
-      // Checa sessão existente
       if (window.AuraAuth && window.AuraAuth.temSessao()) {
         const papel = await window.AuraAuth.papel();
-        if (papel === 'dono') {
-          showAdminDashboard();
-          return;
-        }
+        if (papel === 'dono') showAdminDashboard();
       }
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // AVISOS  (substituem os alert(), que bloqueiam a tela e somem)
+    // ─────────────────────────────────────────────────────────────
+    function initAvisos() {
+      const fechar = document.getElementById('btn-fechar-aviso');
+      if (fechar) fechar.addEventListener('click', esconderAviso);
+    }
+
+    function mostrarAviso(texto, tipo) {
+      const caixa = document.getElementById('admin-aviso');
+      if (!caixa) { console.log('[Painel]', texto); return; }
+      const alvo = caixa.querySelector('.admin-aviso-texto');
+      if (alvo) alvo.textContent = texto;
+      caixa.classList.toggle('is-ok', tipo === 'ok');
+      caixa.classList.toggle('is-erro', tipo !== 'ok');
+      caixa.hidden = false;
+      caixa.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function esconderAviso() {
+      const caixa = document.getElementById('admin-aviso');
+      if (caixa) caixa.hidden = true;
+    }
+
+    const moeda = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');
+
+    // ─────────────────────────────────────────────────────────────
+    // LOGIN
+    // ─────────────────────────────────────────────────────────────
     function initAuthEvents() {
       const formLogin = document.getElementById('form-admin-login');
       const errBox = document.getElementById('login-error-box');
       const btnLogout = document.getElementById('btn-logout');
 
+      const erroLogin = (msg) => {
+        if (errBox) { errBox.textContent = msg; errBox.style.display = 'block'; }
+      };
+
       if (formLogin) {
         formLogin.addEventListener('submit', async (e) => {
           e.preventDefault();
           const email = document.getElementById('login-email').value.trim();
-          const pass = document.getElementById('login-password').value.trim();
+          const senha = document.getElementById('login-password').value;
           const btnSubmit = document.getElementById('btn-submit-login');
 
           btnSubmit.disabled = true;
           btnSubmit.textContent = 'Autenticando...';
-          errBox.style.display = 'none';
+          if (errBox) errBox.style.display = 'none';
 
           try {
-            if (window.AuraAuth) {
-              const r = await window.AuraAuth.entrar(email, pass);
-              if (r.ok) {
-                const papel = await window.AuraAuth.papel();
-                if (papel === 'dono') {
-                  showAdminDashboard();
-                  return;
-                } else {
-                  errBox.textContent = 'Acesso Negado: Sua conta não tem privilégios de Administrador.';
-                  errBox.style.display = 'block';
-                  window.AuraAuth.sair();
-                  return;
-                }
-              }
-            }
+            const r = await window.AuraAuth.entrar(email, senha);
 
-            errBox.textContent = 'E-mail ou senha inválidos.';
-            errBox.style.display = 'block';
+            if (r && r.ok) {
+              if (r.papel === 'dono') {
+                document.getElementById('login-password').value = '';
+                showAdminDashboard();
+                return;
+              }
+              await window.AuraAuth.sair();
+              erroLogin('Esta conta é da portaria e não tem acesso ao painel do dono.');
+            } else {
+              erroLogin((r && r.mensagem) || 'E-mail ou senha inválidos.');
+            }
           } catch (err) {
-            console.error('[Admin] Erro no login:', err);
-            errBox.textContent = 'Falha na conexão com o banco de dados.';
-            errBox.style.display = 'block';
+            console.error('[Painel] Erro no login:', err);
+            erroLogin('Falha na conexão com o banco de dados.');
           } finally {
             btnSubmit.disabled = false;
             btnSubmit.textContent = 'Entrar no Painel Seguro →';
@@ -835,13 +1203,14 @@
       }
 
       if (btnLogout) {
-        btnLogout.addEventListener('click', () => {
-          if (window.AuraAuth) window.AuraAuth.sair();
-          sessionStorage.removeItem('aura_admin_authed');
-          if (pollingAdminInterval) clearInterval(pollingAdminInterval);
+        btnLogout.addEventListener('click', async () => {
+          pararPainel();
+          await window.AuraAuth.sair();
           window.location.reload();
         });
       }
+
+      window.addEventListener('beforeunload', pararPainel);
     }
 
     function showAdminDashboard() {
@@ -850,359 +1219,572 @@
       document.getElementById('btn-logout').style.display = 'inline-flex';
 
       carregarDadosDashboard();
-
-      // Inicia atualização contínua em tempo real (a cada 4 segundos)
-      if (pollingAdminInterval) clearInterval(pollingAdminInterval);
-      pollingAdminInterval = setInterval(carregarDadosDashboard, 4000);
+      iniciarPainel();
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // ATUALIZAÇÃO PERIÓDICA
+    // Antes: 3 chamadas ao banco a cada 4 segundos, para sempre, mesmo com a
+    // aba escondida. Agora: 15s, pausado fora de foco, sem chamadas em cima
+    // de chamadas.
+    // ─────────────────────────────────────────────────────────────
+    function iniciarPainel() {
+      pararPainel();
+      intervaloPainel = setInterval(() => {
+        if (!document.hidden) carregarDadosDashboard();
+      }, INTERVALO_PAINEL_MS);
+
+      document.addEventListener('visibilitychange', aoVoltarParaAba);
+    }
+
+    function pararPainel() {
+      if (intervaloPainel) { clearInterval(intervaloPainel); intervaloPainel = null; }
+      document.removeEventListener('visibilitychange', aoVoltarParaAba);
+    }
+
+    function aoVoltarParaAba() {
+      if (!document.hidden) carregarDadosDashboard();
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // ABAS E FORMULÁRIOS
+    // ─────────────────────────────────────────────────────────────
     function initTabNavigation() {
       const tabs = document.querySelectorAll('.tab-btn');
       tabs.forEach((tab) => {
         tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('is-active'));
+          tabs.forEach((t) => t.classList.remove('is-active'));
           tab.classList.add('is-active');
 
-          const target = tab.getAttribute('data-target');
-          document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
-          const el = document.getElementById(target);
+          const alvo = tab.getAttribute('data-target');
+          document.querySelectorAll('.admin-tab-content').forEach((c) => { c.style.display = 'none'; });
+          const el = document.getElementById(alvo);
           if (el) el.style.display = 'block';
         });
       });
 
       const btnRefresh = document.getElementById('btn-refresh-pending');
-      if (btnRefresh) {
-        btnRefresh.addEventListener('click', () => carregarDadosDashboard());
+      if (btnRefresh) btnRefresh.addEventListener('click', () => carregarDadosDashboard());
+
+      const btnRecarregar = document.getElementById('btn-recarregar-config');
+      if (btnRecarregar) {
+        btnRecarregar.addEventListener('click', () => {
+          estado.formulariosPreenchidos = false;
+          carregarDadosDashboard();
+          mostrarAviso('Dados recarregados do banco.', 'ok');
+        });
       }
+
+      const btnVendas = document.getElementById('btn-toggle-vendas');
+      if (btnVendas) btnVendas.addEventListener('click', alternarVendas);
 
       const formShow = document.getElementById('form-show-active');
       if (formShow) {
-        formShow.addEventListener('submit', async (e) => {
+        formShow.addEventListener('submit', (e) => {
           e.preventDefault();
-          const btn = document.getElementById('btn-save-show');
-          btn.disabled = true;
-          btn.textContent = 'Salvando...';
-
-          try {
-            const titulo = document.getElementById('adm-show-title').value.trim();
-            const dataShow = document.getElementById('adm-show-date').value.trim();
-            const flyer = document.getElementById('adm-show-flyer').value.trim();
-            const desc = document.getElementById('adm-show-desc').value.trim();
-            const badge = document.getElementById('adm-show-badge').value.trim() || '1º LOTE ATIVO';
-            const pPista = parseFloat(document.getElementById('adm-price-pista').value) || 40;
-            const pCamarote = parseFloat(document.getElementById('adm-price-camarote').value) || 90;
-
-            const configAtual = (() => {
-              try {
-                const s = localStorage.getItem('aura_admin_config_v1');
-                return s ? JSON.parse(s) : {};
-              } catch(e) { return {}; }
-            })();
-
-            const novaConfig = {
-              activeShow: {
-                id: currentShowId,
-                title: titulo,
-                date: dataShow,
-                dateBadge: 'SÁBADO 22/08',
-                flyer: flyer,
-                desc: desc,
-                badge: badge,
-                pricePista: pPista,
-                priceCamarote: pCamarote
-              },
-              nextShow: configAtual.nextShow || {
-                id: 'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
-                title: 'AURA SATURDAY SESSIONS',
-                date: 'SÁBADO SEGUINTE • 21:00',
-                dateBadge: 'PRÉ-VENDA',
-                desc: 'Lineup especial com DJs convidados do circuito paulista e estrutura de lasers ampliada.',
-                price: 35,
-                pricePista: 35,
-                priceCamarote: 75,
-                badge: 'PRÉ-VENDA'
-              },
-              isSoldOut: false
-            };
-
-            localStorage.setItem('aura_admin_config_v1', JSON.stringify(novaConfig));
-
-            if (window.AuraDB) {
-              try {
-                await window.AuraDB.updateShow(currentShowId, {
-                  titulo: titulo,
-                  flyer_url: flyer,
-                  descricao: desc
-                });
-              } catch (e) {}
-            }
-
-            alert('✓ Show Principal salvo com sucesso! Os novos preços e dados já estão ativos no site e no checkout.');
-          } catch (err) {
-            console.error('[Admin] Erro ao salvar show:', err);
-            alert('Falha ao salvar. Verifique os dados inseridos.');
-          } finally {
-            btn.disabled = false;
-            btn.textContent = '💾 Salvar Show Principal';
-          }
+          salvarShow('ativo');
         });
       }
 
-      const formShowNext = document.getElementById('form-show-next');
-      if (formShowNext) {
-        formShowNext.addEventListener('submit', async (e) => {
+      const formNext = document.getElementById('form-show-next');
+      if (formNext) {
+        formNext.addEventListener('submit', (e) => {
           e.preventDefault();
-          const btn = document.getElementById('btn-save-next-show');
-          btn.disabled = true;
-          btn.textContent = 'Salvando...';
-
-          try {
-            const nextTitle = document.getElementById('adm-next-title').value.trim();
-            const nextDate = document.getElementById('adm-next-date').value.trim();
-            const nextBadge = document.getElementById('adm-next-badge').value.trim() || 'PRÉ-VENDA';
-            const nextPrice = parseFloat(document.getElementById('adm-next-price').value) || 35;
-            const nextCamarote = parseFloat(document.getElementById('adm-next-price-camarote').value) || 75;
-            const nextDesc = document.getElementById('adm-next-desc').value.trim();
-
-            const configAtual = (() => {
-              try {
-                const s = localStorage.getItem('aura_admin_config_v1');
-                return s ? JSON.parse(s) : {};
-              } catch(e) { return {}; }
-            })();
-
-            const novaConfig = {
-              activeShow: configAtual.activeShow || {
-                id: currentShowId,
-                title: 'LORENAH IN AURA',
-                date: 'SÁBADO, 22 DE AGOSTO • 21:00 (SHOW 00:00)',
-                dateBadge: 'SÁBADO 22/08',
-                flyer: 'https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg',
-                desc: 'Com o sertanejo emocionante de @lorenahoficial...',
-                badge: '1º LOTE ATIVO',
-                pricePista: 40,
-                priceCamarote: 90
-              },
-              nextShow: {
-                id: (configAtual.nextShow && configAtual.nextShow.id) || 'b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e',
-                title: nextTitle,
-                date: nextDate,
-                dateBadge: nextBadge,
-                desc: nextDesc,
-                price: nextPrice,
-                pricePista: nextPrice,
-                priceCamarote: nextCamarote,
-                badge: nextBadge
-              },
-              isSoldOut: false
-            };
-
-            localStorage.setItem('aura_admin_config_v1', JSON.stringify(novaConfig));
-
-            if (window.AuraDB) {
-              try {
-                await window.AuraDB.updateShow(novaConfig.nextShow.id, {
-                  titulo: nextTitle,
-                  descricao: nextDesc
-                });
-              } catch (e) {}
-            }
-
-            alert('✓ Próximo Show / Pré-Venda salvo com sucesso! Os valores e datas da pré-venda já estão ativos no site e no checkout.');
-          } catch (err) {
-            console.error('[Admin] Erro ao salvar pré-venda:', err);
-            alert('Falha ao salvar pré-venda. Verifique os dados inseridos.');
-          } finally {
-            btn.disabled = false;
-            btn.textContent = '💾 Salvar Próximo Show & Pré-Venda';
-          }
+          salvarShow('proximo');
         });
       }
     }
 
-    async function carregarDadosDashboard() {
-      if (!window.AuraDB) return;
-
-      try {
-        // 1. Carrega Métricas
-        const metricas = await window.AuraDB.fetchMetricas(currentShowId);
-        const elFaturamento = document.getElementById('metric-faturamento');
-        const elIngressosPagos = document.getElementById('metric-ingressos-pagos');
-        const elPixPendentes = document.getElementById('metric-pix-pendentes');
-        const elValorPendente = document.getElementById('metric-valor-pendente');
-
-        if (metricas) {
-          if (elFaturamento) elFaturamento.textContent = `R$ ${(metricas.totalFaturamento || 0).toFixed(2).replace('.', ',')}`;
-          if (elIngressosPagos) elIngressosPagos.textContent = metricas.totalIngressos || 0;
-          if (elPixPendentes) elPixPendentes.textContent = metricas.ingressosAguardando || 0;
-          if (elValorPendente) elValorPendente.textContent = `R$ ${(metricas.valorAguardando || 0).toFixed(2).replace('.', ',')} aguardando baixa`;
-
-          const tabCounter = document.getElementById('tab-counter-pending');
-          if (tabCounter) tabCounter.textContent = metricas.ingressosAguardando || 0;
-        }
-
-        // 2. Carrega Métricas de Portaria
-        const portaria = await window.AuraDB.fetchResumoPortaria(currentShowId);
-        const elPortariaValidados = document.getElementById('metric-portaria-validados');
-        const elPortariaRestantes = document.getElementById('metric-portaria-restantes');
-        if (portaria) {
-          if (elPortariaValidados) elPortariaValidados.textContent = portaria.validados || 0;
-          if (elPortariaRestantes) elPortariaRestantes.textContent = `${portaria.restantes || 0} restantes para entrar`;
-        }
-
-        // 3. Carrega Pedidos Pendentes
-        const pedidos = await window.AuraDB.fetchPedidosPendentes(currentShowId);
-        renderPedidosPendentes(pedidos || []);
-
-        // 4. Preenche formulário de show se vazio
-        preencherFormularioShow();
-      } catch (e) {
-        console.warn('[Admin] Sincronização do dashboard:', e);
-      }
+    // ─────────────────────────────────────────────────────────────
+    // GRAVAÇÃO DO SHOW E DOS LOTES
+    // ─────────────────────────────────────────────────────────────
+    function lerCampo(id) {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
     }
 
-    function renderPedidosPendentes(pedidos) {
-      const container = document.getElementById('pending-list-container');
-      if (!container) return;
+    /** datetime-local ("2026-08-22T21:00") para ISO com fuso do navegador. */
+    function dataParaISO(valor) {
+      if (!valor) return null;
+      const d = new Date(valor);
+      return isNaN(d.getTime()) ? null : d.toISOString();
+    }
 
-      if (!pedidos.length) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">✓</div>
-            <p>Nenhum pedido pendente no momento. Todos os PIX foram conferidos!</p>
-          </div>
-        `;
+    async function salvarShow(qual) {
+      const ehAtivo = qual === 'ativo';
+      const show = ehAtivo ? estado.showAtivo : estado.showProximo;
+      const btn = document.getElementById(ehAtivo ? 'btn-save-show' : 'btn-save-next-show');
+      const prefixo = ehAtivo ? 'adm-show' : 'adm-next';
+      const lotes = ehAtivo ? estado.lotesAtivo : estado.lotesProximo;
+
+      if (!show || !show.id) {
+        mostrarAviso('Não sei qual show gravar: os dados ainda não vieram do banco. Clique em "Recarregar" e tente de novo.', 'erro');
         return;
       }
 
-      container.innerHTML = '';
-      pedidos.forEach((p) => {
-        const card = document.createElement('div');
-        card.className = 'pending-card';
+      const rotuloBotao = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+      esconderAviso();
 
-        const dataStr = p.criado_em ? new Date(p.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
-        const valorFmt = `R$ ${Number(p.valor_total || 0).toFixed(2).replace('.', ',')}`;
+      const problemas = [];
 
-        card.innerHTML = `
-          <div class="pending-info-main">
-            <div class="pending-customer-name">${p.cliente_nome}</div>
-            <div class="pending-details font-mono">
-              <span>🎟️ ${p.quantidade}x ${p.setor || 'Pista'}</span>
-              <span>📱 ${p.cliente_whatsapp || '-'}</span>
-              <span>📄 CPF: ${p.cliente_cpf || '-'}</span>
-              <span>⏰ ${dataStr}</span>
-              <span>🔑 Pedido: <strong>${p.codigo_pedido}</strong></span>
-            </div>
-          </div>
+      // 1. Dados do show
+      const dadosShow = {
+        titulo: lerCampo(prefixo + '-title'),
+        descricao: lerCampo(prefixo + '-desc'),
+        flyer_url: lerCampo(prefixo + '-flyer'),
+        horario_abertura: lerCampo(prefixo + '-abertura') || null,
+        horario_show: lerCampo(prefixo + '-horario') || null
+      };
+      const dataISO = dataParaISO(lerCampo(prefixo + '-data'));
+      if (dataISO) dadosShow.data_evento = dataISO;
 
-          <div class="pending-badge-value font-mono">${valorFmt}</div>
+      if (!dadosShow.titulo) {
+        if (btn) { btn.disabled = false; btn.textContent = rotuloBotao; }
+        mostrarAviso('O título do show não pode ficar vazio.', 'erro');
+        return;
+      }
 
-          <div class="pending-actions">
-            <button type="button" class="btn-confirm-pix" data-pedido="${p.codigo_pedido}">
-              ✓ Confirmar PIX
-            </button>
-            <button type="button" class="btn-cancel-pix" data-pedido="${p.codigo_pedido}" data-nome="${p.cliente_nome}">
-              ✕ Cancelar
-            </button>
-            ${p.cliente_whatsapp ? `
-              <a href="https://wa.me/55${String(p.cliente_whatsapp).replace(/\D/g, '')}?text=Ol%C3%A1%20${encodeURIComponent(p.cliente_nome)}%2C%20confirmamos%20seu%20ingresso%20para%20a%20AURA!" class="btn-zap-link" target="_blank" title="Falar no WhatsApp">
-                💬
-              </a>
-            ` : ''}
-          </div>
-        `;
+      const rShow = await window.AuraDB.updateShow(show.id, dadosShow);
+      if (!rShow.ok) problemas.push('dados do show: ' + rShow.mensagem);
 
-        // Handlers de confirmação e cancelamento
-        const btnOk = card.querySelector('.btn-confirm-pix');
-        btnOk.addEventListener('click', async () => {
-          btnOk.disabled = true;
-          btnOk.textContent = 'Confirmando...';
-          const r = await window.AuraDB.confirmarPagamento(p.codigo_pedido);
-          alert(r.ok ? `✓ Pagamento de ${p.cliente_nome} confirmado! Ingresso liberado.` : (r.mensagem || 'Falha ao confirmar'));
-          carregarDadosDashboard();
-        });
+      // 2. Preços e capacidade de cada lote.
+      //    Era aqui que o painel mentia: lia os preços da tela, guardava no
+      //    localStorage e anunciava "já está ativo no site". Preço mora em
+      //    `aura_lotes`, e este era o único lugar que nunca gravava lá.
+      for (const lote of lotes) {
+        const preco = parseFloat(lerCampo('lote-preco-' + lote.id));
+        const total = parseInt(lerCampo('lote-total-' + lote.id), 10);
+        const nome = lerCampo('lote-nome-' + lote.id);
 
-        const btnCancel = card.querySelector('.btn-cancel-pix');
-        btnCancel.addEventListener('click', async () => {
-          if (!confirm(`Cancelar o pedido ${p.codigo_pedido} de ${p.cliente_nome}?`)) return;
-          btnCancel.disabled = true;
-          const r = await window.AuraDB.cancelarPedido(p.codigo_pedido);
-          alert(r.ok ? 'Pedido cancelado.' : (r.mensagem || 'Falha ao cancelar'));
-          carregarDadosDashboard();
-        });
+        const campos = {};
+        if (Number.isFinite(preco) && preco >= 0 && preco !== Number(lote.preco)) campos.preco = preco;
+        if (Number.isFinite(total) && total > 0 && total !== Number(lote.quantidade_total)) {
+          if (total < Number(lote.quantidade_vendida)) {
+            problemas.push(`${lote.setor}: a capacidade (${total}) não pode ser menor que os ${lote.quantidade_vendida} já vendidos`);
+            continue;
+          }
+          campos.quantidade_total = total;
+        }
+        if (nome && nome !== lote.nome_lote) campos.nome_lote = nome;
 
-        container.appendChild(card);
+        if (!Object.keys(campos).length) continue;
+
+        const r = await window.AuraDB.updateLote(lote.id, campos);
+        if (!r.ok) problemas.push(`${lote.setor}: ${r.mensagem}`);
+      }
+
+      if (btn) { btn.disabled = false; btn.textContent = rotuloBotao; }
+
+      estado.formulariosPreenchidos = false;
+      await carregarDadosDashboard();
+
+      if (problemas.length) {
+        mostrarAviso('NÃO foi salvo por completo — ' + problemas.join(' · '), 'erro');
+      } else {
+        mostrarAviso('Salvo e publicado no site. Confira os valores abaixo: eles vieram de volta do banco.', 'ok');
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // PAUSAR / REABRIR VENDAS
+    // Isto vive no banco (`aura_lotes.status`). Antes ficava no localStorage,
+    // e pausar a venda pausava só no navegador do dono: o site seguia
+    // vendendo para todo mundo.
+    // ─────────────────────────────────────────────────────────────
+    function vendasPausadas() {
+      const lotes = estado.lotesAtivo;
+      return lotes.length > 0 && lotes.every((l) => l.status === 'ESGOTADO');
+    }
+
+    function pintarEstadoDasVendas() {
+      const texto = document.getElementById('vendas-estado-texto');
+      const btn = document.getElementById('btn-toggle-vendas');
+      if (!btn || !texto) return;
+
+      if (!estado.lotesAtivo.length) {
+        texto.textContent = 'Nenhum lote cadastrado para o show ativo.';
+        btn.disabled = true;
+        return;
+      }
+
+      const pausado = vendasPausadas();
+      btn.disabled = false;
+      btn.classList.toggle('is-pausar', !pausado);
+      btn.classList.toggle('is-reabrir', pausado);
+      btn.textContent = pausado ? '🟢 REABRIR VENDAS' : '🔴 PAUSAR VENDAS / ESGOTADO';
+      texto.textContent = pausado
+        ? 'As vendas estão PAUSADAS no site para todos os visitantes.'
+        : 'As vendas estão ABERTAS no site.';
+    }
+
+    async function alternarVendas() {
+      const btn = document.getElementById('btn-toggle-vendas');
+      if (!estado.showAtivo) return;
+
+      const pausar = !vendasPausadas();
+      const rotulo = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = pausar ? 'Pausando...' : 'Reabrindo...';
+
+      const r = await window.AuraDB.definirVendasPausadas(estado.showAtivo.id, pausar);
+
+      btn.textContent = rotulo;
+      btn.disabled = false;
+
+      if (!r.ok) {
+        mostrarAviso('As vendas NÃO mudaram de estado: ' + r.mensagem, 'erro');
+        return;
+      }
+
+      await carregarDadosDashboard();
+      mostrarAviso(pausar
+        ? 'Vendas pausadas no site inteiro. Os botões de compra estão travados para todos os visitantes.'
+        : 'Vendas reabertas no site.', 'ok');
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CARREGAMENTO
+    // ─────────────────────────────────────────────────────────────
+    async function carregarDadosDashboard() {
+      if (!window.AuraDB || estado.carregando) return;
+      estado.carregando = true;
+
+      try {
+        // O show ativo é sempre resolvido pelo banco. Antes, com cache no
+        // localStorage, o painel ficava preso num id escrito no código e podia
+        // mostrar as métricas de outro show.
+        const shows = await window.AuraDB.fetchShows();
+        if (Array.isArray(shows) && shows.length) {
+          estado.showAtivo = shows.find((s) => s.is_ativo) || shows[0];
+          estado.showProximo = shows.find((s) => s.is_proximo) || null;
+        }
+
+        if (!estado.showAtivo) {
+          mostrarAviso('Não foi possível ler os shows do banco.', 'erro');
+          return;
+        }
+
+        const [lotesA, lotesP, metricas, portaria, pedidos] = await Promise.all([
+          window.AuraDB.fetchLotes(estado.showAtivo.id),
+          estado.showProximo ? window.AuraDB.fetchLotes(estado.showProximo.id) : Promise.resolve([]),
+          window.AuraDB.fetchMetricas(estado.showAtivo.id),
+          window.AuraDB.fetchResumoPortaria(estado.showAtivo.id),
+          window.AuraDB.fetchPedidosPendentes(estado.showAtivo.id)
+        ]);
+
+        estado.lotesAtivo = Array.isArray(lotesA) ? lotesA : [];
+        estado.lotesProximo = Array.isArray(lotesP) ? lotesP : [];
+
+        pintarMetricas(metricas, portaria);
+        pintarEstadoDasVendas();
+        renderPedidosPendentes(pedidos || []);
+        renderLotes('lotes-ativo', estado.lotesAtivo);
+        renderLotes('lotes-proximo', estado.lotesProximo);
+        preencherFormularios();
+      } catch (e) {
+        console.warn('[Painel] Falha ao sincronizar:', e);
+      } finally {
+        estado.carregando = false;
+      }
+    }
+
+    function pintarMetricas(metricas, portaria) {
+      const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+
+      if (metricas && metricas.ok !== false) {
+        set('metric-faturamento', moeda(metricas.totalFaturamento));
+        set('metric-ingressos-pagos', metricas.totalIngressos || 0);
+        set('metric-pix-pendentes', metricas.ingressosAguardando || 0);
+        set('metric-valor-pendente', moeda(metricas.valorAguardando) + ' aguardando baixa');
+      }
+
+      if (portaria && portaria.ok !== false) {
+        set('metric-portaria-validados', portaria.validados || 0);
+        set('metric-portaria-restantes', (portaria.restantes || 0) + ' restantes para entrar');
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // LOTES (preço, capacidade e nome do lote — direto no banco)
+    // ─────────────────────────────────────────────────────────────
+    function renderLotes(containerId, lotes) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.textContent = '';
+
+      if (!lotes.length) {
+        const vazio = document.createElement('p');
+        vazio.className = 'admin-help font-mono';
+        vazio.textContent = 'Nenhum lote cadastrado para este show — nada será vendido até criar um.';
+        container.appendChild(vazio);
+        return;
+      }
+
+      lotes.forEach((lote) => {
+        const bloco = document.createElement('div');
+        bloco.className = 'lote-card';
+
+        const topo = document.createElement('div');
+        topo.className = 'lote-card-topo font-mono';
+        const setor = document.createElement('strong');
+        setor.textContent = lote.setor;
+        const vendidos = document.createElement('span');
+        vendidos.className = 'lote-vendidos';
+        vendidos.textContent = `${lote.quantidade_vendida} de ${lote.quantidade_total} vendidos`;
+        topo.appendChild(setor);
+        topo.appendChild(vendidos);
+        bloco.appendChild(topo);
+
+        bloco.appendChild(campoLote('lote-nome-' + lote.id, 'NOME DO LOTE', 'text', lote.nome_lote || ''));
+        bloco.appendChild(campoLote('lote-preco-' + lote.id, 'PREÇO (R$)', 'number', lote.preco));
+        bloco.appendChild(campoLote('lote-total-' + lote.id, 'CAPACIDADE', 'number', lote.quantidade_total));
+
+        if (lote.status !== 'ATIVO') {
+          const selo = document.createElement('span');
+          selo.className = 'lote-selo-pausado font-mono';
+          selo.textContent = 'SETOR PAUSADO';
+          bloco.appendChild(selo);
+        }
+
+        container.appendChild(bloco);
       });
     }
 
-    let formPreenchido = false;
-    async function preencherFormularioShow() {
-      if (formPreenchido) return;
-      try {
-        const stored = localStorage.getItem('aura_admin_config_v1');
-        if (stored) {
-          const cfg = JSON.parse(stored);
-          if (cfg && cfg.activeShow) {
-            document.getElementById('adm-show-title').value = cfg.activeShow.title || '';
-            document.getElementById('adm-show-date').value = cfg.activeShow.date || '';
-            document.getElementById('adm-show-flyer').value = cfg.activeShow.flyer || '';
-            document.getElementById('adm-show-desc').value = cfg.activeShow.desc || '';
-            document.getElementById('adm-show-badge').value = cfg.activeShow.badge || '1º LOTE ATIVO';
-            document.getElementById('adm-price-pista').value = cfg.activeShow.pricePista || 40;
-            document.getElementById('adm-price-camarote').value = cfg.activeShow.priceCamarote || 90;
-          }
-          if (cfg && cfg.nextShow) {
-            const fNextTitle = document.getElementById('adm-next-title');
-            const fNextDate = document.getElementById('adm-next-date');
-            const fNextBadge = document.getElementById('adm-next-badge');
-            const fNextPrice = document.getElementById('adm-next-price');
-            const fNextCam = document.getElementById('adm-next-price-camarote');
-            const fNextDesc = document.getElementById('adm-next-desc');
+    function campoLote(id, rotulo, tipo, valor) {
+      const wrap = document.createElement('div');
+      wrap.className = 'form-group';
 
-            if (fNextTitle) fNextTitle.value = cfg.nextShow.title || 'AURA SATURDAY SESSIONS';
-            if (fNextDate) fNextDate.value = cfg.nextShow.date || 'SÁBADO SEGUINTE • 21:00';
-            if (fNextBadge) fNextBadge.value = cfg.nextShow.badge || 'PRÉ-VENDA';
-            if (fNextPrice) fNextPrice.value = cfg.nextShow.price || cfg.nextShow.pricePista || 35;
-            if (fNextCam) fNextCam.value = cfg.nextShow.priceCamarote || 75;
-            if (fNextDesc) fNextDesc.value = cfg.nextShow.desc || '';
-          }
-          if (cfg && cfg.activeShow) {
-            formPreenchido = true;
-            return;
-          }
-        }
+      const label = document.createElement('label');
+      label.className = 'form-label font-mono';
+      label.setAttribute('for', id);
+      label.textContent = rotulo;
 
-        const shows = await window.AuraDB.fetchShows();
-        if (shows && shows.length > 0) {
-          const s = shows.find(x => x.is_ativo) || shows[0];
-          currentShowId = s.id;
-          document.getElementById('adm-show-title').value = s.titulo || '';
-          document.getElementById('adm-show-date').value = `${s.data_show || ''} • ${s.horario_abertura || ''}`;
-          document.getElementById('adm-show-flyer').value = s.flyer_url || '';
-          document.getElementById('adm-show-desc').value = s.descricao || '';
-          document.getElementById('adm-show-badge').value = '1º LOTE ATIVO';
-          document.getElementById('adm-price-pista').value = 40;
-          document.getElementById('adm-price-camarote').value = 90;
+      const input = document.createElement('input');
+      input.type = tipo;
+      input.id = id;
+      input.className = 'form-input';
+      input.value = valor;
+      if (tipo === 'number') { input.min = '0'; input.step = id.includes('preco') ? '0.01' : '1'; }
 
-          const n = shows.find(x => x.is_proximo) || shows[1];
-          if (n) {
-            const fNextTitle = document.getElementById('adm-next-title');
-            const fNextDate = document.getElementById('adm-next-date');
-            const fNextBadge = document.getElementById('adm-next-badge');
-            const fNextPrice = document.getElementById('adm-next-price');
-            const fNextCam = document.getElementById('adm-next-price-camarote');
-            const fNextDesc = document.getElementById('adm-next-desc');
+      wrap.appendChild(label);
+      wrap.appendChild(input);
+      return wrap;
+    }
 
-            if (fNextTitle) fNextTitle.value = n.titulo || 'AURA SATURDAY SESSIONS';
-            if (fNextDate) fNextDate.value = 'SÁBADO SEGUINTE • 21:00';
-            if (fNextBadge) fNextBadge.value = 'PRÉ-VENDA';
-            if (fNextPrice) fNextPrice.value = 35;
-            if (fNextCam) fNextCam.value = 75;
-            if (fNextDesc) fNextDesc.value = n.descricao || '';
-          }
-          formPreenchido = true;
-        }
-      } catch (e) {}
+    // ─────────────────────────────────────────────────────────────
+    // FILA DE PAGAMENTOS
+    //
+    // Montado inteiro com createElement. O nome, o CPF e o WhatsApp que
+    // aparecem aqui foram digitados por um desconhecido na internet.
+    // ─────────────────────────────────────────────────────────────
+    function renderPedidosPendentes(pedidos) {
+      const container = document.getElementById('pending-list-container');
+      const contador = document.getElementById('tab-counter-pending');
+      if (!container) return;
+
+      if (contador) contador.textContent = pedidos.length;
+
+      container.textContent = '';
+
+      if (!pedidos.length) {
+        const vazio = document.createElement('div');
+        vazio.className = 'empty-state';
+        const icone = document.createElement('div');
+        icone.className = 'empty-icon';
+        icone.textContent = '✓';
+        const txt = document.createElement('p');
+        txt.textContent = 'Nenhum pedido pendente no momento. Todos os PIX foram conferidos!';
+        vazio.appendChild(icone);
+        vazio.appendChild(txt);
+        container.appendChild(vazio);
+        return;
+      }
+
+      pedidos.forEach((p) => container.appendChild(cardPedido(p)));
+    }
+
+    function cardPedido(p) {
+      const card = document.createElement('div');
+      card.className = 'pending-card' + (p.expirado ? ' is-expirado' : '');
+
+      const info = document.createElement('div');
+      info.className = 'pending-info-main';
+
+      const nome = document.createElement('div');
+      nome.className = 'pending-customer-name';
+      nome.textContent = p.cliente_nome || '(sem nome)';
+      info.appendChild(nome);
+
+      if (p.expirado) {
+        const selo = document.createElement('span');
+        selo.className = 'pending-selo-expirado font-mono';
+        selo.textContent = '⏰ PRAZO VENCIDO — a vaga voltou para o lote';
+        info.appendChild(selo);
+      }
+
+      const detalhes = document.createElement('div');
+      detalhes.className = 'pending-details font-mono';
+      [
+        '🎟️ ' + (p.quantidade || 1) + 'x ' + (p.setor || 'Pista'),
+        '📱 ' + (p.cliente_whatsapp || '-'),
+        '📄 CPF: ' + (p.cliente_cpf || '-'),
+        '⏰ ' + formatarHora(p.criado_em),
+        '💳 ' + (p.metodo || 'PIX')
+      ].forEach((txt) => {
+        const span = document.createElement('span');
+        span.textContent = txt;
+        detalhes.appendChild(span);
+      });
+
+      const pedidoSpan = document.createElement('span');
+      pedidoSpan.append('🔑 Pedido: ');
+      const forte = document.createElement('strong');
+      forte.textContent = p.codigo_pedido;
+      pedidoSpan.appendChild(forte);
+      detalhes.appendChild(pedidoSpan);
+
+      if (p.combo) {
+        const combo = document.createElement('span');
+        combo.textContent = '🍾 ' + p.combo;
+        detalhes.appendChild(combo);
+      }
+
+      info.appendChild(detalhes);
+
+      const valor = document.createElement('div');
+      valor.className = 'pending-badge-value font-mono';
+      valor.textContent = moeda(p.valor_total);
+
+      const acoes = document.createElement('div');
+      acoes.className = 'pending-actions';
+
+      const btnOk = document.createElement('button');
+      btnOk.type = 'button';
+      btnOk.className = 'btn-confirm-pix';
+      btnOk.textContent = '✓ Confirmar PIX';
+      btnOk.addEventListener('click', () => confirmarPedido(p, btnOk));
+
+      const btnCancel = document.createElement('button');
+      btnCancel.type = 'button';
+      btnCancel.className = 'btn-cancel-pix';
+      btnCancel.textContent = '✕ Cancelar';
+      btnCancel.addEventListener('click', () => cancelarPedido(p, btnCancel));
+
+      if (p.cliente_whatsapp) {
+        const zap = document.createElement('a');
+        zap.className = 'btn-zap-link';
+        zap.target = '_blank';
+        zap.rel = 'noopener noreferrer';
+        zap.href = 'https://wa.me/55' + String(p.cliente_whatsapp).replace(/\D/g, '') +
+                   '?text=' + encodeURIComponent(
+                     'Olá ' + (p.cliente_nome || '') + ', aqui é da AURA MOCOCA sobre o pedido ' + p.codigo_pedido + '.');
+        zap.title = 'Falar no WhatsApp';
+        zap.textContent = '💬';
+        acoes.appendChild(zap);
+      }
+
+      acoes.appendChild(btnOk);
+      acoes.appendChild(btnCancel);
+
+      card.appendChild(info);
+      card.appendChild(valor);
+      card.appendChild(acoes);
+      return card;
+    }
+
+    function formatarHora(iso) {
+      if (!iso) return '-';
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '-';
+      return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function confirmarPedido(p, btn) {
+      btn.disabled = true;
+      btn.textContent = 'Confirmando...';
+
+      const r = await window.AuraDB.confirmarPagamento(p.codigo_pedido);
+
+      if (r && r.ok) {
+        mostrarAviso(`Pagamento de ${p.cliente_nome} confirmado. O ingresso já abre a portaria.`, 'ok');
+      } else if (r && r.motivo === 'ESGOTADO') {
+        // Pedido que venceu o prazo e o setor lotou nesse meio tempo.
+        mostrarAviso(
+          `NÃO foi possível confirmar o pedido ${p.codigo_pedido}: o prazo venceu e o setor esgotou. ` +
+          'Combine com o cliente e devolva o valor, ou aumente a capacidade do lote antes de confirmar.', 'erro');
+      } else {
+        mostrarAviso(`NÃO confirmado: ${(r && r.mensagem) || 'motivo não informado'}`, 'erro');
+      }
+
+      await carregarDadosDashboard();
+    }
+
+    async function cancelarPedido(p, btn) {
+      const confirma = confirm(
+        `Cancelar o pedido ${p.codigo_pedido} de ${p.cliente_nome}?\n\n` +
+        'Os ingressos deixam de valer na portaria e as vagas voltam para o lote.');
+      if (!confirma) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Cancelando...';
+
+      const r = await window.AuraDB.cancelarPedido(p.codigo_pedido);
+      mostrarAviso(
+        (r && r.ok) ? (r.mensagem || 'Pedido cancelado.') : `NÃO cancelado: ${(r && r.mensagem) || 'motivo não informado'}`,
+        (r && r.ok) ? 'ok' : 'erro');
+
+      await carregarDadosDashboard();
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // FORMULÁRIOS
+    // ─────────────────────────────────────────────────────────────
+    function preencherFormularios() {
+      if (estado.formulariosPreenchidos) return;
+
+      const escrever = (id, valor) => {
+        const el = document.getElementById(id);
+        if (el && valor != null) el.value = valor;
+      };
+
+      /** ISO para o formato que o input datetime-local aceita, no fuso local. */
+      const paraCampoData = (iso) => {
+        if (!iso) return '';
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '';
+        const p = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+      };
+
+      if (estado.showAtivo) {
+        escrever('adm-show-title', estado.showAtivo.titulo);
+        escrever('adm-show-desc', estado.showAtivo.descricao);
+        escrever('adm-show-flyer', estado.showAtivo.flyer_url);
+        escrever('adm-show-abertura', estado.showAtivo.horario_abertura);
+        escrever('adm-show-horario', estado.showAtivo.horario_show);
+        escrever('adm-show-data', paraCampoData(estado.showAtivo.data_evento));
+      }
+
+      const aviso = document.getElementById('next-show-indisponivel');
+      const formNext = document.getElementById('form-show-next');
+
+      if (estado.showProximo) {
+        if (aviso) aviso.hidden = true;
+        if (formNext) formNext.hidden = false;
+        escrever('adm-next-title', estado.showProximo.titulo);
+        escrever('adm-next-desc', estado.showProximo.descricao);
+        escrever('adm-next-flyer', estado.showProximo.flyer_url);
+        escrever('adm-next-abertura', estado.showProximo.horario_abertura);
+        escrever('adm-next-horario', estado.showProximo.horario_show);
+        escrever('adm-next-data', paraCampoData(estado.showProximo.data_evento));
+      } else {
+        if (aviso) aviso.hidden = false;
+        if (formNext) formNext.hidden = true;
+      }
+
+      estado.formulariosPreenchidos = true;
     }
   </script>
 </body>

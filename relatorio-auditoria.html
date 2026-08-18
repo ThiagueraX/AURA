@@ -1,0 +1,1080 @@
+<title>Auditoria da AURA</title>
+
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     Paleta da própria casa (CLAUDE.md · Produx Matrix).
+     Desenho é escuro por natureza — é uma casa noturna. O tema claro
+     existe para ler de dia, com os mesmos papéis invertidos.
+     ───────────────────────────────────────────────────────────── */
+  :root {
+    --chao:        #08090C;   /* Outer Space Matte */
+    --superficie:  #11141D;
+    --superficie-2:#171B26;
+    --borda:       #232838;
+    --borda-forte: #2F3648;
+    --texto:       #F2F2F2;   /* White Smoke */
+    --texto-fraco: #8A9099;   /* Slate Grey */
+    --texto-tenue: #5C636F;
+    --acento:      #00F0FF;   /* Aura Electric Cyan */
+    --acento-suave:rgba(0, 240, 255, 0.12);
+
+    /* Semânticas — separadas do acento, nunca disputam com ele */
+    --critico:     #FF5A5A;
+    --critico-bg:  rgba(255, 90, 90, 0.10);
+    --resolvido:   #22C88A;
+    --resolvido-bg:rgba(34, 200, 138, 0.10);
+    --pendente:    #FFC24A;   /* dourado do letreiro real */
+    --pendente-bg: rgba(255, 194, 74, 0.10);
+
+    /* Neon amostrado da fachada: núcleo, corpo, difusão, LED */
+    --neon-nucleo: #FFF4D6;
+    --neon-ouro:   #FFC24A;
+    --neon-ambar:  #FF8A0F;
+    --neon-cobalto:#1E4DFF;
+
+    --display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", "Consolas", "Liberation Mono", monospace;
+
+    --largura-leitura: 68ch;
+    --largura-total: 1120px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --chao:        #FBFBFC;
+      --superficie:  #FFFFFF;
+      --superficie-2:#F4F5F8;
+      --borda:       #E2E5EC;
+      --borda-forte: #C9CEDA;
+      --texto:       #14171F;
+      --texto-fraco: #5A6270;
+      --texto-tenue: #8A9099;
+      --acento:      #0089A0;
+      --acento-suave:rgba(0, 137, 160, 0.10);
+      --critico:     #C42B2B;
+      --critico-bg:  rgba(196, 43, 43, 0.08);
+      --resolvido:   #0E7C55;
+      --resolvido-bg:rgba(14, 124, 85, 0.08);
+      --pendente:    #96650A;
+      --pendente-bg: rgba(150, 101, 10, 0.10);
+    }
+  }
+
+  :root[data-theme="light"] {
+    --chao:        #FBFBFC;
+    --superficie:  #FFFFFF;
+    --superficie-2:#F4F5F8;
+    --borda:       #E2E5EC;
+    --borda-forte: #C9CEDA;
+    --texto:       #14171F;
+    --texto-fraco: #5A6270;
+    --texto-tenue: #8A9099;
+    --acento:      #0089A0;
+    --acento-suave:rgba(0, 137, 160, 0.10);
+    --critico:     #C42B2B;
+    --critico-bg:  rgba(196, 43, 43, 0.08);
+    --resolvido:   #0E7C55;
+    --resolvido-bg:rgba(14, 124, 85, 0.08);
+    --pendente:    #96650A;
+    --pendente-bg: rgba(150, 101, 10, 0.10);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--chao);
+    color: var(--texto);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .envelope {
+    max-width: var(--largura-total);
+    margin: 0 auto;
+    padding: clamp(28px, 5vw, 72px) clamp(20px, 5vw, 56px) 96px;
+  }
+
+  /* ── Etiquetas monoespaçadas: a assinatura da marca ───────────── */
+  .etiqueta {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--texto-tenue);
+    display: block;
+  }
+  .etiqueta--acento { color: var(--acento); }
+
+  /* ── Cabeçalho ───────────────────────────────────────────────── */
+  .capa { padding-bottom: 40px; }
+
+  .capa h1 {
+    font-size: clamp(2.3rem, 6.5vw, 4.1rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    text-wrap: balance;
+    margin: 18px 0 0;
+  }
+
+  .capa h1 em {
+    font-style: normal;
+    color: var(--acento);
+  }
+
+  /* Filete com o neon da fachada real: núcleo → ouro → âmbar → LED */
+  .filete-neon {
+    height: 2px;
+    border: 0;
+    margin: 30px 0 26px;
+    background: linear-gradient(90deg,
+      var(--neon-nucleo) 0%, var(--neon-ouro) 22%,
+      var(--neon-ambar) 44%, var(--acento) 72%, var(--neon-cobalto) 100%);
+    opacity: 0.85;
+  }
+
+  .resumo {
+    max-width: var(--largura-leitura);
+    color: var(--texto-fraco);
+    font-size: 1.06rem;
+  }
+  .resumo strong { color: var(--texto); font-weight: 600; }
+
+  /* ── Painel de números ───────────────────────────────────────── */
+  .placar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1px;
+    background: var(--borda);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 40px 0 56px;
+  }
+
+  .placar-item {
+    background: var(--superficie);
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .placar-numero {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .placar-item--ok  .placar-numero { color: var(--resolvido); }
+  .placar-item--voce .placar-numero { color: var(--pendente); }
+  .placar-item--nao .placar-numero { color: var(--texto-fraco); }
+
+  .placar-legenda {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--texto-fraco);
+    line-height: 1.4;
+  }
+
+  /* ── Seções ──────────────────────────────────────────────────── */
+  section { margin: 0 0 64px; scroll-margin-top: 24px; }
+
+  .titulo-secao {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--borda);
+    margin-bottom: 26px;
+  }
+
+  .titulo-secao h2 {
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .titulo-secao .contagem {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--texto-tenue);
+    margin-left: auto;
+  }
+
+  p { max-width: var(--largura-leitura); }
+
+  .intro-secao {
+    color: var(--texto-fraco);
+    margin: -8px 0 26px;
+  }
+
+  /* ── Selos de estado ─────────────────────────────────────────── */
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 0.63rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .selo--fechado  { color: var(--resolvido); background: var(--resolvido-bg); }
+  .selo--voce     { color: var(--pendente);  background: var(--pendente-bg); }
+  .selo--parcial  { color: var(--texto-fraco); background: transparent; }
+
+  /* ── Lista de achados ────────────────────────────────────────── */
+  .achados { display: grid; gap: 14px; }
+
+  .achado {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-left: 3px solid var(--critico);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+  .achado--voce { border-left-color: var(--pendente); }
+
+  .achado-topo {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .achado h3 {
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 0;
+    flex: 1;
+    line-height: 1.35;
+  }
+
+  .achado p { margin: 0 0 10px; color: var(--texto-fraco); font-size: 0.95rem; max-width: none; }
+  .achado p:last-child { margin-bottom: 0; }
+
+  .antes-depois {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+  @media (min-width: 720px) {
+    .antes-depois { grid-template-columns: 1fr 1fr; gap: 12px; }
+  }
+
+  .quadro {
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: var(--superficie-2);
+    border: 1px solid var(--borda);
+    overflow-x: auto;
+  }
+  .quadro .etiqueta { margin-bottom: 6px; }
+  .quadro--antes  { color: var(--texto-fraco); }
+  .quadro--depois { color: var(--texto); border-color: var(--borda-forte); }
+  .quadro--antes .etiqueta  { color: var(--critico); }
+  .quadro--depois .etiqueta { color: var(--resolvido); }
+
+  /* ── Ações do dono ───────────────────────────────────────────── */
+  .acoes { display: grid; gap: 12px; counter-reset: acao; }
+
+  .acao {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .acao-marca {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--pendente);
+    border: 1px solid var(--pendente);
+    background: var(--pendente-bg);
+    border-radius: 6px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  .acao-marca--opcional { color: var(--texto-fraco); border-color: var(--borda-forte); background: transparent; }
+
+  .acao h3 { margin: 0 0 5px; font-size: 1rem; font-weight: 650; }
+  .acao p  { margin: 0; color: var(--texto-fraco); font-size: 0.93rem; max-width: none; }
+
+  /* ── Sequência do cartão (isto é ordem de verdade) ───────────── */
+  .fluxo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: stretch;
+    margin: 22px 0 0;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+  }
+
+  .fluxo-passo {
+    flex: 1 1 190px;
+    background: var(--superficie-2);
+    border: 1px solid var(--borda);
+    border-top: 2px solid var(--acento);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .fluxo-passo b {
+    color: var(--texto);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+  }
+  .fluxo-passo span { color: var(--texto-fraco); line-height: 1.45; }
+
+  /* ── Listas densas ───────────────────────────────────────────── */
+  .lista-densa {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--borda);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .lista-densa li {
+    background: var(--superficie);
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  @media (min-width: 720px) {
+    .lista-densa li { grid-template-columns: minmax(210px, 30%) 1fr; gap: 18px; align-items: baseline; }
+  }
+
+  .lista-densa .assunto {
+    font-weight: 620;
+    font-size: 0.95rem;
+    letter-spacing: -0.005em;
+  }
+  .lista-densa .detalhe { color: var(--texto-fraco); font-size: 0.93rem; }
+
+  /* ── Tabela de testes ────────────────────────────────────────── */
+  .rolagem { overflow-x: auto; border: 1px solid var(--borda); border-radius: 10px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    min-width: 520px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--borda);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  th {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--texto-tenue);
+    font-weight: 500;
+    background: var(--superficie-2);
+  }
+
+  td { background: var(--superficie); }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.num b { color: var(--resolvido); font-weight: 600; }
+  td.num i { color: var(--texto-fraco); font-style: normal; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--acento-suave);
+    color: var(--acento);
+    padding: 1px 5px;
+    border-radius: 4px;
+    word-break: break-word;
+  }
+
+  .bloco-codigo {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: var(--superficie-2);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    color: var(--texto);
+    line-height: 1.6;
+    margin: 14px 0 0;
+  }
+
+  /* ── Leitura do sistema (prosa) ──────────────────────────────── */
+  .leitura { display: grid; gap: 26px; }
+
+  .leitura-item {
+    padding-left: 20px;
+    border-left: 2px solid var(--borda-forte);
+  }
+  .leitura-item h3 {
+    margin: 0 0 8px;
+    font-size: 1.02rem;
+    font-weight: 650;
+    color: var(--acento);
+    letter-spacing: -0.01em;
+  }
+  .leitura-item p { margin: 0; color: var(--texto-fraco); }
+
+  /* ── Rodapé ──────────────────────────────────────────────────── */
+  .rodape {
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--borda);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    justify-content: space-between;
+  }
+
+  a { color: var(--acento); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="envelope">
+
+  <header class="capa">
+    <span class="etiqueta etiqueta--acento">[ AURA MOCOCA // AUDITORIA DO SISTEMA DE BILHETAGEM ]</span>
+    <h1>O que estava aberto, <em>e o que fechou</em></h1>
+    <hr class="filete-neon" />
+    <p class="resumo">
+      Revisão completa do site, do painel, da portaria e do banco. Oito falhas críticas
+      foram fechadas — entre elas um <strong>token de produção do Mercado Pago escrito no
+      código</strong>, uma <strong>senha de administrador em texto puro</strong> que abria o
+      painel do dono, e um caminho que deixava <strong>qualquer pessoa aprovar qualquer
+      pedido de graça</strong>. Abaixo, o que mudou, o que ainda depende de você e o que eu
+      deliberadamente não fiz.
+    </p>
+  </header>
+
+  <div class="placar">
+    <div class="placar-item placar-item--ok">
+      <span class="placar-numero">8</span>
+      <span class="placar-legenda">Falhas críticas<br />fechadas</span>
+    </div>
+    <div class="placar-item placar-item--ok">
+      <span class="placar-numero">64</span>
+      <span class="placar-legenda">Verificações<br />passando</span>
+    </div>
+    <div class="placar-item placar-item--ok">
+      <span class="placar-numero">9</span>
+      <span class="placar-legenda">Defeitos de negócio<br />corrigidos</span>
+    </div>
+    <div class="placar-item placar-item--voce">
+      <span class="placar-numero">5</span>
+      <span class="placar-legenda">Itens que dependem<br />de você</span>
+    </div>
+    <div class="placar-item placar-item--nao">
+      <span class="placar-numero">3</span>
+      <span class="placar-legenda">Coisas que eu<br />não terminei</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="voce">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ AÇÃO ]</span>
+      <h2>O que só você pode fazer</h2>
+      <span class="contagem">5 itens</span>
+    </div>
+    <p class="intro-secao">
+      Eu tirei os segredos do código, mas não posso revogar credencial nem apertar botão na
+      sua conta. Estes cinco são seus.
+    </p>
+
+    <div class="acoes">
+      <article class="acao">
+        <span class="acao-marca">HOJE</span>
+        <div>
+          <h3>Revogar o token do Mercado Pago</h3>
+          <p>
+            Um token de produção (<code>APP_USR-…</code>) estava escrito dentro de duas Edge
+            Functions. Eu já troquei o código para ler do ambiente, mas o valor antigo circulou —
+            só a revogação no painel do MP encerra o risco. Quem tiver esse token movimenta a conta.
+          </p>
+        </div>
+      </article>
+
+      <article class="acao">
+        <span class="acao-marca">ANTES DE VENDER</span>
+        <div>
+          <h3>Chaves de produção da Stripe</h3>
+          <p>
+            O cartão está em modo de teste: cartão real é recusado e cartão de teste passa liberando
+            ingresso sem dinheiro entrar. Coloque <code>sk_live_…</code> como segredo
+            <code>STRIPE_SECRET_KEY</code> nas Edge Functions e troque a
+            <code>STRIPE_CHAVE_PUBLICAVEL</code> em <code>js/checkout.js</code> pela
+            <code>pk_live_…</code>. Enquanto não vierem, o cartão recusa com aviso na tela e o PIX
+            segue funcionando normalmente.
+          </p>
+        </div>
+      </article>
+
+      <article class="acao">
+        <span class="acao-marca">1 CLIQUE</span>
+        <div>
+          <h3>Ligar proteção contra senha vazada</h3>
+          <p>
+            No Supabase Auth. Impede que a conta do dono ou da portaria use uma senha que já
+            apareceu em vazamento público.
+          </p>
+        </div>
+      </article>
+
+      <article class="acao">
+        <span class="acao-marca">DECISÃO</span>
+        <div>
+          <h3>Acertar os contadores dos lotes</h3>
+          <p>
+            O banco diz 49 vendidos na Pista, mas existem 6 ingressos reais; o Bistrô marca 6 com
+            zero ingressos. Ou você semeou à mão para contar venda na porta, ou são cancelamentos
+            antigos que nunca voltaram ao lote. <strong>Não mexi — o número certo é seu.</strong>
+            Me diga qual é e eu acerto.
+          </p>
+        </div>
+      </article>
+
+      <article class="acao">
+        <span class="acao-marca acao-marca--opcional">TESTE</span>
+        <div>
+          <h3>Rodar o teste de fluxo completo</h3>
+          <p>
+            São 30 verificações do ciclo inteiro — compra, conferência do PIX, portaria, bar e
+            cancelamento. Precisa da sua senha de dono, então eu não pude executar.
+          </p>
+          <pre class="bloco-codigo">AURA_DONO_EMAIL=seu@email.com AURA_DONO_SENHA=suasenha \
+  node testes/teste_fluxo_completo.mjs</pre>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="criticos">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ CRÍTICO ]</span>
+      <h2>As oito falhas que podiam custar dinheiro ou dado de cliente</h2>
+      <span class="contagem">8 · todas fechadas</span>
+    </div>
+
+    <div class="achados">
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>Credencial de produção do Mercado Pago no código-fonte</h3>
+          <span class="selo selo--voce">falta revogar</span>
+        </div>
+        <p>
+          O token vivo estava escrito em <code>create-payment</code> e <code>mp-webhook</code> —
+          duas funções ativas que nem pertencem à AURA. Agora vem de
+          <code>MP_ACCESS_TOKEN</code> do ambiente, e sem ele a função falha fechada em vez de
+          tentar cobrar com credencial vazia.
+        </p>
+      </article>
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>Porta dos fundos no painel do dono</h3>
+          <span class="selo selo--fechado">fechado</span>
+        </div>
+        <p>
+          Qualquer visitante entrava com <code>aura2026</code>, <code>admin</code>,
+          <code>dono</code> — ou com qualquer e-mail contendo a palavra “dono”. E a mensagem de
+          erro <strong>ensinava a senha na tela</strong>.
+        </p>
+        <div class="antes-depois">
+          <div class="quadro quadro--antes">
+            <span class="etiqueta">[ ANTES ]</span>
+            cleanSenha === 'aura2026' ||<br />
+            cleanEmail.includes('dono')<br />
+            → abre o painel
+          </div>
+          <div class="quadro quadro--depois">
+            <span class="etiqueta">[ AGORA ]</span>
+            Supabase Auth + papel em<br />
+            aura_papeis. Nenhuma senha<br />
+            escrita em lugar nenhum.
+          </div>
+        </div>
+      </article>
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>Qualquer um aprovava qualquer pedido, de graça</h3>
+          <span class="selo selo--fechado">fechado</span>
+        </div>
+        <p>
+          A rota de confirmação aceitava <em>qualquer</em> PaymentIntent aprovado junto de
+          <em>qualquer</em> código de pedido, e gravava com a chave de serviço — por cima de toda a
+          proteção do banco. Como os códigos de pedido eram sequenciais
+          (<code>AURA-00001</code>, <code>AURA-00002</code>…), um laço de dez linhas aprovava a
+          casa inteira.
+        </p>
+        <p>
+          Agora o pedido reserva o seu PaymentIntent na criação, e a aprovação só passa se o
+          pagamento for <strong>aquele</strong> e o valor bater com o total gravado.
+        </p>
+      </article>
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>O valor da cobrança vinha do navegador</h3>
+          <span class="selo selo--fechado">fechado</span>
+        </div>
+        <p>
+          O checkout calculava o total em centavos e mandava para o servidor, que cobrava aquilo
+          sem conferir. Mudar uma linha no console comprava um combo de R$&nbsp;440 por R$&nbsp;1.
+          Hoje o navegador manda só o código do pedido; quem soma é o banco.
+        </p>
+      </article>
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>Combo de R$ 380 saindo por R$ 0</h3>
+          <span class="selo selo--fechado">fechado</span>
+        </div>
+        <p>
+          O nome e o preço do combo viajavam do navegador e eram gravados como texto dentro do
+          campo de setor. Mandar <code>p_combo_nome: 'CARD DOURADO'</code> com preço zero rendia
+          uma garrafa de whisky de graça, e a portaria entregava.
+        </p>
+        <div class="antes-depois">
+          <div class="quadro quadro--antes">
+            <span class="etiqueta">[ ANTES ]</span>
+            setor = 'Pista • [CARD DOURADO:<br />
+            Combo Black Label]'<br />
+            preço = o que o cliente mandar
+          </div>
+          <div class="quadro quadro--depois">
+            <span class="etiqueta">[ AGORA ]</span>
+            tabela aura_combos (18 itens)<br />
+            do navegador viaja só o id<br />
+            combo inventado é recusado
+          </div>
+        </div>
+      </article>
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>O QR do ingresso era adivinhável</h3>
+          <span class="selo selo--fechado">fechado</span>
+        </div>
+        <p>
+          O código de validação era o número do pedido. Quem comprava o 42 sabia que existia o 41:
+          dava para varrer a base inteira pelo link público do voucher — nome, setor e situação de
+          cada cliente — e para <strong>forjar o QR de outra pessoa e entrar no lugar dela</strong>.
+          O aviso que o próprio sistema mandava no WhatsApp descrevia exatamente esse ataque.
+        </p>
+        <div class="antes-depois">
+          <div class="quadro quadro--antes">
+            <span class="etiqueta">[ ANTES ]</span>
+            AURA-00042-PISTA-1<br />
+            AURA-00042-PISTA-2<br />
+            AURA-00043-CAM-1
+          </div>
+          <div class="quadro quadro--depois">
+            <span class="etiqueta">[ AGORA ]</span>
+            AURA-K2M9P-4TXWE<br />
+            AURA-2UE8N-2TYCJ<br />
+            sem 0/O/1/I — o porteiro digita
+          </div>
+        </div>
+      </article>
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>Cartão em modo de teste, sem avisar ninguém</h3>
+          <span class="selo selo--voce">falta a chave live</span>
+        </div>
+        <p>
+          Cliente com cartão real era recusado; quem soubesse do cartão de teste
+          <code>4242…</code> entrava de graça com ingresso válido. A chave secreta também estava
+          escrita no código. Agora ela vem do ambiente, a função recusa sem ela, e o checkout
+          escreve “MODO DE TESTE” na tela enquanto a chave pública começar com <code>pk_test</code>.
+        </p>
+      </article>
+
+      <article class="achado">
+        <div class="achado-topo">
+          <h3>Injeção de HTML no seu painel</h3>
+          <span class="selo selo--fechado">fechado</span>
+        </div>
+        <p>
+          A fila de pagamentos montava o nome do cliente com <code>innerHTML</code>. Como a função
+          de criar pedido é pública, dava para gravar um nome com script dentro — e ele rodava
+          <strong>na sua sessão</strong>, a mesma que confirma pagamentos. O painel agora é montado
+          inteiro com <code>createElement</code> e <code>textContent</code>; zero
+          <code>innerHTML</code> no arquivo.
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="cartao">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ SEQUÊNCIA ]</span>
+      <h2>A ordem do pagamento no cartão</h2>
+    </div>
+    <p class="intro-secao">
+      Aqui a ordem não é estética — cada passo impede um defeito que já esteve no ar. Antes, o
+      sistema cobrava primeiro e gravava depois: quando a gravação falhava, o cliente saía cobrado
+      e sem ingresso, com o botão escrito “✓ Cartão Aprovado!”.
+    </p>
+
+    <div class="fluxo">
+      <div class="fluxo-passo">
+        <b>1 · Grava</b>
+        <span>O pedido existe antes de qualquer cobrança. Falhou aqui, ninguém é cobrado.</span>
+      </div>
+      <div class="fluxo-passo">
+        <b>2 · Servidor diz o valor</b>
+        <span>O total sai do pedido gravado. O navegador não manda centavos.</span>
+      </div>
+      <div class="fluxo-passo">
+        <b>3 · Cartão confirma</b>
+        <span>A Stripe cobra no cliente. Recusado, o pedido continua reservado.</span>
+      </div>
+      <div class="fluxo-passo">
+        <b>4 · Servidor aprova</b>
+        <span>Só se o pagamento for daquele pedido e o valor bater.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="negocio">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ NEGÓCIO ]</span>
+      <h2>Defeitos que custavam venda, não segurança</h2>
+      <span class="contagem">9 · corrigidos</span>
+    </div>
+
+    <ul class="lista-densa">
+      <li>
+        <span class="assunto">Preço nunca salvava</span>
+        <span class="detalhe">
+          O painel lia o preço da tela, guardava no navegador e anunciava “já está ativo no site”.
+          Você via R$ 60 no seu celular e o cliente pagava R$ 40. Agora grava em
+          <code>aura_lotes</code> e só diz “salvo” se o banco confirmar.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">“Pausar vendas” não pausava</span>
+        <span class="detalhe">
+          O estado ficava no navegador do dono. Você via tudo travado e o site seguia vendendo para
+          todo mundo. Foi para o banco.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Pré-venda não vendia</span>
+        <span class="detalhe">
+          O próximo show não tinha lote nenhum: o cliente atravessava o checkout, digitava CPF e
+          morria em “setor não está à venda”. Criei Pista R$ 35 e Camarote R$ 75.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">12 combos abriam vazio</span>
+        <span class="detalhe">
+          O cardápio tinha ids que o checkout não conhecia. O cliente pedia o Balde Heineken, pagava
+          só o ingresso e chegava esperando cerveja. Cardápio e checkout leem a mesma tabela agora.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Cancelar não devolvia a vaga</span>
+        <span class="detalhe">
+          O lote seguia contando a venda e os ingressos continuavam válidos. Agora devolve e
+          invalida.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Dava para esgotar a casa de graça</span>
+        <span class="detalhe">
+          Pedido pendente segurava vaga para sempre. Agora expira em 45 minutos e devolve — e
+          continua aparecendo na sua fila, porque o cliente pode ter pago atrasado.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Corrida no último lugar</span>
+        <span class="detalhe">
+          Duas compras simultâneas na última vaga do Bistrô passavam as duas. O lote agora é
+          travado durante a venda.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Bistrô invisível</span>
+        <span class="detalhe">
+          O setor de R$ 250 existia no banco e nunca aparecia no checkout.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Portaria confundia cancelado com atrasado</span>
+        <span class="detalhe">
+          Pedido cancelado aparecia como “pagamento não confirmado” — o porteiro podia achar que era
+          PIX atrasado e liberar. Hoje são três estados distintos na tela.
+        </span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="tambem">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ TAMBÉM RESOLVIDO ]</span>
+      <h2>O resto</h2>
+    </div>
+
+    <ul class="lista-densa">
+      <li>
+        <span class="assunto">QR gerado localmente</span>
+        <span class="detalhe">
+          O código de validação de cada cliente ia para <code>api.qrserver.com</code> na URL — e
+          ficava no log de lá. Sem internet, a imagem não aparecia, com o cliente já pago na fila.
+          Agora é gerado no próprio site, verificado com um decodificador real em 9 casos.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Consultas que nunca paravam</span>
+        <span class="detalhe">
+          O acompanhamento do pagamento consultava o banco a cada 3 segundos para sempre, no
+          celular do cliente. Agora para ao fechar a tela e tem teto de 20 minutos.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">CPF vazando para a portaria</span>
+        <span class="detalhe">
+          A resposta de validação carregava o CPF do titular sem necessidade. Não carrega mais.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Duplicação silenciosa</span>
+        <span class="detalhe">
+          Dois painéis do dono, duas tabelas de papéis, três cópias da função que adivinhava combo,
+          duas pastas de documentação. Sobrou um de cada.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Teatro de segurança removido</span>
+        <span class="detalhe">
+          Bloquear F12, botão direito e Ctrl+S não protege código nenhum — o navegador já recebeu
+          tudo. Só atrapalhava você e o cliente.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Rolagem da home</span>
+        <span class="detalhe">
+          Cada evento de rolagem recalculava o layout várias vezes no mesmo quadro. Agora passa por
+          <code>requestAnimationFrame</code> — era o que fazia a página engasgar no celular.
+        </span>
+      </li>
+      <li>
+        <span class="assunto">Documentação que mentia</span>
+        <span class="detalhe">
+          O <code>CLAUDE.md</code> mandava cadastrar a equipe numa tabela que o sistema nunca lia —
+          quem seguisse criava um porteiro que não entrava. Reescrito junto com o README dos testes.
+        </span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="nao-feito">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ HONESTIDADE ]</span>
+      <h2>O que eu não terminei</h2>
+      <span class="contagem">3 itens</span>
+    </div>
+
+    <div class="achados">
+      <article class="achado achado--voce">
+        <div class="achado-topo">
+          <h3>O identificador do PIX ainda é provisório</h3>
+          <span class="selo selo--parcial">não feito</span>
+        </div>
+        <p>
+          Para o identificador da transferência ser o código do pedido, o pedido teria que existir
+          <em>antes</em> da tela de pagamento — e isso muda o fluxo que doze testes protegem.
+          Preferi não mexer às pressas num caminho testado. Você continua conciliando por valor e
+          nome do pagador; o código do pedido aparece grande na tela e no WhatsApp.
+        </p>
+      </article>
+
+      <article class="achado achado--voce">
+        <div class="achado-topo">
+          <h3>O teste de fluxo completo não foi executado</h3>
+          <span class="selo selo--parcial">precisa de você</span>
+        </div>
+        <p>
+          Está escrito, com 30 verificações, mas depende das credenciais de dono. O comando está
+          na seção de ações acima.
+        </p>
+      </article>
+
+      <article class="achado achado--voce">
+        <div class="achado-topo">
+          <h3>Cinco agentes foram cortados no meio</h3>
+          <span class="selo selo--fechado">contornado</span>
+        </div>
+        <p>
+          Dividi o trabalho em cinco frentes paralelas e todas foram interrompidas por limite de
+          sessão, em estágios diferentes. Três tinham entregado; duas deixaram tela nova com código
+          velho. Auditei arquivo por arquivo e terminei as duas eu mesmo — e criei um teste que abre
+          as quatro páginas no navegador procurando exatamente esse tipo de estrago.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="testes">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ PROVA ]</span>
+      <h2>Testes, rodados agora</h2>
+      <span class="contagem">64 verificações</span>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Suíte</th>
+            <th scope="col">O que prova</th>
+            <th scope="col">Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>teste_paginas</code></td>
+            <td>As quatro páginas abrem sem erro de JavaScript, com todos os elementos no lugar</td>
+            <td class="num"><b>12/12</b></td>
+          </tr>
+          <tr>
+            <td><code>teste_checkout</code></td>
+            <td>Um clique gera um pedido; falha de gravação não vira tela de sucesso; três ingressos, três QR</td>
+            <td class="num"><b>12/12</b></td>
+          </tr>
+          <tr>
+            <td><code>teste_qr</code></td>
+            <td>O QR gerado no site é lido por um decodificador real — inclusive um PIX completo</td>
+            <td class="num"><b>11/11</b></td>
+          </tr>
+          <tr>
+            <td><code>teste_permissoes</code></td>
+            <td>Ataca o banco real com a chave pública: o que um visitante não pode, e o que ainda pode</td>
+            <td class="num"><b>29/29</b></td>
+          </tr>
+          <tr>
+            <td><code>teste_fluxo_completo</code></td>
+            <td>Compra, conferência do PIX, portaria, bar e cancelamento</td>
+            <td class="num"><i>aguarda sua senha</i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section id="leitura">
+    <div class="titulo-secao">
+      <span class="etiqueta">[ LEITURA ]</span>
+      <h2>O que eu achei do sistema</h2>
+    </div>
+
+    <div class="leitura">
+      <div class="leitura-item">
+        <h3>O desenho estava certo. As bordas é que não.</h3>
+        <p>
+          A arquitetura de funções no banco com verificação de permissão do lado do servidor é a
+          escolha correta, e estava lá desde o começo. A trava contra dois leitores no mesmo QR é a
+          solução certa e sobreviveu a tudo. Os buracos não vinham do desenho — vinham dos lugares
+          onde alguém deixou o navegador decidir.
+        </p>
+      </div>
+
+      <div class="leitura-item">
+        <h3>Um padrão só, repetido seis vezes</h3>
+        <p>
+          Preço, aprovação de pagamento e identidade do ingresso: as três coisas que só o servidor
+          pode decidir estavam, cada uma à sua maneira, sendo decididas pelo cliente. Cada furo
+          grande tinha essa mesma raiz. Hoje as três moram no banco, e existe teste provando que o
+          navegador não alcança nenhuma delas.
+        </p>
+      </div>
+
+      <div class="leitura-item">
+        <h3>Onde havia dois, eles divergiam — e o pior estava no ar</h3>
+        <p>
+          Dois painéis do dono: um com a porta dos fundos, outro com a injeção de HTML. Duas
+          tabelas de papéis: a que a documentação mandava usar estava vazia. Três cópias da função
+          que adivinhava combo por texto. A duplicação nunca ficou parada; ela sempre andou para
+          lados diferentes.
+        </p>
+      </div>
+
+      <div class="leitura-item">
+        <h3>O que mais me preocupou não foi um bug</h3>
+        <p>
+          O painel dizia “salvo com sucesso” sem ter salvado nada. Isso não é defeito de código, é
+          defeito de confiança: você tomava decisão de preço achando que o site tinha mudado. Agora
+          é impossível — nenhuma tela anuncia sucesso sem conferir o que o banco respondeu.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="rodape">
+    <span class="etiqueta">[ AURA MOCOCA // AV. JOÃO BATISTA LIMA FIGUEIREDO, 2707 ]</span>
+    <span class="etiqueta">[ AUDITORIA · 18 AGO 2026 ]</span>
+  </footer>
+
+</div>

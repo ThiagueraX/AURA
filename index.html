@@ -27,7 +27,7 @@
   <meta name="theme-color" content="#08090C" />
 
   <!-- Folha de Estilos Principal -->
-  <link rel="stylesheet" href="css/style.css?v=20260816_02" />
+  <link rel="stylesheet" href="css/style.css?v=20260818_02" />
 </head>
 <body>
 
@@ -87,14 +87,17 @@
       <!-- Ações Rápidas: Checkout e Admin -->
       <div class="navbar-actions">
         <button type="button" class="btn-quick-ticket" id="btn-header-buy" data-cursor="CHECKOUT">
-          <span class="btn-icon">🎟️</span> COMPRAR
+          <span class="btn-icon">🎟️</span><span class="btn-rotulo">COMPRAR</span>
         </button>
-        <button type="button" class="btn-admin-gear" id="btn-open-admin" title="Painel do Proprietário" aria-label="Painel Administrativo">
+        <!-- O painel do dono é uma página própria (admin.html), com login no
+             Supabase Auth. Aqui é só um link: nenhuma tela de senha mora no
+             site público. -->
+        <a href="admin.html" class="btn-admin-gear" id="btn-open-admin" title="Painel do Proprietário" aria-label="Painel Administrativo" rel="noopener">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
-        </button>
+        </a>
       </div>
 
     </div>
@@ -285,7 +288,10 @@
                   <span class="price-label font-mono">A partir de:</span>
                   <span class="price-val" id="show-active-price">R$ 40,00</span>
                 </div>
-                <button type="button" class="btn-show-buy" onclick="openCheckoutWithShow('active')">
+                <!-- data-rotulo é o modelo do texto; js/site-config.js troca
+                     {preco} pelo preço do banco e reescreve o botão quando o
+                     setor está pausado. -->
+                <button type="button" class="btn-show-buy" data-show="active" data-setor="PISTA" data-rotulo="Garantir Ingresso →" onclick="openCheckoutWithShow('active')">
                   Garantir Ingresso →
                 </button>
               </div>
@@ -305,14 +311,14 @@
 
             <div class="show-card-body">
               <div class="show-date-tag font-mono" id="show-next-date">📅 SÁBADO SEGUINTE • 21:00</div>
-              <h3 class="show-artist-title">AURA SATURDAY SESSIONS</h3>
+              <h3 class="show-artist-title" id="show-next-title">AURA SATURDAY SESSIONS</h3>
               
               <div class="show-genres font-mono">
                 <span class="genre-tag">HOUSE &amp; TECHNO</span>
                 <span class="genre-tag">SPECIAL GUEST</span>
               </div>
 
-              <p class="show-description">
+              <p class="show-description" id="show-next-desc">
                 Lineup especial com DJs convidados do circuito paulista e estrutura de lasers ampliada. Já disponível para compra antecipada no lote promocional.
               </p>
 
@@ -321,7 +327,7 @@
                   <span class="price-label font-mono">Lote Promocional:</span>
                   <span class="price-val" id="show-next-price">R$ 35,00</span>
                 </div>
-                <button type="button" class="btn-show-buy btn-show-buy--secondary" onclick="openCheckoutWithShow('next')">
+                <button type="button" class="btn-show-buy btn-show-buy--secondary" data-show="next" data-setor="PISTA" data-rotulo="Garantir Pré-Venda →" onclick="openCheckoutWithShow('next')">
                   Garantir Pré-Venda →
                 </button>
               </div>
@@ -378,15 +384,15 @@
               <li>✓ Sanitários amplos e higienizados</li>
             </ul>
 
-            <button type="button" class="btn-sector" onclick="openCheckoutWithSector('Pista')">
+            <button type="button" class="btn-sector" data-show="active" data-setor="PISTA" data-rotulo="Comprar Ingresso Pista ({preco}) →" onclick="openCheckoutWithSector('Pista')">
               Comprar Ingresso Pista (R$ 40,00) →
             </button>
           </div>
 
-          <!-- CAMAROTE VIP & BISTRÔS -->
+          <!-- CAMAROTE & VIP -->
           <div class="sector-card sector-card--vip">
             <div class="sector-badge font-mono highlight-blood">[ EXPERIÊNCIA VIP EXCLUSIVA ]</div>
-            <h3 class="sector-name">Camarotes Privativos &amp; Mesas Bistrô</h3>
+            <h3 class="sector-name">Camarotes Privativos &amp; Área VIP</h3>
             <p class="sector-desc">Conforto superior com vista panorâmica da casa, atendimento exclusivo de garçom e combos de bebidas personalizadas.</p>
             
             <ul class="sector-features font-merriweather">
@@ -397,11 +403,15 @@
               <li>★ Combos especiais de Gin, Whisky e Espumantes</li>
             </ul>
 
+            <p class="sector-desc font-mono">
+              VIP a partir de <strong data-preco-setor="BISTRO">R$ 250,00</strong> — reserva pelo WhatsApp.
+            </p>
+
             <div class="sector-vip-actions">
-              <a href="https://wa.me/5519992971614?text=Ol%C3%A1!%20Gostaria%20de%20reservar%20um%20Camarote%20Fechado%20ou%20Mesa%20Bistr%C3%B4%20na%20AURA%20Mococa." target="_blank" rel="noopener" class="btn-whatsapp-reserve font-mono">
+              <a href="https://wa.me/5519992971614?text=Ol%C3%A1!%20Gostaria%20de%20reservar%20um%20Camarote%20Fechado%20ou%20a%20%C3%A1rea%20VIP%20na%20AURA%20Mococa." target="_blank" rel="noopener" class="btn-whatsapp-reserve font-mono">
                 💬 Reservar Camarote Fechado no WhatsApp
               </a>
-              <button type="button" class="btn-sector btn-sector--vip" onclick="openCheckoutWithSector('Camarote')">
+              <button type="button" class="btn-sector btn-sector--vip" data-show="active" data-setor="CAMAROTE" data-rotulo="Garantir Camarote Individual ({preco}) →" onclick="openCheckoutWithSector('Camarote')">
                 Garantir Camarote Individual (R$ 80,00) →
               </button>
             </div>
@@ -418,7 +428,7 @@
     <section class="brands-section" aria-label="Marcas Parceiras Servidas na Casa" id="cardapio">
       <div class="brands-container">
         <div class="brands-header text-center">
-          <div class="brands-title-tag font-mono">[ CARDÁPIO EXCLUSIVO DE MARCAS ]</div>
+          <div class="brands-title-tag font-mono">[ CARDÁPIO EXCLUSIVO DE&nbsp;MARCAS&nbsp;]</div>
           <h2 class="brands-main-title font-display">BEBIDAS &amp; COMBOS ORIGINAIS</h2>
           <p class="brands-subtitle">Trabalhamos exclusivamente com marcas premium e rótulos 100% certificados. Clique em qualquer marca para ver os combos.</p>
           <div class="brands-action-wrapper">
@@ -663,7 +673,7 @@
                 </div>
                 <div class="review-stars">★★★★★</div>
                 <p class="review-quote">
-                  "Camarote VIP vale cada centavo. Vista privileged do palco, atendimento exclusivo e carta de drinks com bebidas de altíssima qualidade."
+                  "Camarote vale cada centavo. Vista privileged do palco, atendimento exclusivo e carta de drinks com bebidas de altíssima qualidade."
                 </p>
               </div>
 
@@ -873,7 +883,7 @@
               <label class="sector-radio-card" data-sector="Camarote" data-price="80">
                 <input type="radio" name="checkout_sector" value="Camarote" />
                 <div class="radio-card-content">
-                  <div class="radio-card-title">Camarote VIP</div>
+                  <div class="radio-card-title">Camarote</div>
                   <div class="radio-card-price">R$ 80,00</div>
                   <div class="radio-card-desc font-mono">Vista elevada + Pulseira VIP</div>
                 </div>
@@ -885,9 +895,9 @@
           <div class="form-group">
             <label class="form-label font-mono">2. QUANTIDADE DE INGRESSOS:</label>
             <div class="quantity-counter">
-              <button type="button" class="btn-qty" id="btn-qty-minus">-</button>
-              <span class="qty-number font-mono" id="qty-val">1</span>
-              <button type="button" class="btn-qty" id="btn-qty-plus">+</button>
+              <button type="button" class="btn-qty" id="btn-qty-minus" aria-label="Remover um ingresso">-</button>
+              <span class="qty-number font-mono" id="qty-val" aria-live="polite">1</span>
+              <button type="button" class="btn-qty" id="btn-qty-plus" aria-label="Adicionar um ingresso">+</button>
               <span class="qty-max-note font-mono">[ Máx. 10 ingressos por compra ]</span>
             </div>
           </div>
@@ -1140,182 +1150,6 @@
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- MODAL DE ADMINISTRAÇÃO DO PROPRIETÁRIO (/admin)          -->
-  <!-- ======================================================== -->
-  <div id="admin-modal" class="admin-modal-overlay" aria-hidden="true">
-    <div class="admin-card" role="dialog" aria-modal="true" aria-labelledby="admin-title">
-      
-      <div class="admin-header">
-        <div>
-          <div class="admin-tag font-mono">[ PAINEL ADMINISTRATIVO AURA ]</div>
-          <h3 class="admin-title" id="admin-title">Gerenciar Shows &amp; Ingressos</h3>
-        </div>
-        <button type="button" class="btn-admin-close" id="btn-close-admin" aria-label="Fechar painel">✕</button>
-      </div>
-
-      <!-- Login de verdade, contra o Supabase Auth. A senha nunca fica no
-           código do site: quem confere é o servidor. -->
-      <div id="admin-auth-view" class="admin-auth-view">
-        <form id="form-admin-login">
-          <p class="admin-login-desc">Entre com a conta de proprietário da AURA para alterar preços, atrações e confirmar pagamentos:</p>
-          <div class="form-group">
-            <label for="admin-email" class="form-label font-mono">E-MAIL:</label>
-            <input type="email" id="admin-email" class="form-input font-mono" placeholder="dono@auramococa.com.br" autocomplete="username" required />
-          </div>
-          <div class="form-group">
-            <label for="admin-senha" class="form-label font-mono">SENHA:</label>
-            <input type="password" id="admin-senha" class="form-input font-mono" placeholder="Sua senha" autocomplete="current-password" required />
-          </div>
-          <div class="checkout-erro-box font-mono" id="admin-erro" role="alert" style="display: none;"></div>
-          <button type="submit" class="btn-action-primary w-100" id="btn-admin-entrar">
-            Acessar Painel →
-          </button>
-        </form>
-      </div>
-
-      <div id="admin-dashboard-view" class="admin-dashboard-view" style="display: none;">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); padding: 10px 14px; border-radius: 6px;">
-          <span class="font-mono" style="font-size: 0.78rem; color: #00F0FF;">⚡ MÓDULO DE PORTARIA AO VIVO</span>
-          <a href="portaria.html" target="_blank" class="font-mono" style="background: #00F0FF; color: #08090C; font-size: 0.75rem; font-weight: bold; padding: 6px 12px; border-radius: 4px; text-decoration: none;">
-            Abrir Scanner Portaria 📱
-          </a>
-        </div>
-
-        <div class="admin-sessao-barra font-mono">
-          <span id="adm-sessao-email">—</span>
-          <button type="button" class="btn-sair-sessao" id="btn-admin-sair">Sair</button>
-        </div>
-
-        <div class="admin-tabs">
-          <button type="button" class="admin-tab-btn is-active" data-admintab="tab-pagamentos">💵 Pagamentos <span class="admin-badge-contador" id="adm-contador-pendentes">0</span></button>
-          <button type="button" class="admin-tab-btn" data-admintab="tab-edit-show">🎤 Show Ativo</button>
-          <button type="button" class="admin-tab-btn" data-admintab="tab-queue-show">📋 Próximo Show</button>
-          <button type="button" class="admin-tab-btn" data-admintab="tab-lotes">💰 Lotes &amp; Preços</button>
-        </div>
-
-        <!-- Conferência do PIX: é aqui que um pedido vira ingresso válido.
-             O dono vê o valor cair no app do banco dele e confirma. -->
-        <div class="admin-tab-pane is-active" id="tab-pagamentos">
-          <div class="admin-metricas font-mono" id="adm-metricas">
-            <div class="metrica-box">
-              <span class="metrica-rotulo">CONFIRMADO</span>
-              <span class="metrica-valor" id="adm-met-faturamento">R$ 0,00</span>
-              <span class="metrica-sub" id="adm-met-ingressos">0 ingressos</span>
-            </div>
-            <div class="metrica-box metrica-aguardando">
-              <span class="metrica-rotulo">AGUARDANDO</span>
-              <span class="metrica-valor" id="adm-met-aguardando">R$ 0,00</span>
-              <span class="metrica-sub" id="adm-met-aguardando-qtd">0 ingressos</span>
-            </div>
-          </div>
-
-          <p class="admin-help-text font-mono">
-            Confira o PIX na conta da casa e confirme aqui. O QR Code do cliente
-            só abre a portaria depois da confirmação.
-          </p>
-
-          <div id="adm-lista-pendentes" class="admin-lista-pendentes"></div>
-
-          <button type="button" class="btn-action-primary w-100" id="btn-recarregar-pendentes">
-            ↻ Atualizar lista
-          </button>
-        </div>
-
-        <div class="admin-tab-pane" id="tab-edit-show">
-          <form id="form-edit-active-show">
-            <div class="form-group">
-              <label for="adm-show-title" class="form-label font-mono">NOME DO EVENTO / ARTISTA *</label>
-              <input type="text" id="adm-show-title" class="form-input" value="LORENAH IN AURA" required />
-            </div>
-
-            <div class="form-group">
-              <label for="adm-show-date" class="form-label font-mono">DATA &amp; HORÁRIO DO SHOW *</label>
-              <input type="text" id="adm-show-date" class="form-input" value="SÁBADO, 22 DE AGOSTO • 21:00 (SHOW 00:00)" required />
-            </div>
-
-            <div class="form-group">
-              <label for="adm-show-flyer" class="form-label font-mono">URL DA FOTO / FLYER DO EVENTO *</label>
-              <input type="url" id="adm-show-flyer" class="form-input" value="https://res.cloudinary.com/htkavmx5a/image/upload/v1786630554/hq6bthf6gky5eyqeqp44.jpg" required />
-            </div>
-
-            <div class="form-group">
-              <label for="adm-show-desc" class="form-label font-mono">DESCRIÇÃO DA FESTA</label>
-              <textarea id="adm-show-desc" class="form-input form-textarea" rows="3">Com muito sertanejo emocionante de @lorenahoficial e os drops mais quentes do funk premium, a noite promete sacudir a estrutura da AURA!</textarea>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group flex-1">
-                <label for="adm-price-pista" class="form-label font-mono">PREÇO PISTA (R$)</label>
-                <input type="number" id="adm-price-pista" class="form-input" value="40" min="10" />
-              </div>
-              <div class="form-group flex-1">
-                <label for="adm-price-camarote" class="form-label font-mono">PREÇO CAMAROTE (R$)</label>
-                <input type="number" id="adm-price-camarote" class="form-input" value="80" min="20" />
-              </div>
-            </div>
-
-            <button type="submit" class="btn-action-primary w-100">
-              Salvar Alterações no Site 💾
-            </button>
-          </form>
-        </div>
-
-        <div class="admin-tab-pane" id="tab-queue-show">
-          <form id="form-edit-next-show">
-            <p class="admin-help-text font-mono">Deixe o show da semana seguinte preparado para ativar quando quiser:</p>
-            
-            <div class="form-group">
-              <label for="adm-next-title" class="form-label font-mono">NOME DO PRÓXIMO EVENTO</label>
-              <input type="text" id="adm-next-title" class="form-input" value="AURA SATURDAY SESSIONS" />
-            </div>
-
-            <div class="form-group">
-              <label for="adm-next-date" class="form-label font-mono">DATA</label>
-              <input type="text" id="adm-next-date" class="form-input" value="SÁBADO SEGUINTE • 21:00" />
-            </div>
-
-            <div class="form-group">
-              <label for="adm-next-price" class="form-label font-mono">VALOR PRÉ-VENDA (R$)</label>
-              <input type="number" id="adm-next-price" class="form-input" value="35" />
-            </div>
-
-            <button type="submit" class="btn-action-primary w-100">
-              Atualizar Próximo Show 💾
-            </button>
-          </form>
-        </div>
-
-        <div class="admin-tab-pane" id="tab-lotes">
-          <div class="admin-lotes-control">
-            <div class="lote-status-box">
-              <span class="font-mono">STATUS DAS VENDAS:</span>
-              <button type="button" class="btn-toggle-soldout" id="btn-toggle-soldout">
-                🟢 VENDAS ABERTAS (CLIQUE PARA PAUSAR/ESGOTAR)
-              </button>
-            </div>
-
-            <div class="lote-selector-box">
-              <label for="adm-select-lote" class="form-label font-mono">LOTE ATUAL EM EXIBIÇÃO:</label>
-              <select id="adm-select-lote" class="form-input">
-                <option value="1º LOTE ATIVO">1º Lote (Promocional)</option>
-                <option value="2º LOTE ATIVO">2º Lote</option>
-                <option value="ÚLTIMOS INGRESSOS">Últimos Ingressos</option>
-                <option value="INGRESSOS ESGOTADOS">Sold Out (Esgotado)</option>
-              </select>
-            </div>
-
-            <button type="button" class="btn-action-primary w-100 mt-20" id="btn-save-lotes">
-              Aplicar Status de Lotes 💾
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
 
   <!-- BOTÃO FLUTUANTE DE SUPORTE WHATSAPP VIP -->
   <a 
@@ -1352,17 +1186,21 @@
 
   <!-- SUPABASE JS SDK & CLIENT -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-client.js?v=20260815_46"></script>
+  <script src="js/supabase-client.js?v=20260818_01"></script>
 
   <!-- Stripe JS -->
   <script src="https://js.stripe.com/v3/"></script>
 
-  <!-- SCRIPTS DA APLICAÇÃO & BLINDAGEM DE CÓDIGO -->
-  <script src="js/security.js?v=20260816_01"></script>
-  <script src="js/main.js?v=20260816_01"></script>
-  <script src="js/cardapio.js?v=20260816_01"></script>
-  <script src="js/admin.js?v=20260816_01"></script>
-  <script src="js/checkout.js?v=20260816_01"></script>
+  <!-- SCRIPTS DA APLICAÇÃO -->
+  <!-- Gerador de QR local: o código de validação do cliente não sai daqui,
+       e o ingresso aparece mesmo sem internet. -->
+  <script src="js/qr.js?v=20260818_01"></script>
+  <script src="js/main.js?v=20260818_01"></script>
+  <script src="js/cardapio.js?v=20260818_02"></script>
+  <!-- Aplica no site a configuração do show que está no banco. Não é painel:
+       quem edita é admin.html. -->
+  <script src="js/site-config.js?v=20260818_01"></script>
+  <script src="js/checkout.js?v=20260818_01"></script>
 
 </body>
 </html>

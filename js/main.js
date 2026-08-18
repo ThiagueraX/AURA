@@ -26,6 +26,23 @@ const PROPORCAO_LOCKUP = 1.65; // 987 ÷ 598 — largura ÷ altura do logotipo
 const LETREIRO_NA_FOTO = { x: 0.2731, y: 0.2959, largura: 0.4218, altura: 0.1438 };
 
 const limitar = (v, min = 0, max = 1) => Math.max(min, Math.min(max, v));
+
+/* Um evento de rolagem dispara muitas vezes por quadro. Como cada passada do
+   hero lê a posição de 8 fragmentos e escreve estilo em todos, rodar direto no
+   evento força o navegador a recalcular o layout várias vezes no mesmo quadro —
+   é o que fazia a home engasgar no celular. Este empacotador junta todas as
+   chamadas do quadro numa só, na hora certa de desenhar. */
+function porQuadro(fn) {
+  let agendado = false;
+  return function () {
+    if (agendado) return;
+    agendado = true;
+    requestAnimationFrame(() => {
+      agendado = false;
+      fn();
+    });
+  };
+}
 const suavizar = (t) => 1 - Math.pow(1 - t, 3); // cubic ease-out
 /* Acelera e desacelera: os fragmentos ainda estão visivelmente convergindo na
    metade do caminho, em vez de chegarem quase prontos logo no início. */
@@ -40,21 +57,43 @@ function initCustomCursor() {
   const badge = document.getElementById('cursor-badge');
   if (!cursor) return;
 
+  // Num aparelho de toque não existe ponteiro para seguir: o cursor fica
+  // escondido e o laço de animação rodaria a noite toda gastando bateria.
+  if (!window.matchMedia('(pointer: fine)').matches) {
+    cursor.style.display = 'none';
+    return;
+  }
+
   let mouseX = -100, mouseY = -100;
   let cursorX = -100, cursorY = -100;
+  let animando = false;
 
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
+    if (!animando) {
+      animando = true;
+      requestAnimationFrame(renderCursor);
+    }
   });
 
+  /* O laço se desliga quando o cursor alcança o ponteiro e volta a ligar no
+     próximo movimento. Antes ele rodava a 60 quadros por segundo para sempre,
+     mesmo com o mouse parado. */
   function renderCursor() {
-    cursorX += (mouseX - cursorX) * 0.2;
-    cursorY += (mouseY - cursorY) * 0.2;
+    const dx = mouseX - cursorX;
+    const dy = mouseY - cursorY;
+
+    cursorX += dx * 0.2;
+    cursorY += dy * 0.2;
     cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+
+    if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+      animando = false;
+      return;
+    }
     requestAnimationFrame(renderCursor);
   }
-  requestAnimationFrame(renderCursor);
 
   document.addEventListener('mouseover', (e) => {
     const target = e.target.closest('[data-cursor], a, button, .show-card-media, .auto-party-video-layer, .brand-square-card');
@@ -305,8 +344,9 @@ function initProduxHeroPuzzle() {
     }, slideDuration);
   }
 
-  window.addEventListener('scroll', updateProduxScroll, { passive: true });
-  window.addEventListener('resize', updateProduxScroll);
+  const aoRolar = porQuadro(updateProduxScroll);
+  window.addEventListener('scroll', aoRolar, { passive: true });
+  window.addEventListener('resize', aoRolar);
   updateProduxScroll();
 }
 
@@ -428,7 +468,7 @@ function initTrilhoHorizontal(secaoId, palcoId, trilhoId, esteiraId, barraId, mo
     if (barra) barra.style.transform = `scaleX(${Math.max(0.06, p).toFixed(3)})`;
   }
 
-  window.addEventListener('scroll', posicionar, { passive: true });
+  window.addEventListener('scroll', porQuadro(posicionar), { passive: true });
   window.addEventListener('resize', medir);
   movimentoReduzido.addEventListener('change', medir);
 
@@ -544,7 +584,7 @@ function initActiveNavHighlight() {
     }
   }
 
-  window.addEventListener('scroll', updateActiveSection, { passive: true });
+  window.addEventListener('scroll', porQuadro(updateActiveSection), { passive: true });
   updateActiveSection();
 }
 

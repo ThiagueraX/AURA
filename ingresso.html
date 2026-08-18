@@ -68,11 +68,25 @@
       text-align: center;
       padding: 60px 20px;
       display: none;
+      max-width: 420px;
     }
 
     .error-icon {
       font-size: 3rem;
       margin-bottom: 12px;
+    }
+
+    .error-link {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 11px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.12);
+      color: #34D399;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      text-decoration: none;
     }
 
     /* Voucher do Ingresso */
@@ -97,6 +111,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
     }
 
     .voucher-brand {
@@ -111,6 +126,8 @@
       padding: 4px 10px;
       border-radius: 4px;
       font-weight: 700;
+      text-align: center;
+      line-height: 1.3;
     }
 
     .badge-valido {
@@ -123,6 +140,12 @@
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid #EF4444;
       color: #EF4444;
+    }
+
+    .badge-aguardando {
+      background: rgba(255, 194, 74, 0.15);
+      border: 1px solid #FFC24A;
+      color: #FFC24A;
     }
 
     .voucher-body {
@@ -174,6 +197,68 @@
 
     .voucher-info-value.cyan { color: #00F0FF; }
 
+    /* Aviso de prazo / cancelamento / expiração */
+    .voucher-aviso {
+      display: none;
+      border-radius: 10px;
+      padding: 13px 14px;
+      margin-bottom: 16px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .voucher-aviso.is-visivel { display: block; }
+
+    .voucher-aviso.tom-alerta {
+      background: rgba(255, 194, 74, 0.1);
+      border: 1px solid rgba(255, 194, 74, 0.45);
+      color: #FFE2A8;
+    }
+
+    .voucher-aviso.tom-erro {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #FCA5A5;
+    }
+
+    .voucher-aviso.tom-ok {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #A7F3D0;
+    }
+
+    .voucher-aviso-titulo {
+      font-weight: 800;
+      font-size: 0.82rem;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .voucher-contador {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      display: block;
+      margin: 8px 0 2px;
+      color: #FFC24A;
+    }
+
+    .voucher-aviso-link,
+    .voucher-aviso-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 9px 14px;
+      border-radius: 7px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      color: #F2F2F2;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.76rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
     /* QR Code Central */
     .voucher-qr-section {
       background: #FFFFFF;
@@ -181,31 +266,88 @@
       padding: 20px;
       text-align: center;
       margin-bottom: 16px;
+      transition: opacity 0.25s ease, filter 0.25s ease;
     }
 
-    .voucher-qr-section img {
-      width: 220px;
-      height: 220px;
+    /* Entrada liberada: QR maior, sem transparência, moldura viva.
+       Esta tela é lida sob luz de celular na porta da casa. */
+    .voucher-qr-section.is-valido {
+      box-shadow: 0 0 0 3px #10B981, 0 0 28px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Aguardando pagamento: ainda não vale entrada, e a tela precisa dizer isso
+       sem esconder o QR (ele é o mesmo quando o pagamento for confirmado). */
+    .voucher-qr-section.is-aguardando {
+      opacity: 0.55;
+      filter: grayscale(0.35);
+    }
+
+    /* Expirado / cancelado: o QR não abre a portaria. Fica apagado de propósito. */
+    .voucher-qr-section.is-inativo {
+      opacity: 0.3;
+      filter: grayscale(1);
+    }
+
+    .voucher-qr-holder img,
+    .voucher-qr-holder canvas {
+      width: 250px;
+      height: 250px;
+      max-width: 100%;
       image-rendering: pixelated;
+      display: block;
+      margin: 0 auto;
     }
 
     .voucher-qr-hint {
-      font-size: 0.72rem;
-      color: #6B7280;
-      margin-top: 10px;
+      font-size: 0.74rem;
+      color: #4B5563;
+      margin-top: 12px;
+      line-height: 1.45;
+    }
+
+    /* Código ditável por telefone */
+    .voucher-code-row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
     }
 
     .voucher-code-display {
+      flex: 1;
       text-align: center;
       background: rgba(0, 240, 255, 0.08);
       border: 1px dashed rgba(0, 240, 255, 0.4);
       border-radius: 8px;
-      padding: 10px;
-      font-size: 0.95rem;
+      padding: 12px 10px;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #00F0FF;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       word-break: break-all;
+      user-select: all;
+    }
+
+    .btn-copiar-codigo {
+      flex-shrink: 0;
+      padding: 0 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      background: rgba(0, 240, 255, 0.12);
+      color: #00F0FF;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .voucher-code-label {
+      font-size: 0.64rem;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      text-align: center;
     }
 
     .voucher-footer {
@@ -268,6 +410,11 @@
       background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(8, 20, 24, 0.95));
       border: 2px solid #06B6D4;
     }
+    /* Combo sem card físico (bebida avulsa): moldura neutra. */
+    .voucher-combo-box.card-neutro {
+      background: linear-gradient(135deg, rgba(148, 163, 184, 0.14), rgba(10, 14, 20, 0.95));
+      border: 2px solid rgba(148, 163, 184, 0.6);
+    }
 
     .v-combo-tag {
       font-size: 0.72rem;
@@ -285,6 +432,12 @@
       font-weight: 800;
       color: #FFFFFF;
       margin-bottom: 4px;
+    }
+    .v-combo-desc {
+      font-size: 0.76rem;
+      color: #CBD5E1;
+      line-height: 1.4;
+      margin-bottom: 8px;
     }
     .v-combo-chip {
       display: inline-block;
@@ -304,6 +457,13 @@
     .card-green .v-combo-chip { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
     .card-lime .v-combo-chip { background: rgba(234, 179, 8, 0.2); color: #FACC15; border: 1px solid #EAB308; }
     .card-cyan .v-combo-chip { background: rgba(6, 182, 212, 0.2); color: #22D3EE; border: 1px solid #06B6D4; }
+    .card-neutro .v-combo-chip { background: rgba(148, 163, 184, 0.2); color: #CBD5E1; border: 1px solid rgba(148, 163, 184, 0.7); }
+
+    .v-combo-chip.chip-resgatado {
+      background: rgba(107, 114, 128, 0.25);
+      color: #9CA3AF;
+      border: 1px solid rgba(156, 163, 175, 0.7);
+    }
 
     .v-combo-hint {
       font-size: 0.72rem;
@@ -347,10 +507,14 @@
   <!-- ESTADO: ERRO / NÃO ENCONTRADO -->
   <div class="error-state" id="state-error">
     <div class="error-icon">&#10060;</div>
-    <h2 style="font-size: 1.2rem; margin-bottom: 8px;">Ingresso Nao Encontrado</h2>
+    <h2 style="font-size: 1.2rem; margin-bottom: 8px;" id="error-title">Ingresso não encontrado</h2>
     <p class="font-mono" style="color: #8A9099; font-size: 0.82rem;" id="error-msg">
-      Verifique se o link esta correto ou entre em contato com a AURA.
+      Verifique se o link está correto ou fale com a AURA pelo WhatsApp.
     </p>
+    <a class="error-link font-mono" id="error-whatsapp"
+       href="https://wa.me/5519992971614" target="_blank" rel="noopener noreferrer">
+      Falar com a AURA no WhatsApp
+    </a>
   </div>
 
   <!-- ESTADO: VOUCHER DO INGRESSO -->
@@ -359,12 +523,12 @@
 
       <div class="voucher-header">
         <span class="voucher-brand">AURA</span>
-        <span class="voucher-badge badge-valido font-mono" id="voucher-status-badge">ENTRADA VALIDA</span>
+        <span class="voucher-badge badge-valido font-mono" id="voucher-status-badge">ENTRADA VÁLIDA</span>
       </div>
 
       <div class="voucher-body">
         <div class="voucher-event-name" id="voucher-evento">LORENAH IN AURA</div>
-        <div class="voucher-event-date font-mono" id="voucher-data">SABADO, 22 DE AGOSTO - 21:00</div>
+        <div class="voucher-event-date font-mono" id="voucher-data">SÁBADO, 22 DE AGOSTO - 21:00</div>
 
         <div class="voucher-info-grid font-mono">
           <div class="voucher-info-item">
@@ -377,29 +541,38 @@
           </div>
         </div>
 
+        <!-- Aviso de prazo, expiração ou cancelamento -->
+        <div class="voucher-aviso font-mono" id="voucher-aviso"></div>
+
         <!-- Banner de Combo e Card de Retirada na Portaria -->
         <div id="voucher-combo-box" style="display: none;"></div>
 
-        <!-- QR CODE REAL ESCANEAVEL -->
-        <div class="voucher-qr-section">
-          <img id="voucher-qr-img" src="" alt="QR Code do Ingresso" />
-          <div class="voucher-qr-hint font-mono">Apresente este QR Code na portaria oficial</div>
+        <!-- QR CODE REAL ESCANEÁVEL -->
+        <div class="voucher-qr-section" id="voucher-qr-section">
+          <div class="voucher-qr-holder" id="voucher-qr-holder"></div>
+          <div class="voucher-qr-hint font-mono" id="voucher-qr-hint">
+            Apresente este QR Code na portaria oficial.
+          </div>
         </div>
 
-        <div class="voucher-code-display font-mono" id="voucher-codigo">-</div>
+        <div class="voucher-code-label font-mono">CÓDIGO DO INGRESSO</div>
+        <div class="voucher-code-row">
+          <div class="voucher-code-display font-mono" id="voucher-codigo">-</div>
+          <button type="button" class="btn-copiar-codigo" id="btn-copiar-codigo">Copiar</button>
+        </div>
       </div>
 
       <div class="voucher-footer">
         <p class="voucher-footer-text font-mono">
-          <strong>AURA MOCOCA</strong> - Ingresso digital oficial e intransferivel.<br />
+          <strong>AURA MOCOCA</strong> — ingresso digital oficial e intransferível.<br />
           Entrada somente com documento original (RG ou CNH).<br />
-          Av. Joao Batista Lima Figueiredo, 2707 - Mococa/SP
+          Av. João Batista Lima Figueiredo, 2707 — Mococa/SP
         </p>
       </div>
     </div>
 
     <div class="voucher-actions">
-      <button type="button" class="btn-voucher-action" onclick="window.print()">
+      <button type="button" class="btn-voucher-action" id="btn-salvar-pdf">
         Salvar / PDF
       </button>
       <a href="/" class="btn-voucher-action">
@@ -409,35 +582,109 @@
   </div>
 
   <!-- SUPABASE CLIENT -->
-  <script src="js/supabase-client.js?v=20260816_01"></script>
+  <!-- Gerador de QR local: o voucher abre mesmo sem internet e o código de
+       validação não é enviado para nenhum serviço de fora. -->
+  <script src="js/qr.js?v=20260818_01"></script>
+  <script src="js/supabase-client.js?v=20260818_01"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    'use strict';
+
+    // ═══════════════════════════════════════════════════════════════
+    // CONSTANTES
+    // ═══════════════════════════════════════════════════════════════
+
+    const WHATSAPP_AURA = '5519992971614';
+
+    /**
+     * Classes de card que existem de fato na folha desta página (bloco <style>
+     * acima). O `card_classe` vem do banco: aplicar direto o que chegar
+     * deixaria o layout à mercê de um valor digitado errado no painel.
+     */
+    const CLASSES_CARD_VALIDAS = [
+      'card-gold', 'card-amber', 'card-blue', 'card-royal-blue', 'card-red',
+      'card-pink', 'card-green', 'card-lime', 'card-cyan'
+    ];
+
+    const POLL_INTERVALO_MS = 5000;          // 5s: o dono confere o PIX no app do banco
+    const POLL_LIMITE_MS = 30 * 60 * 1000;   // 30min e paramos: é o celular do cliente
+
+    // ═══════════════════════════════════════════════════════════════
+    // ENTRADA
+    // ═══════════════════════════════════════════════════════════════
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ligarBotoesFixos();
+
       const params = new URLSearchParams(window.location.search);
       const codigoValidador = params.get('v');
 
       if (!codigoValidador) {
-        showError('Nenhum codigo de ingresso informado na URL.');
+        mostrarErro(
+          'Link incompleto',
+          'O endereço não traz o código do ingresso. Abra o link exatamente como a AURA enviou no WhatsApp ou no e-mail.'
+        );
         return;
       }
 
-      // A tabela de ingressos nao e mais legivel pelo navegador. Esta funcao
-      // do banco devolve so o ingresso deste codigo, e sem o CPF do titular.
-      const r = await window.AuraDB.buscarVoucher(codigoValidador);
+      buscarERenderizar(codigoValidador, { primeiraCarga: true });
+    });
+
+    /** Um botão, um handler: nenhum destes tem `onclick=` no HTML. */
+    function ligarBotoesFixos() {
+      const btnPdf = document.getElementById('btn-salvar-pdf');
+      if (btnPdf) btnPdf.addEventListener('click', () => window.print());
+
+      const btnCopiar = document.getElementById('btn-copiar-codigo');
+      if (btnCopiar) btnCopiar.addEventListener('click', copiarCodigo);
+    }
+
+    async function buscarERenderizar(codigo, { primeiraCarga = false } = {}) {
+      // A tabela de ingressos não é legível pelo navegador. Esta função do
+      // banco devolve só o ingresso deste código, e sem o CPF do titular.
+      const r = await window.AuraDB.buscarVoucher(codigo);
 
       if (!r || !r.ok) {
+        if (!primeiraCarga) return false; // já há um voucher na tela: não apagar
         if (r && r.motivo === 'NAO_ENCONTRADO') {
-          showError('Ingresso nao encontrado no sistema. Verifique o link.');
+          mostrarErro(
+            'Ingresso não encontrado',
+            'Não localizamos este código no sistema. Confira se o link veio completo ou fale com a AURA pelo WhatsApp.'
+          );
         } else {
-          showError((r && r.mensagem) || 'Falha de conexao. Tente novamente.');
+          mostrarErro(
+            'Não conseguimos abrir seu ingresso',
+            (r && r.mensagem) || 'Falha de conexão. Verifique a internet e tente novamente.'
+          );
         }
-        return;
+        return false;
       }
 
       renderVoucher(r.ingresso);
-    });
+      return true;
+    }
 
-    /** Monta a linha de data a partir do que a funcao do banco devolveu. */
+    // ═══════════════════════════════════════════════════════════════
+    // ESTADO DO INGRESSO
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * `pago` é a palavra final sobre entrada liberada — o dono consegue
+     * confirmar até um pedido que já tinha expirado, então a checagem de
+     * `pago` vem antes da de EXPIRADO.
+     */
+    function estadoDoIngresso(ing) {
+      const st = (ing.status || '').toUpperCase();
+      const stPag = (ing.status_pagamento || '').toUpperCase();
+
+      if (st === 'CANCELADO' || stPag === 'CANCELADO') return 'CANCELADO';
+      if (stPag === 'RECUSADO') return 'RECUSADO';
+      if (ing.pago) return st === 'UTILIZADO' ? 'UTILIZADO' : 'VALIDO';
+      if (stPag === 'EXPIRADO') return 'EXPIRADO';
+      return 'PENDENTE';
+    }
+
+    /** Monta a linha de data a partir do que a função do banco devolveu. */
     function montarDataDoShow(ingresso) {
       if (!ingresso || !ingresso.show_data) return null;
 
@@ -451,214 +698,586 @@
       return (base + abertura).toUpperCase();
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // RENDERIZAÇÃO
+    // Idempotente de propósito: a verificação periódica chama de novo com o
+    // ingresso atualizado, sem precisar recarregar a página.
+    // ═══════════════════════════════════════════════════════════════
+
     function renderVoucher(ingresso) {
       document.getElementById('state-loading').style.display = 'none';
+      document.getElementById('state-error').style.display = 'none';
       document.getElementById('state-voucher').style.display = 'block';
 
       const elNome = document.getElementById('voucher-nome');
       const elSetor = document.getElementById('voucher-setor');
       const elCodigo = document.getElementById('voucher-codigo');
-      const elQrImg = document.getElementById('voucher-qr-img');
-      const elBadge = document.getElementById('voucher-status-badge');
       const elEvento = document.getElementById('voucher-evento');
       const elData = document.getElementById('voucher-data');
-      const elDica = document.querySelector('.voucher-qr-hint');
 
       if (elNome) elNome.textContent = ingresso.titular_nome || '-';
       if (elSetor) elSetor.textContent = (ingresso.setor || '-').toUpperCase();
-      if (elCodigo) elCodigo.textContent = ingresso.codigo_validador || '-';
+      if (elCodigo) elCodigo.textContent = (ingresso.codigo_validador || '-').toUpperCase();
 
-      // Evento e data vem do show do ingresso, nao do texto fixo do HTML
+      // Evento e data vêm do show do ingresso, não do texto fixo do HTML
       if (elEvento && ingresso.show_titulo) {
         elEvento.textContent = ingresso.show_titulo.toUpperCase();
       }
       const dataShow = montarDataDoShow(ingresso);
       if (elData && dataShow) elData.textContent = dataShow;
 
-      const cancelado = ingresso.status === 'CANCELADO'
-                     || ingresso.status_pagamento === 'CANCELADO';
+      renderComboDoIngresso(ingresso);
 
-      if (cancelado) {
-        if (elBadge) {
-          elBadge.textContent = 'INGRESSO CANCELADO';
-          elBadge.className = 'voucher-badge badge-utilizado font-mono';
-        }
-        const secaoQr = document.querySelector('.voucher-qr-section');
-        if (secaoQr) {
-          secaoQr.textContent = '';
-          const aviso = document.createElement('div');
-          aviso.className = 'voucher-qr-hint font-mono';
-          aviso.textContent = 'Este ingresso foi cancelado ou estornado e nao permite entrada. Fale com a AURA pelo WhatsApp.';
-          secaoQr.appendChild(aviso);
-        }
+      const estado = estadoDoIngresso(ingresso);
+      aplicarEstado(estado, ingresso);
+    }
+
+    function aplicarEstado(estado, ingresso) {
+      const secaoQr = document.getElementById('voucher-qr-section');
+      const dica = document.getElementById('voucher-qr-hint');
+
+      // Sempre desenhamos o QR: mesmo apagado, é o mesmo código que a portaria
+      // lê depois que o dono confirma o PIX.
+      desenharQrCode(ingresso.codigo_validador);
+
+      secaoQr.classList.remove('is-valido', 'is-aguardando', 'is-inativo');
+
+      switch (estado) {
+        case 'CANCELADO':
+          pararMonitoramento();
+          definirSelo('INGRESSO CANCELADO', 'badge-utilizado');
+          secaoQr.classList.add('is-inativo');
+          dica.textContent = 'Este ingresso foi cancelado ou estornado e não permite entrada.';
+          mostrarAviso({
+            tom: 'erro',
+            titulo: 'Ingresso cancelado',
+            texto: 'Este pedido foi cancelado ou estornado. Se você acha que houve engano, fale com a AURA pelo WhatsApp.',
+            comWhatsapp: true
+          });
+          break;
+
+        case 'RECUSADO':
+          pararMonitoramento();
+          definirSelo('PAGAMENTO RECUSADO', 'badge-utilizado');
+          secaoQr.classList.add('is-inativo');
+          dica.textContent = 'O pagamento deste pedido não foi aprovado, então o código não libera a entrada.';
+          mostrarAviso({
+            tom: 'erro',
+            titulo: 'Pagamento recusado',
+            texto: 'A cobrança não foi aprovada. Você pode refazer a compra no site ou falar com a AURA pelo WhatsApp.',
+            comWhatsapp: true
+          });
+          break;
+
+        case 'EXPIRADO':
+          pararMonitoramento();
+          definirSelo('PRAZO VENCIDO', 'badge-utilizado');
+          secaoQr.classList.add('is-inativo');
+          dica.textContent = 'Este código não libera a entrada enquanto o pedido não for reativado pela casa.';
+          mostrarAviso({
+            tom: 'erro',
+            titulo: 'O prazo deste pedido venceu',
+            texto: 'O prazo deste pedido venceu e a reserva foi liberada. Se você já pagou, fale com a AURA no WhatsApp — a casa consegue reativar.',
+            comWhatsapp: true
+          });
+          break;
+
+        case 'UTILIZADO':
+          pararMonitoramento();
+          definirSelo('JÁ UTILIZADO', 'badge-utilizado');
+          secaoQr.classList.add('is-inativo');
+          dica.textContent = 'Esta entrada já foi registrada na portaria.';
+          mostrarAviso({
+            tom: 'alerta',
+            titulo: 'Entrada já registrada',
+            texto: horarioDeUso(ingresso)
+          });
+          break;
+
+        case 'VALIDO':
+          pararMonitoramento();
+          definirSelo('ENTRADA VÁLIDA', 'badge-valido');
+          secaoQr.classList.add('is-valido');
+          dica.textContent = 'Pagamento confirmado. Apresente este QR Code na portaria da AURA junto com seu documento.';
+          esconderAviso();
+          break;
+
+        case 'PENDENTE':
+        default:
+          definirSelo('AGUARDANDO CONFIRMAÇÃO', 'badge-aguardando');
+          secaoQr.classList.add('is-aguardando');
+          dica.textContent = 'Este QR Code ainda não libera a entrada. Assim que a AURA confirmar o seu PIX, esta tela muda sozinha para Entrada Válida.';
+          mostrarAvisoDePrazo(ingresso);
+          iniciarMonitoramento(ingresso.codigo_validador);
+          break;
+      }
+    }
+
+    function horarioDeUso(ingresso) {
+      if (!ingresso.utilizado_em) {
+        return 'Este ingresso já foi usado para entrar na casa e não pode ser lido de novo.';
+      }
+      const d = new Date(ingresso.utilizado_em);
+      if (isNaN(d.getTime())) {
+        return 'Este ingresso já foi usado para entrar na casa e não pode ser lido de novo.';
+      }
+      return `Entrada registrada em ${d.toLocaleString('pt-BR', {
+        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+      })}. O mesmo código não pode ser lido duas vezes.`;
+    }
+
+    function definirSelo(texto, classe) {
+      const elBadge = document.getElementById('voucher-status-badge');
+      if (!elBadge) return;
+      elBadge.textContent = texto;
+      elBadge.className = `voucher-badge ${classe} font-mono`;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // BLOCO DE AVISO (prazo / expirado / cancelado)
+    // Montado com createElement: o texto do show e do combo vem do banco.
+    // ═══════════════════════════════════════════════════════════════
+
+    function esconderAviso() {
+      const box = document.getElementById('voucher-aviso');
+      if (!box) return;
+      box.className = 'voucher-aviso font-mono';
+      box.textContent = '';
+    }
+
+    function mostrarAviso({ tom = 'alerta', titulo, texto, comWhatsapp = false, extra = null }) {
+      const box = document.getElementById('voucher-aviso');
+      if (!box) return null;
+
+      box.className = `voucher-aviso font-mono is-visivel tom-${tom}`;
+      box.textContent = '';
+
+      if (titulo) {
+        const t = document.createElement('strong');
+        t.className = 'voucher-aviso-titulo';
+        t.textContent = titulo;
+        box.appendChild(t);
+      }
+      if (texto) {
+        const p = document.createElement('span');
+        p.textContent = texto;
+        box.appendChild(p);
+      }
+      if (extra) box.appendChild(extra);
+
+      if (comWhatsapp) {
+        const link = document.createElement('a');
+        link.className = 'voucher-aviso-link font-mono';
+        link.href = `https://wa.me/${WHATSAPP_AURA}?text=` + encodeURIComponent(
+          'Olá! Preciso de ajuda com o meu ingresso da AURA.'
+        );
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Falar com a AURA no WhatsApp';
+        box.appendChild(link);
+      }
+
+      return box;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // CONTAGEM REGRESSIVA DO PRAZO (45 min a partir da compra)
+    // ═══════════════════════════════════════════════════════════════
+
+    let contadorInterval = null;
+
+    function pararContador() {
+      if (contadorInterval) {
+        clearInterval(contadorInterval);
+        contadorInterval = null;
+      }
+    }
+
+    function formatarRestante(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const min = String(Math.floor(total / 60)).padStart(2, '0');
+      const seg = String(total % 60).padStart(2, '0');
+      return `${min}:${seg}`;
+    }
+
+    function mostrarAvisoDePrazo(ingresso) {
+      pararContador();
+
+      const limite = ingresso.expira_em ? new Date(ingresso.expira_em) : null;
+      const temPrazo = limite && !isNaN(limite.getTime());
+
+      if (!temPrazo) {
+        mostrarAviso({
+          tom: 'alerta',
+          titulo: 'Pagamento em conferência',
+          texto: 'Assim que a AURA confirmar o recebimento, o seu ingresso é liberado automaticamente nesta tela.'
+        });
         return;
       }
 
-      // Pagamento ainda em conferencia: o QR existe mas a portaria recusa.
-      // Esta pagina e o lugar onde o cliente acompanha a liberacao em tempo real.
-      if (!ingresso.pago) {
-        if (elBadge) {
-          elBadge.textContent = 'AGUARDANDO CONFIRMAÇÃO';
-          elBadge.className = 'voucher-badge badge-utilizado font-mono';
+      const relogio = document.createElement('span');
+      relogio.className = 'voucher-contador';
+
+      const box = mostrarAviso({
+        tom: 'alerta',
+        titulo: 'Pagamento em conferência',
+        texto: 'Pague o PIX e aguarde a conferência da casa. Se o prazo abaixo vencer, a sua vaga volta para o lote.',
+        extra: relogio
+      });
+      if (!box) return;
+
+      const atualizar = () => {
+        const restante = limite.getTime() - Date.now();
+        if (restante <= 0) {
+          relogio.textContent = '00:00';
+          pararContador();
+          const p = document.createElement('span');
+          p.textContent = 'O prazo terminou. Se você já pagou, fale com a AURA pelo WhatsApp para reativar a reserva.';
+          box.appendChild(p);
+          return;
         }
-        if (elDica) {
-          elDica.textContent = '⏱️ Pagamento em conferência. Assim que a AURA confirmar seu PIX, esta tela atualizará automaticamente para Entrada Válida.';
-        }
-        iniciarMonitoramentoVoucher(ingresso.codigo_validador);
-      } else if (ingresso.status === 'UTILIZADO') {
-        if (elBadge) {
-          elBadge.textContent = 'JÁ UTILIZADO';
-          elBadge.className = 'voucher-badge badge-utilizado font-mono';
-        }
+        relogio.textContent = formatarRestante(restante);
+      };
+
+      atualizar();
+      contadorInterval = setInterval(atualizar, 1000);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // COMBO — vem pronto do banco, nada de adivinhar pelo texto do setor
+    // ═══════════════════════════════════════════════════════════════
+
+    function renderComboDoIngresso(ingresso) {
+      const box = document.getElementById('voucher-combo-box');
+      if (!box) return;
+
+      const combo = ingresso.combo;
+      box.textContent = '';
+
+      if (!combo || !combo.titulo) {
+        box.style.display = 'none';
+        box.className = '';
+        return;
+      }
+
+      const classeCard = CLASSES_CARD_VALIDAS.includes(combo.card_classe)
+        ? combo.card_classe
+        : 'card-neutro';
+      box.className = `voucher-combo-box ${classeCard}`;
+
+      // Cor exata do card impressa pelo banco. Só entra se for um hexadecimal
+      // de verdade — o valor vem de fora e não pode virar CSS arbitrário.
+      if (typeof combo.card_cor === 'string' && /^#[0-9A-Fa-f]{3,8}$/.test(combo.card_cor)) {
+        box.style.borderColor = combo.card_cor;
       } else {
-        if (elBadge) {
-          elBadge.textContent = 'ENTRADA VÁLIDA';
-          elBadge.className = 'voucher-badge badge-valido font-mono';
-        }
+        box.style.borderColor = '';
       }
 
-      // Banner de Combo e Card de Retirada Física na Portaria
-      const comboContainer = document.getElementById('voucher-combo-box');
-      if (comboContainer) {
-        const comboInfo = extrairComboDoIngresso(ingresso);
-        if (comboInfo) {
-          comboContainer.className = `voucher-combo-box ${comboInfo.classe}`;
-          comboContainer.innerHTML = `
-            <div class="v-combo-tag font-mono">
-              <span>🏷️ COMBO INCLUSO NO PEDIDO:</span>
-            </div>
-            <div class="v-combo-title">${comboInfo.produto}</div>
-            <span class="v-combo-chip font-mono">💳 RETIRAR NA PORTARIA: ${comboInfo.cardNome}</span>
-            <p class="v-combo-hint font-mono">
-              Ao apresentar este QR Code na portaria, o segurança entregará seu <strong>${comboInfo.cardNome}</strong> físico para resgatar no Bar da casa.
-            </p>
-          `;
-          comboContainer.style.display = 'block';
-        } else {
-          comboContainer.style.display = 'none';
-        }
+      const resgatado = (ingresso.combo_status || '').toUpperCase() === 'RESGATADO';
+
+      const tag = document.createElement('div');
+      tag.className = 'v-combo-tag font-mono';
+      const tagTexto = document.createElement('span');
+      tagTexto.textContent = '🏷️ COMBO INCLUSO NO PEDIDO:';
+      tag.appendChild(tagTexto);
+      box.appendChild(tag);
+
+      const titulo = document.createElement('div');
+      titulo.className = 'v-combo-title';
+      titulo.textContent = combo.titulo;
+      box.appendChild(titulo);
+
+      if (combo.descricao) {
+        const desc = document.createElement('p');
+        desc.className = 'v-combo-desc font-mono';
+        desc.textContent = combo.descricao;
+        box.appendChild(desc);
       }
 
-      // QR Code real gerado via API publica
-      if (elQrImg) {
-        const qrData = encodeURIComponent(ingresso.codigo_validador);
-        elQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrData}&format=png&margin=8`;
+      if (resgatado) {
+        const chip = document.createElement('span');
+        chip.className = 'v-combo-chip chip-resgatado font-mono';
+        chip.textContent = '✓ COMBO JÁ RESGATADO NO BAR';
+        box.appendChild(chip);
+
+        const hint = document.createElement('p');
+        hint.className = 'v-combo-hint font-mono';
+        hint.textContent = 'Este combo já foi entregue. Cada combo é resgatado uma única vez.';
+        box.appendChild(hint);
+      } else {
+        if (combo.card_nome) {
+          const chip = document.createElement('span');
+          chip.className = 'v-combo-chip font-mono';
+          chip.textContent = `💳 RETIRAR NA PORTARIA: ${combo.card_nome}`;
+          box.appendChild(chip);
+        }
+
+        const hint = document.createElement('p');
+        hint.className = 'v-combo-hint font-mono';
+        hint.textContent = combo.card_nome
+          ? `Ao apresentar este QR Code na portaria, a equipe entrega o seu ${combo.card_nome} físico para resgatar no bar da casa.`
+          : 'Apresente este QR Code no bar da casa para retirar o seu pedido.';
+        box.appendChild(hint);
       }
+
+      box.style.display = 'block';
     }
 
-    function extrairComboDoIngresso(ingresso) {
-      if (!ingresso) return null;
-      const setor = (ingresso.setor || '').toUpperCase();
+    // ═══════════════════════════════════════════════════════════════
+    // QR CODE
+    //
+    // Preferimos o gerador local (`window.AuraQR`): assim o código de
+    // validação do cliente não viaja para um serviço de terceiro — nem fica
+    // no log dele — e o QR aparece mesmo com a internet ruim na fila da
+    // portaria. Se o gerador não estiver carregado nesta página, caímos no
+    // serviço externo com `referrerpolicy="no-referrer"`, que ao menos evita
+    // mandar junto a URL desta página (ela carrega o código na query string).
+    // ═══════════════════════════════════════════════════════════════
 
-      if (setor.includes('BLACK LABEL') || setor.includes('CARD DOURADO') || (setor.includes('WHISKY') && setor.includes('BLACK'))) {
-        return {
-          cardNome: 'CARD DOURADO',
-          classe: 'card-gold',
-          produto: 'Combo Johnnie Walker Black Label 12 Anos'
-        };
-      }
-      if (setor.includes('RED LABEL') || setor.includes('CARD ÂMBAR') || setor.includes('CARD AMBAR') || (setor.includes('WHISKY') && setor.includes('RED'))) {
-        return {
-          cardNome: 'CARD ÂMBAR',
-          classe: 'card-amber',
-          produto: 'Combo Johnnie Walker Red Label'
-        };
-      }
-      if (setor.includes('CIROC') || setor.includes('CÎROC') || setor.includes('AZUL ROYAL')) {
-        return {
-          cardNome: 'CARD AZUL ROYAL',
-          classe: 'card-royal-blue',
-          produto: 'Combo Cîroc Ultra Premium Vodka'
-        };
-      }
-      if (setor.includes('ABSOLUT') || setor.includes('CARD AZUL') || setor.includes('VODKA')) {
-        return {
-          cardNome: 'CARD AZUL',
-          classe: 'card-blue',
-          produto: 'Combo Absolut Vodka'
-        };
-      }
-      if (setor.includes('TANQUERAY') || setor.includes('CARD VERMELHO') || setor.includes('GIN')) {
-        return {
-          cardNome: 'CARD VERMELHO',
-          classe: 'card-red',
-          produto: 'Combo Gin Tanqueray London Dry'
-        };
-      }
-      if (setor.includes('CHANDON') || setor.includes('PASSION') || setor.includes('CARD ROSA') || setor.includes('ESPUMANTE')) {
-        return {
-          cardNome: 'CARD ROSA',
-          classe: 'card-pink',
-          produto: 'Chandon Passion On The Rocks'
-        };
-      }
-      if (setor.includes('CORONA') || setor.includes('VERDE LIMÃO') || setor.includes('VERDE LIMAO')) {
-        return {
-          cardNome: 'CARD VERDE LIMÃO',
-          classe: 'card-lime',
-          produto: 'Balde Corona Extra (6x com Limão)'
-        };
-      }
-      if (setor.includes('HEINEKEN') || setor.includes('CARD VERDE') || setor.includes('BALDE')) {
-        return {
-          cardNome: 'CARD VERDE',
-          classe: 'card-green',
-          produto: 'Balde Heineken (6x Long Neck)'
-        };
-      }
-      if (setor.includes('RED BULL') || setor.includes('CARD CIANO')) {
-        return {
-          cardNome: 'CARD CIANO',
-          classe: 'card-cyan',
-          produto: 'Combo 5x Red Bull Energy Drink'
-        };
-      }
+    const QR_TAMANHO = 250;
 
-      return null;
-    }
+    function desenharQrCode(codigo) {
+      const holder = document.getElementById('voucher-qr-holder');
+      if (!holder || !codigo) return;
 
-    let pollingVoucherInterval = null;
+      // Redesenhar o mesmo código a cada verificação piscaria a tela.
+      if (holder.dataset.codigo === codigo && holder.childElementCount > 0) return;
 
-    function iniciarMonitoramentoVoucher(codigoValidador) {
-      if (pollingVoucherInterval) clearInterval(pollingVoucherInterval);
-      if (!codigoValidador || !window.AuraDB) return;
+      holder.textContent = '';
+      holder.dataset.codigo = codigo;
 
-      pollingVoucherInterval = setInterval(async () => {
+      if (window.AuraQR && typeof window.AuraQR.desenhar === 'function') {
         try {
-          const r = await window.AuraDB.buscarVoucher(codigoValidador);
-          if (r && r.ok && r.ingresso && r.ingresso.pago) {
-            clearInterval(pollingVoucherInterval);
-            pollingVoucherInterval = null;
-
-            const elBadge = document.getElementById('voucher-status-badge');
-            const elDica = document.querySelector('.voucher-qr-hint');
-
-            if (elBadge) {
-              elBadge.textContent = 'ENTRADA VÁLIDA';
-              elBadge.className = 'voucher-badge badge-valido font-mono';
-              elBadge.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
-            }
-            if (elDica) {
-              elDica.textContent = '✓ Pagamento confirmado! Apresente este QR Code na portaria da AURA.';
-              elDica.style.color = '#10B981';
-            }
-
-            if (navigator.vibrate) {
-              try { navigator.vibrate([100, 50, 150]); } catch (e) {}
-            }
+          const canvas = window.AuraQR.desenhar(codigo, QR_TAMANHO);
+          if (canvas) {
+            canvas.setAttribute('role', 'img');
+            canvas.setAttribute('aria-label', 'QR Code do ingresso');
+            holder.appendChild(canvas);
+            return;
           }
         } catch (e) {
-          console.warn('[Voucher Realtime] Polling:', e);
+          console.warn('[Voucher] Gerador local de QR falhou, usando o serviço externo:', e);
         }
-      }, 3000);
+      }
+
+      const img = document.createElement('img');
+      img.width = QR_TAMANHO;
+      img.height = QR_TAMANHO;
+      img.alt = 'QR Code do ingresso';
+      img.referrerPolicy = 'no-referrer';
+      img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=' +
+        `${QR_TAMANHO}x${QR_TAMANHO}&data=${encodeURIComponent(codigo)}&format=png&margin=8`;
+      holder.appendChild(img);
     }
 
-    function showError(msg) {
+    // ═══════════════════════════════════════════════════════════════
+    // COPIAR O CÓDIGO
+    // O código é ditado por telefone e digitado na portaria quando a câmera
+    // não colabora — precisa ser fácil de copiar.
+    // ═══════════════════════════════════════════════════════════════
+
+    async function copiarCodigo() {
+      const elCodigo = document.getElementById('voucher-codigo');
+      const btn = document.getElementById('btn-copiar-codigo');
+      if (!elCodigo || !btn) return;
+
+      const texto = (elCodigo.textContent || '').trim();
+      if (!texto || texto === '-') return;
+
+      let copiou = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(texto);
+          copiou = true;
+        }
+      } catch (e) {
+        copiou = false;
+      }
+
+      if (!copiou) {
+        // Navegador antigo ou página sem HTTPS: caminho manual.
+        try {
+          const campo = document.createElement('textarea');
+          campo.value = texto;
+          campo.setAttribute('readonly', '');
+          campo.style.position = 'fixed';
+          campo.style.opacity = '0';
+          document.body.appendChild(campo);
+          campo.select();
+          copiou = document.execCommand('copy');
+          document.body.removeChild(campo);
+        } catch (e) {
+          copiou = false;
+        }
+      }
+
+      const rotuloOriginal = 'Copiar';
+      btn.textContent = copiou ? 'Copiado!' : 'Selecione';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = rotuloOriginal;
+        btn.disabled = false;
+      }, 2000);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // VERIFICAÇÃO PERIÓDICA DO PAGAMENTO
+    //
+    // Isto roda no celular do cliente. Antes consultava a cada 3s para
+    // sempre, mesmo com a tela apagada — a noite inteira de bateria e dados.
+    // Agora: 5s, pausa quando a aba sai de vista, e desiste depois de 30min
+    // oferecendo um botão de verificação manual.
+    // ═══════════════════════════════════════════════════════════════
+
+    let pollTimer = null;
+    let pollCodigo = null;
+    let pollInicio = 0;
+    let pollAtivo = false;
+    let pollOuvinteLigado = false;
+
+    function iniciarMonitoramento(codigo) {
+      if (!codigo || !window.AuraDB) return;
+      if (pollAtivo && pollCodigo === codigo) return; // já monitorando
+
+      pollCodigo = codigo;
+      pollInicio = Date.now();
+      pollAtivo = true;
+
+      if (!pollOuvinteLigado) {
+        document.addEventListener('visibilitychange', aoTrocarVisibilidade);
+        window.addEventListener('pagehide', pausarMonitoramento);
+        pollOuvinteLigado = true;
+      }
+
+      retomarMonitoramento();
+    }
+
+    function retomarMonitoramento() {
+      if (!pollAtivo || pollTimer || document.hidden) return;
+      pollTimer = setInterval(verificarPagamento, POLL_INTERVALO_MS);
+    }
+
+    /** Suspende o relógio sem encerrar o monitoramento. */
+    function pausarMonitoramento() {
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    }
+
+    /** Encerra de vez. Todo caminho de saída passa por aqui. */
+    function pararMonitoramento() {
+      pausarMonitoramento();
+      pararContador();
+      pollAtivo = false;
+    }
+
+    function aoTrocarVisibilidade() {
+      if (document.hidden) {
+        pausarMonitoramento();
+        return;
+      }
+      if (!pollAtivo) return;
+
+      if (Date.now() - pollInicio > POLL_LIMITE_MS) {
+        pararPorTempo();
+        return;
+      }
+      // Voltou para a tela: confere na hora, sem esperar o próximo ciclo.
+      verificarPagamento();
+      retomarMonitoramento();
+    }
+
+    async function verificarPagamento() {
+      if (!pollAtivo || !pollCodigo) return;
+
+      if (Date.now() - pollInicio > POLL_LIMITE_MS) {
+        pararPorTempo();
+        return;
+      }
+
+      try {
+        const r = await window.AuraDB.buscarVoucher(pollCodigo);
+        if (!r || !r.ok || !r.ingresso) return;
+
+        const estado = estadoDoIngresso(r.ingresso);
+        if (estado === 'PENDENTE') return; // nada mudou
+
+        // Mudou de estado: pararMonitoramento é chamado dentro de aplicarEstado
+        // para os estados finais.
+        renderVoucher(r.ingresso);
+
+        if (estado === 'VALIDO' && navigator.vibrate) {
+          try { navigator.vibrate([100, 50, 150]); } catch (e) {}
+        }
+      } catch (e) {
+        console.warn('[Voucher] Falha ao verificar o pagamento:', e);
+      }
+    }
+
+    /**
+     * Parou pelo limite de tempo. O cliente continua no controle: o botão
+     * abaixo faz uma consulta avulsa, sem religar o relógio.
+     */
+    function pararPorTempo() {
+      pararMonitoramento();
+
+      const botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = 'voucher-aviso-btn font-mono';
+      botao.textContent = 'Verificar agora';
+      botao.addEventListener('click', async () => {
+        botao.disabled = true;
+        botao.textContent = 'Verificando...';
+        const mudou = await verificarUmaVez();
+        if (!mudou) {
+          botao.disabled = false;
+          botao.textContent = 'Verificar de novo';
+        }
+      });
+
+      mostrarAviso({
+        tom: 'alerta',
+        titulo: 'Paramos de verificar sozinhos',
+        texto: 'Faz meia hora que este ingresso está aguardando confirmação, então paramos de consultar para poupar a bateria do seu celular. Toque no botão para checar agora, ou fale com a AURA.',
+        extra: botao,
+        comWhatsapp: true
+      });
+    }
+
+    /** Consulta avulsa. Devolve true se o estado saiu de PENDENTE. */
+    async function verificarUmaVez() {
+      if (!pollCodigo) return false;
+      try {
+        const r = await window.AuraDB.buscarVoucher(pollCodigo);
+        if (!r || !r.ok || !r.ingresso) return false;
+        if (estadoDoIngresso(r.ingresso) === 'PENDENTE') return false;
+        renderVoucher(r.ingresso);
+        return true;
+      } catch (e) {
+        console.warn('[Voucher] Falha na verificação manual:', e);
+        return false;
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ERRO
+    // ═══════════════════════════════════════════════════════════════
+
+    function mostrarErro(titulo, mensagem) {
+      pararMonitoramento();
+
       document.getElementById('state-loading').style.display = 'none';
+      document.getElementById('state-voucher').style.display = 'none';
+
       const errorEl = document.getElementById('state-error');
       errorEl.style.display = 'block';
+
+      const tituloEl = document.getElementById('error-title');
+      if (tituloEl && titulo) tituloEl.textContent = titulo;
+
       const msgEl = document.getElementById('error-msg');
-      if (msgEl) msgEl.textContent = msg;
+      if (msgEl) msgEl.textContent = mensagem;
     }
   </script>
 </body>

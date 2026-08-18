@@ -1,9 +1,15 @@
 /**
  * AURA MOCOCA • CAMADA DE DADOS
  *
- * O navegador não escreve mais direto nas tabelas. Tudo que envolve dinheiro,
+ * O navegador não escreve direto nas tabelas. Tudo que envolve dinheiro,
  * dado de cliente ou validação de entrada passa por uma função no banco
  * (RPC, SECURITY DEFINER), que checa permissão do lado do servidor.
+ *
+ * Três coisas que o navegador NÃO decide mais:
+ *   • o preço do ingresso  — vem de aura_lotes
+ *   • o preço do combo     — vem de aura_combos (só o id viaja daqui)
+ *   • o valor cobrado no cartão — vem do pedido gravado, lido pela Edge
+ *     Function com a chave de serviço
  *
  * A chave abaixo é a chave PÚBLICA (anon) — ela é feita para ficar exposta.
  * Quem protege as tabelas são as políticas RLS e os GRANTs, não o segredo
@@ -13,13 +19,6 @@
 const SUPABASE_CONFIG = {
   url: 'https://sgfyxmajpdgynsicmzdb.supabase.co',
   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnZnl4bWFqcGRneW5zaWNtemRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDcyNzUsImV4cCI6MjEwMDcyMzI3NX0.auX5eGMcbyeGYZdfOOd4uSPwCWe35NnaQPzi27BrMQ0'
-};
-
-const REST_HEADERS = {
-  'apikey': SUPABASE_CONFIG.anonKey,
-  'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
-  'Content-Type': 'application/json',
-  'Prefer': 'return=representation'
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -130,7 +129,7 @@ async function chamarRpc(nome, params = {}, { autenticado = false } = {}) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AUTENTICAÇÃO DA EQUIPE (substitui a senha escrita no JS)
+// AUTENTICAÇÃO DA EQUIPE
 // ═══════════════════════════════════════════════════════════════
 
 async function entrarEquipe(email, senha) {
@@ -174,7 +173,7 @@ async function sairEquipe() {
   limparSessao();
 }
 
-/** 'dono', 'portaria' ou null. */
+/** 'dono', 'portaria' ou null. O papel mora em aura_papeis. */
 async function papelDoUsuario() {
   if (papelEmCache) return papelEmCache;
   if (!lerSessao()) return null;
@@ -189,7 +188,7 @@ function temSessao() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// LEITURA PÚBLICA (o site precisa exibir shows e preços)
+// LEITURA PÚBLICA (o site precisa exibir shows, preços e combos)
 // ═══════════════════════════════════════════════════════════════
 
 async function fetchAuraShows() {
@@ -207,7 +206,9 @@ async function fetchAuraShows() {
 async function fetchAuraLotes(showId) {
   try {
     let url = `${SUPABASE_CONFIG.url}/rest/v1/aura_lotes?select=*`;
-    if (showId) url += `&show_id=eq.${showId}`;
+    // encodeURIComponent: o id entra numa query string, não pode carregar
+    // separador de parâmetro para dentro do filtro.
+    if (showId) url += `&show_id=eq.${encodeURIComponent(showId)}`;
     const res = await fetch(url, { headers: await cabecalhos() });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
@@ -217,12 +218,29 @@ async function fetchAuraLotes(showId) {
   }
 }
 
+/**
+ * Catálogo de combos. É a única fonte de preço de bebida no sistema:
+ * cardápio, checkout, voucher e portaria leem daqui.
+ */
+async function fetchAuraCombos() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_CONFIG.url}/rest/v1/aura_combos?select=*&ativo=eq.true&order=ordem.asc`,
+      { headers: await cabecalhos() });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('[Supabase] Falha ao buscar combos:', err);
+    return null;
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // CHECKOUT — cria pedido e ingressos numa transação só.
-// O preço é decidido pelo banco; o que o navegador manda é ignorado.
+// Preço do ingresso e do combo são decididos pelo banco.
 // ═══════════════════════════════════════════════════════════════
 
-async function criarPedidoAura({ showId, setor, quantidade, nome, cpf, email, whatsapp, metodo, comboNome, comboPreco }) {
+async function criarPedidoAura({ showId, setor, quantidade, nome, cpf, email, whatsapp, metodo, comboId }) {
   return await chamarRpc('aura_criar_pedido', {
     p_show_id: showId,
     p_setor: setor,
@@ -232,8 +250,7 @@ async function criarPedidoAura({ showId, setor, quantidade, nome, cpf, email, wh
     p_email: email,
     p_whatsapp: whatsapp,
     p_metodo: metodo,
-    p_combo_nome: comboNome || null,
-    p_combo_preco: comboPreco || 0
+    p_combo_id: comboId || null
   });
 }
 
@@ -243,69 +260,132 @@ async function buscarVoucher(codigo) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// CARTÃO DE CRÉDITO
+// O navegador manda o código do pedido; quem calcula o valor e quem
+// aprova é o servidor. Nenhum valor em centavos sai daqui.
+// ═══════════════════════════════════════════════════════════════
+
+async function chamarPagamentoCartao(corpo) {
+  try {
+    const res = await fetch(`${SUPABASE_CONFIG.url}/functions/v1/stripe-payment`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(corpo)
+    });
+
+    const texto = await res.text();
+    let dados = null;
+    try { dados = texto ? JSON.parse(texto) : null; } catch (e) {}
+
+    if (!res.ok || !dados || dados.error) {
+      return {
+        ok: false,
+        mensagem: (dados && dados.error) ||
+          `O servidor de pagamento respondeu HTTP ${res.status}.`,
+        motivo: (dados && dados.motivo) || 'ERRO_SERVIDOR'
+      };
+    }
+    return { ok: true, ...dados };
+  } catch (err) {
+    console.error('[Cartão] Falha de conexão:', err);
+    return { ok: false, motivo: 'SEM_CONEXAO',
+             mensagem: 'Falha de conexão com o servidor de pagamento.' };
+  }
+}
+
+/** Abre a cobrança do pedido. O valor vem do banco. */
+async function iniciarPagamentoCartao(codigoPedido) {
+  return await chamarPagamentoCartao({ action: 'create', codigoPedido });
+}
+
+/** Confirma no servidor. O banco só aprova se o PaymentIntent for daquele pedido. */
+async function confirmarPagamentoCartao(codigoPedido, paymentIntentId) {
+  return await chamarPagamentoCartao({ action: 'confirm', codigoPedido, paymentIntentId });
+}
+
+// ═══════════════════════════════════════════════════════════════
 // PAINEL DO DONO (exige login com papel 'dono')
 // ═══════════════════════════════════════════════════════════════
 
-async function updateAuraShow(showId, showData) {
+/**
+ * RLS não dá erro quando bloqueia um UPDATE: devolve zero linhas com HTTP 200.
+ * Por isso toda gravação confere o tamanho do array retornado. Sem essa
+ * conferência o painel exibia "salvo com sucesso" sem ter salvado nada.
+ */
+async function gravarLinhas(url, corpo) {
   try {
-    const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/aura_shows?id=eq.${showId}`, {
-      method: 'PATCH',
-      headers: await cabecalhos({ autenticado: true }),
-      body: JSON.stringify({ ...showData, updated_at: new Date().toISOString() })
-    });
-    if (!res.ok) return false;
-    const linhas = await res.json();
-    // RLS não dá erro quando bloqueia: devolve zero linhas. Sem esta conferência
-    // o painel exibia "salvo com sucesso" sem ter salvado nada.
-    return Array.isArray(linhas) && linhas.length > 0;
-  } catch (err) {
-    console.error('[Supabase] Erro ao atualizar show:', err);
-    return false;
-  }
-}
-
-async function updateAuraLote(loteId, dados) {
-  try {
-    const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/aura_lotes?id=eq.${loteId}`, {
-      method: 'PATCH',
-      headers: await cabecalhos({ autenticado: true }),
-      body: JSON.stringify(dados)
-    });
-    if (!res.ok) return false;
-    const linhas = await res.json();
-    return Array.isArray(linhas) && linhas.length > 0;
-  } catch (err) {
-    console.error('[Supabase] Erro ao atualizar lote:', err);
-    return false;
-  }
-}
-
-/** `campos` é o objeto de colunas a gravar, ex.: { nome_lote, status }. */
-async function updateAuraLoteStatus(showId, campos) {
-  try {
-    const corpo = (typeof campos === 'string') ? { status: campos } : campos;
-    const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/aura_lotes?show_id=eq.${showId}`, {
+    const res = await fetch(url, {
       method: 'PATCH',
       headers: await cabecalhos({ autenticado: true }),
       body: JSON.stringify(corpo)
     });
-    if (!res.ok) return false;
+    if (!res.ok) {
+      const texto = await res.text();
+      return { ok: false, mensagem: `O servidor recusou a gravação (HTTP ${res.status}). ${texto.slice(0, 120)}` };
+    }
     const linhas = await res.json();
-    return Array.isArray(linhas) && linhas.length > 0;
+    if (!Array.isArray(linhas) || linhas.length === 0) {
+      return { ok: false, mensagem: 'Nada foi gravado: sua sessão de dono expirou ou o registro não existe mais.' };
+    }
+    return { ok: true, linhas };
   } catch (err) {
-    return false;
+    console.error('[Supabase] Erro ao gravar:', err);
+    return { ok: false, mensagem: 'Falha de conexão ao gravar. Verifique a internet.' };
   }
+}
+
+async function updateAuraShow(showId, showData) {
+  return await gravarLinhas(
+    `${SUPABASE_CONFIG.url}/rest/v1/aura_shows?id=eq.${encodeURIComponent(showId)}`,
+    { ...showData, updated_at: new Date().toISOString() }
+  );
+}
+
+async function updateAuraLote(loteId, dados) {
+  return await gravarLinhas(
+    `${SUPABASE_CONFIG.url}/rest/v1/aura_lotes?id=eq.${encodeURIComponent(loteId)}`,
+    dados
+  );
+}
+
+/** Grava o mesmo conjunto de campos em todos os lotes do show. */
+async function updateAuraLoteStatus(showId, campos) {
+  const corpo = (typeof campos === 'string') ? { status: campos } : campos;
+  return await gravarLinhas(
+    `${SUPABASE_CONFIG.url}/rest/v1/aura_lotes?show_id=eq.${encodeURIComponent(showId)}`,
+    corpo
+  );
+}
+
+/**
+ * Pausa ou reabre as vendas do show inteiro.
+ * Isso mora no banco, não no localStorage: pausar venda que só vale no
+ * navegador do dono não pausa venda nenhuma.
+ */
+async function definirVendasPausadas(showId, pausado) {
+  return await updateAuraLoteStatus(showId, { status: pausado ? 'ESGOTADO' : 'ATIVO' });
+}
+
+async function updateAuraCombo(comboId, dados) {
+  return await gravarLinhas(
+    `${SUPABASE_CONFIG.url}/rest/v1/aura_combos?id=eq.${encodeURIComponent(comboId)}`,
+    dados
+  );
 }
 
 async function fetchAuraMetricas(showId) {
   const r = await chamarRpc('aura_metricas', { p_show_id: showId || null }, { autenticado: true });
-  if (!r.ok) return { totalIngressos: 0, totalFaturamento: 0, ingressosAguardando: 0, valorAguardando: 0 };
+  if (!r || !r.ok) return { ok: false, totalIngressos: 0, totalFaturamento: 0, ingressosAguardando: 0, valorAguardando: 0 };
   return r;
 }
 
 async function fetchPedidosPendentes(showId) {
   const r = await chamarRpc('aura_pedidos_pendentes', { p_show_id: showId || null }, { autenticado: true });
-  return r.ok ? (r.pedidos || []) : [];
+  return (r && r.ok) ? (r.pedidos || []) : [];
 }
 
 async function confirmarPagamento(codigoPedido) {
@@ -336,7 +416,7 @@ async function validarComboBar(codigoValidador, operador = 'BAR') {
 
 async function fetchResumoPortaria(showId) {
   const r = await chamarRpc('aura_resumo_portaria', { p_show_id: showId || null }, { autenticado: true });
-  if (!r.ok) return { total: 0, validados: 0, restantes: 0, aguardando_pagamento: 0 };
+  if (!r || !r.ok) return { total: 0, validados: 0, restantes: 0, aguardando_pagamento: 0 };
   return r;
 }
 
@@ -344,13 +424,19 @@ window.AuraDB = {
   // leitura pública
   fetchShows: fetchAuraShows,
   fetchLotes: fetchAuraLotes,
+  fetchCombos: fetchAuraCombos,
   // checkout
   criarPedido: criarPedidoAura,
   buscarVoucher: buscarVoucher,
+  // cartão
+  iniciarPagamentoCartao: iniciarPagamentoCartao,
+  confirmarPagamentoCartao: confirmarPagamentoCartao,
   // painel do dono
   updateShow: updateAuraShow,
   updateLote: updateAuraLote,
   updateLoteStatus: updateAuraLoteStatus,
+  updateCombo: updateAuraCombo,
+  definirVendasPausadas: definirVendasPausadas,
   fetchMetricas: fetchAuraMetricas,
   fetchPedidosPendentes: fetchPedidosPendentes,
   confirmarPagamento: confirmarPagamento,

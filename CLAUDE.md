@@ -88,12 +88,10 @@ Todo o design digital, interfaces, interações e fluxos do website oficial da *
 
 ---
 
-## ⚙️ Painel Administrativo do Dono (`/admin`)
-
-- **Gestão do Show Ativo:** Trocar nome da atração, data e foto do flyer.
-- **Fila de Shows ("No Pente"):** Cadastro antecipado do próximo sábado com ativação em 1 clique.
-- **Gestão de Lotes & Preços:** 1º Lote, 2º Lote, Portaria e pausa rápida (*Sold Out*).
-- **Métricas:** Contador em tempo real de ingressos emitidos e faturamento.
+> **Painel do dono:** ver a seção `⚙️ Painel do Dono — admin.html, e só ele`,
+> mais abaixo. Resumo: gestão do show ativo e do próximo, preço e capacidade
+> por setor gravados em `aura_lotes`, pausa de vendas no banco, fila de PIX
+> pendentes e métricas em tempo real.
 
 ---
 
@@ -105,7 +103,7 @@ Todo o design digital, interfaces, interações e fluxos do website oficial da *
   geométricas uniformes erram o desenho. Só existe no peso 400 — nunca pedir
   200/300 nem aplicar `bold`. Fallback em tamanhos pequenos: `Tenor Sans`.
   O emblema é SVG vetorial: três anéis + "A" de duas lâminas + ponto central.
-  Detalhes e coordenadas em `informações/identidade_visual.md`.
+  Detalhes e coordenadas em `informacoes/identidade_visual.md`.
 - **Tipografia Monospaçada:** `DM Mono` (UPPERCASE, `[ HOME ]`, `[ 01 // LINEUP ]`, `-rotate-2deg`, `backdrop-blur-md`).
 - **Display & Títulos:** `Montserrat Black` (leading compacto `leading-[1.1]`, split-word animations).
 - **Corpo de Texto:** `Inter` / `Plus Jakarta Sans`.
@@ -150,11 +148,18 @@ Tem dois modos, escolhidos pelo JS em `initGaleriaHorizontal()`:
 - **Qualquer largura, sem movimento reduzido:** a seção ganha a classe
   `modo-fixo`, gruda na tela via `position: sticky` e as fotos correm na
   horizontal conforme a página desce. Não há sequestro de rolagem — parar de
-  rolar sai da seção normalmente. No celular o percurso é comprimido
-  (`Math.max(teto, percurso * 0.55)`, fotos em 56vw) para que a seção prenda
-  a rolagem por pouco mais de uma tela, e não pelas duas e meia que o
-  percurso cheio custaria.
+  rolar sai da seção normalmente. No celular (≤740px) o percurso é comprimido
+  para `Math.max(innerHeight * 1.6, percurso * 0.92)`, para a seção não prender
+  a rolagem pelas duas telas e meia que o percurso cheio custaria. Os números
+  estão em `initTrilhoHorizontal()`, em `js/main.js` — conferir lá antes de
+  citar valores.
 - **Movimento reduzido:** arraste lateral nativo, sem `modo-fixo`.
+
+Os dois manipuladores de rolagem da home passam por `porQuadro()`, um
+empacotador de `requestAnimationFrame`: cada passada do hero lê a posição de 8
+fragmentos e escreve estilo em todos, e rodar isso direto no evento `scroll`
+forçava vários recálculos de layout no mesmo quadro — era o que fazia a página
+engasgar no celular.
 
 Dois detalhes que já quebraram e não são óbvios:
 
@@ -172,98 +177,241 @@ Dois detalhes que já quebraram e não são óbvios:
 
 ## 🔐 Arquitetura de dados & permissões (Supabase)
 
-Projeto `sgfyxmajpdgynsicmzdb`. **O navegador não escreve mais direto nas
-tabelas.** Tudo que envolve dinheiro, dado de cliente ou validação de entrada
-passa por função no banco (`SECURITY DEFINER`), que confere permissão no
-servidor.
+Projeto `sgfyxmajpdgynsicmzdb`. **O navegador não escreve direto nas tabelas.**
+Tudo que envolve dinheiro, dado de cliente ou validação de entrada passa por
+função no banco (`SECURITY DEFINER`), que confere permissão no servidor.
+
+### Três coisas que o navegador NÃO decide
+
+| Decisão | Onde mora |
+|---|---|
+| Preço do ingresso | `aura_lotes.preco` |
+| Preço do combo | `aura_combos.preco` — do navegador viaja **só o id** |
+| Valor cobrado no cartão | o servidor lê do pedido já gravado |
+
+Cada uma dessas linhas veio de um buraco real: o navegador mandava o preço do
+combo (`p_combo_preco`) e o valor em centavos do cartão (`amount`). Bastava
+mudar uma linha no console para comprar um combo de R$ 440 por R$ 1.
 
 ### Papéis
-`aura_equipe` liga `auth.users` a um papel: `dono` ou `portaria`.
-`aura_papel()` devolve o papel do usuário logado. Não existe mais senha
-escrita no JS — quem confere é o Supabase Auth.
+
+`aura_papeis` liga `auth.users` a um papel: `dono` ou `portaria`.
+`aura_papel()` devolve o papel do usuário logado.
+
+> Existiu uma tabela `aura_equipe`, que a documentação mandava usar e que
+> `aura_papel()` **nunca leu**. Ficou vazia o tempo todo; quem seguisse o doc
+> cadastrava um porteiro que não entrava. Foi removida.
+
+Não existe senha escrita no JS. Existiu: `js/admin.js` tinha um "fallback de
+contingência" que abria o painel do dono com `aura2026`, `admin`, `dono` — ou
+com qualquer e-mail contendo "dono" — e a mensagem de erro **ensinava a senha
+na tela**. Foi apagado junto com o painel embutido no `index.html`.
 
 ### Funções expostas
 
 | Função | Quem chama | Faz |
 |---|---|---|
-| `aura_criar_pedido` | qualquer visitante | Cria pedido + ingressos numa transação. **Preço vem de `aura_lotes`**, não do navegador. Nasce `PENDENTE`. |
-| `aura_buscar_voucher` | qualquer visitante | Devolve **um** ingresso pelo código, sem CPF. |
-| `aura_validar_ingresso` | `dono`/`portaria` | UPDATE condicional (`and status = 'DISPONIVEL'`): o banco arbitra a corrida. Recusa se o pedido não estiver `APROVADO`. |
-| `aura_confirmar_pagamento` | `dono` | Único caminho que torna um ingresso válido. |
-| `aura_cancelar_pedido` | `dono` | Cancela e devolve as vagas ao lote. |
-| `aura_pedidos_pendentes`, `aura_metricas`, `aura_resumo_portaria` | `dono` (as duas primeiras) / equipe | Sempre filtradas por show. |
+| `aura_criar_pedido` | visitante | Cria pedido + ingressos numa transação. Preço de `aura_lotes` + `aura_combos`. Trava o lote com `FOR UPDATE`. Nasce `PENDENTE` com prazo. |
+| `aura_buscar_voucher` | visitante | Devolve **um** ingresso pelo código, sem CPF. |
+| `aura_validar_ingresso` | `dono`/`portaria` | UPDATE condicional (`and status = 'DISPONIVEL'`): o banco arbitra a corrida. |
+| `aura_resgatar_combo` | `dono`/`portaria` | Baixa do combo no bar, pelo `combo_id`. Exige que a pessoa já tenha entrado. |
+| `aura_confirmar_pagamento` | `dono` | Único caminho manual que torna um ingresso válido. |
+| `aura_cancelar_pedido` | `dono` | Cancela, invalida os ingressos **e devolve as vagas ao lote**. |
+| `aura_liberar_pendentes_expirados` | interno | Devolve ao lote as vagas de pedidos que passaram do prazo. |
+| `aura_iniciar_pagamento_cartao`, `aura_vincular_payment_intent`, `aura_aprovar_pedido_cartao` | **só `service_role`** | O trio que decide a cobrança no cartão. Inacessível ao navegador. |
+| `aura_pedidos_pendentes`, `aura_metricas`, `aura_resumo_portaria` | `dono` / equipe | Sempre filtradas por show. |
 
-### Três armadilhas que já morderam aqui
+### Código do ingresso: aleatório, nunca sequencial
+
+`codigo_validador` é `AURA-XXXXX-XXXXX`, sorteado do alfabeto
+`23456789ABCDEFGHJKLMNPQRSTUVWXYZ` (sem 0/O/1/I, porque o porteiro digita à
+mão quando a câmera falha).
+
+Era `AURA-00042-PISTA-1` — o número do pedido. Quem comprava o 42 sabia que
+existia o 41: dava para varrer a base inteira pelo voucher público (nome,
+setor, situação de cada cliente) e para **forjar o QR de outra pessoa e entrar
+no lugar dela**. O aviso que o próprio sistema mandava no WhatsApp descrevia
+exatamente esse ataque.
+
+### Pedido tem prazo
+
+Nasce `PENDENTE` com `expira_em = agora + 45 min`, e a vaga já sai do lote.
+Vencido o prazo vira `EXPIRADO` e a vaga volta. Sem isso, um laço anônimo
+esgotava a casa de graça — `aura_criar_pedido` é público e reservava estoque
+sem nunca soltar.
+
+`EXPIRADO` continua aparecendo na fila do dono: o cliente pode ter pago
+atrasado, e confirmar retoma a vaga (recusando com `ESGOTADO` se o setor
+lotou nesse meio tempo).
+
+Estados de `status_pagamento`: `PENDENTE`, `APROVADO`, `EXPIRADO`,
+`CANCELADO`, `RECUSADO`.
+
+### Combo é linha de tabela, não texto
+
+`aura_combos` (18 itens) é a fonte única: cardápio, checkout, voucher e bar
+leem de lá. O ingresso guarda `combo_id`; `setor` voltou a ser só
+`PISTA`/`CAMAROTE`/`BISTRO`.
+
+Antes o combo era concatenado dentro do `setor`
+(`'Pista • [CARD DOURADO: Combo Black Label]'`) e três telas o adivinhavam com
+pilhas de `includes('BLACK LABEL')`. Como o nome vinha do navegador, mandar
+`p_combo_nome = 'CARD DOURADO'` com preço zero rendia um combo de R$ 380 de
+graça.
+
+**`BISTRO` é só o nome de coluna — o setor de verdade é "VIP".** Não existe
+"Mesa Bistrô" na casa; o setor real é Pista / Camarote / VIP. Renomear a
+coluna do banco (`aura_lotes.setor`, `aura_ingressos.setor`, o `CHECK`
+constraint) trocaria uma migração real por um problema cosmético, então o
+código interno continua `BISTRO` — só o texto que o cliente vê virou "VIP",
+em `ROTULOS_SETOR` (`js/checkout.js`) e no `index.html`. O Camarote também
+perdeu "VIP" do título por não haver mais dois setores disputando o mesmo
+nome. **A descrição do VIP em `ROTULOS_SETOR` (`'Área VIP com atendimento
+exclusivo'`) é um texto provisório meu — o dono ainda não passou o texto e o
+preço de verdade desse setor.**
+
+### Quatro armadilhas que já morderam aqui
 
 1. **`coalesce` na guarda de permissão.** `aura_papel() <> 'dono'` é **NULL**
    para visitante anônimo, e `if NULL` não dispara — a guarda passava batido.
    Sempre `coalesce(aura_papel(), '') <> 'dono'`.
 
 2. **`revoke from public` ≠ `revoke from anon`.** O Supabase concede EXECUTE a
-   `anon` automaticamente em toda função nova (default privileges). Revogar de
-   `PUBLIC` não desfaz uma concessão explícita ao papel `anon`. Toda função de
-   equipe precisa de `revoke all on function ... from anon`.
+   `anon` automaticamente em toda função nova. Revogar de `PUBLIC` não desfaz a
+   concessão explícita ao papel `anon`. Toda função de equipe precisa de
+   `revoke all on function ... from anon`.
 
 3. **Política RLS que filtra por `coluna IS NOT NULL`** numa coluna
-   obrigatória é `USING (true)` disfarçado. Era assim que as políticas
-   chamadas "Blindagem" liberavam a tabela inteira.
+   obrigatória é `USING (true)` disfarçado.
+
+4. **`SECURITY DEFINER` sem `SET search_path`** é sequestrável. Todas as
+   funções `aura_*` fixam `search_path = public, pg_temp`.
 
 E uma consequência prática: **RLS não dá erro quando bloqueia um UPDATE — ela
-devolve zero linhas com HTTP 200.** Todo `PATCH` precisa conferir se o array
-retornado tem tamanho > 0, senão o painel exibe "salvo com sucesso" sem ter
-salvado nada (foi o que aconteceu com preços durante semanas).
+devolve zero linhas com HTTP 200.** Por isso `updateShow`, `updateLote`,
+`updateLoteStatus` e `updateCombo` devolvem `{ ok, mensagem }`, nunca
+`true`/`false`, e **nenhuma tela pode dizer "salvo" sem checar `.ok`**.
 
 ### O que ainda depende do dono, não do sistema
 
-O pagamento não tem gateway: o PIX cai direto na conta da casa. Por isso o
-pedido nasce `PENDENTE` e o QR **não abre a portaria** até o dono conferir o
-valor no app do banco e clicar em "Recebi o PIX" na aba Pagamentos. É esse
-clique — e não o checkout — que emite entrada válida.
+O PIX não tem gateway: cai direto na conta da casa. O pedido nasce `PENDENTE`
+e o QR **não abre a portaria** até o dono conferir o valor no app do banco e
+clicar em "Confirmar PIX". É esse clique — e não o checkout — que emite
+entrada válida.
+
+---
+
+## 💳 Pagamento com cartão (Stripe)
+
+Ordem obrigatória, e ela não é estética:
+
+```
+criarPedido  →  iniciarPagamentoCartao  →  confirmCardPayment  →  confirmarPagamentoCartao
+ (grava)         (servidor diz o valor)      (Stripe, no cliente)    (servidor confere e aprova)
+```
+
+Três defeitos que essa ordem impede, todos já estiveram no ar juntos:
+
+1. **Cobrava antes de gravar.** Quando a gravação falhava, o cliente saía
+   cobrado e sem ingresso, com o botão escrito "✓ Cartão Aprovado!".
+2. **O valor vinha do navegador.** `amount` em centavos, calculado no cliente.
+3. **O `confirm` não amarrava nada.** Aprovava qualquer `codigoPedido` com
+   qualquer PaymentIntent `succeeded` — usando a chave de serviço, por cima da
+   RLS. Com códigos de pedido sequenciais, um laço aprovava a casa inteira.
+
+Hoje `aura_aprovar_pedido_cartao` só aprova se o PaymentIntent for **o que
+aquele pedido reservou** e se o valor pago bater com `valor_total`.
+
+**A chave secreta da Stripe vem do ambiente** (`STRIPE_SECRET_KEY` nas Edge
+Functions), nunca do código. Sem ela, a função recusa o pagamento em vez de
+cair num modo de teste silencioso.
+
+⚠️ Enquanto `STRIPE_CHAVE_PUBLICAVEL` em `js/checkout.js` começar com
+`pk_test`, a casa está em **modo de teste**: cartão real é recusado e cartão de
+teste passa liberando ingresso sem dinheiro entrar. O checkout escreve isso na
+tela, mas o certo é trocar pelas chaves `pk_live`/`sk_live`.
+
+---
+
+## ⚙️ Painel do Dono — `admin.html`, e só ele
+
+- **Um painel só.** Existiu um segundo, embutido no `index.html`. Eles
+  divergiram: um tinha a porta dos fundos de senha, o outro tinha injeção de
+  HTML; um gravava preço no banco, o outro só no `localStorage`. O do
+  `index.html` foi removido; a engrenagem do cabeçalho agora é um link.
+- **Preço e capacidade gravam em `aura_lotes`**, por setor, com conferência do
+  retorno. O painel antigo lia os preços da tela, guardava no `localStorage` e
+  anunciava *"já está ativo no site"* — o dono via R$ 60 no celular dele e o
+  cliente pagava R$ 40.
+- **Pausar vendas mora no banco** (`aura_lotes.status = 'ESGOTADO'`). Ficava no
+  `localStorage`: pausava só no navegador do dono, e o site seguia vendendo.
+- **A fila de pagamentos é montada com `createElement`/`textContent`.** Nome,
+  CPF e WhatsApp ali foram digitados por um desconhecido na internet, e
+  `aura_criar_pedido` é público — `innerHTML` naquela lista era XSS armazenado
+  executando na sessão que confirma pagamentos.
+- **Nenhum `alert()` de sucesso sem checar `.ok`.**
 
 ---
 
 ## 🎟️ Regras do checkout que não podem regredir
 
-Estas quatro invariantes vieram de defeitos reais que chegaram a estar no ar.
-Cada uma tem teste em `teste_checkout.mjs` (Chrome headless com o `AuraDB`
-simulado).
+Cada uma veio de um defeito real que chegou a estar no ar. Todas têm teste em
+`testes/` (ver `testes/README.md`).
 
 0. **Um scanner só.** A portaria vive em `portaria.html`. Existiu uma cópia
-   embutida no `index.html` que divergiu da original; ela foi removida junto
-   com a biblioteca de leitura de QR (100KB+) da página pública. Não
-   reintroduzir.
+   embutida no `index.html` que divergiu da original; foi removida junto com a
+   biblioteca de leitura de QR da página pública. Não reintroduzir.
 
-1. **Um botão, um handler.** Nenhum botão do checkout pode ter `onclick` no
-   HTML *e* `addEventListener` no JS ao mesmo tempo — o `onclick` roda primeiro,
-   não passa pelas travas, e o clique vira duas compras. Todos os botões com
-   listener em `initCheckoutEvents()` tiveram o `onclick` removido. A trava de
-   verdade mora dentro de `emitDigitalTicket()` (`checkoutState.emitindo`), não
-   no botão, para valer também em toque duplo e chamada solta.
+1. **Um botão, um handler.** Nenhum botão pode ter `onclick` no HTML *e*
+   `addEventListener` no JS — o `onclick` roda primeiro, não passa pelas
+   travas, e o clique vira duas compras. A trava de verdade mora dentro de
+   `emitDigitalTicket()` (`checkoutState.emitindo`), não no botão, para valer
+   também em toque duplo e chamada solta.
 
-2. **Emissão falha fechada.** Se `savePedido` ou `saveIngressos` não concluir,
-   o cliente **não** vê a tela de sucesso — fica no pagamento com o motivo em
-   `#checkout-erro`. Não existe mais código de ingresso gerado localmente: um
-   QR que não está no banco só é descoberto na portaria, com o cliente na fila.
-   Quando o pedido grava mas os ingressos não, a mensagem entrega o
-   `codigo_pedido` para emissão manual.
+2. **Emissão falha fechada.** Se `criarPedido` não concluir, o cliente **não**
+   vê a tela de sucesso — fica no pagamento com o motivo em `#checkout-erro`.
+   No cartão isso vem antes de qualquer cobrança. Quando o pedido grava mas os
+   ingressos não, a mensagem entrega o `codigo_pedido` para emissão manual.
 
 3. **Um QR por ingresso.** `checkoutState.codigosValidadores` é uma lista.
-   A tela e o WhatsApp renderizam todos. Mostrar só o primeiro fazia o segundo
-   a entrar ser barrado como "já utilizado" enquanto o ingresso dele estava
-   intacto no banco.
+   A tela e o WhatsApp renderizam todos.
 
 4. **Compra nova começa zerada.** `openCheckout()` chama
-   `limparEmissaoAnterior()` e `limparDadosDoCliente()`. Sem isso, num caixa
-   compartilhado, o código do comprador anterior sobrevive em memória e é
-   entregue ao próximo cliente se a gravação dele falhar.
+   `limparEmissaoAnterior()` e `limparDadosDoCliente()` — num caixa
+   compartilhado, o código do comprador anterior não pode sobreviver em
+   memória.
 
-**Portaria:** o card de resultado é mostrado/escondido pela classe
-`status-*`, nunca por `style.display` inline — estilo inline vence a folha e
-travava o card invisível da segunda leitura em diante. E todo `AudioContext`
-precisa de `resume()` antes do bipe: no celular ele nasce suspenso e a leitura
-do QR não conta como gesto do usuário.
+5. **Nada de `innerHTML` com dado do banco.** Combos, nomes e descrições vêm de
+   tabela que o navegador não controla.
 
----
+6. **Todo `setInterval` tem um `clearInterval` no caminho de saída.** Fechar o
+   modal desliga o acompanhamento do pagamento; ele também tem teto de 20
+   minutos. Antes seguia consultando o banco a cada 3 segundos para sempre.
+
+7. **O QR é gerado localmente** (`js/qr.js`, verificado em `teste_qr.mjs`).
+   Era desenhado por `api.qrserver.com`: o código de validação de todo cliente
+   viajava na URL para um terceiro, e sem internet a imagem não aparecia — com
+   o cliente já pago, na fila da portaria. O serviço externo ficou só como
+   plano B.
+
+**Portaria:** o card de resultado é mostrado/escondido pela classe `status-*`,
+nunca por `style.display` inline — estilo inline vence a folha e travava o card
+invisível da segunda leitura em diante. E todo `AudioContext` precisa de
+`resume()` antes do bipe: no celular ele nasce suspenso e a leitura do QR não
+conta como gesto do usuário.
+
+8. **Nome de função de nível superior é global entre todos os `<script src>`
+   da página** — não é isolado por arquivo. `js/cardapio.js` e `js/checkout.js`
+   chegaram a declarar cada um sua própria `function carregarCatalogo(...)`;
+   como `checkout.js` carrega depois no `index.html`, a dele sobrescrevia a do
+   cardápio, e toda chamada interna de `cardapio.js` a `carregarCatalogo()`
+   passava a executar a função ERRADA (a do checkout, que nem toca
+   `cardapioEstado`). Resultado: o modal de combos ficava preso em
+   "Carregando o cardápio da casa..." para sempre, sem nenhum erro no
+   console — o `await` da função errada resolvia normalmente. Foi renomeada
+   para `carregarCatalogoCardapio`. Ao criar função de nível superior em
+   qualquer `js/*.js` novo, checar se o nome já existe em outro arquivo
+   carregado na mesma página antes de assumir que está isolada.
 
 ## 🖼️ Mídia Principal & Imagem 4K do Scroll:
 - **Foto 4K da Fachada Noturna (Google CDN - 2340x4160):**
